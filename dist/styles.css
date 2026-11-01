@@ -1,0 +1,139 @@
+:root {
+  --ink: #20231f;
+  --muted: #686d65;
+  --paper: #f4f0e8;
+  --card: #fffdf8;
+  --line: #d9d3c8;
+  --red: #9c2f24;
+  --red-dark: #702118;
+  --amber: #ce7b2b;
+  --green: #475945;
+  --shadow: 0 18px 50px rgba(53, 43, 31, .12);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #ce7b2b; outline-offset: 3px; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: "Noto Sans TC", sans-serif; }
+button, select { font: inherit; }
+button, a, select { -webkit-tap-highlight-color: transparent; }
+.masthead { height: 76px; padding: 0 clamp(20px, 4vw, 64px); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(244,240,232,.92); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 1000; }
+.brand { color: inherit; text-decoration: none; display: flex; gap: 12px; align-items: center; }
+.brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--red); color: white; border-radius: 50% 50% 50% 8px; font-family: "Noto Serif JP", serif; }
+.brand strong, .brand small { display: block; }
+.brand strong { letter-spacing: .08em; font-size: 15px; }
+.brand small { color: var(--muted); font-size: 10px; letter-spacing: .22em; margin-top: 2px; }
+.header-note { color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+main { max-width: 1540px; margin: auto; }
+.intro { min-height: 300px; padding: clamp(48px, 7vw, 94px) clamp(22px, 5vw, 80px) 50px; display: grid; grid-template-columns: 1.15fr .85fr; align-items: end; gap: 50px; background-image: radial-gradient(circle at 82% 18%, rgba(156,47,36,.13), transparent 25%), linear-gradient(115deg, transparent 65%, rgba(206,123,43,.07)); }
+.eyebrow { margin: 0 0 15px; color: var(--red); font-size: 11px; font-weight: 700; letter-spacing: .22em; }
+h1 { margin: 0; font: 700 clamp(42px, 6.5vw, 88px)/1.08 "Noto Serif JP", serif; letter-spacing: -.04em; }
+h1 em { color: var(--red); font-style: normal; }
+.intro-copy { max-width: 520px; padding-bottom: 8px; }
+.intro-copy > p { color: #4f544e; line-height: 1.9; font-size: 15px; }
+.legend { display: flex; gap: 24px; margin-top: 25px; font-size: 12px; color: var(--muted); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; }
+.dot.kanazawa { background: var(--red); } .dot.toyama { background: var(--amber); }
+.dot.tokyo-city { background: #426577; }
+.area-shortcuts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 clamp(16px, 3vw, 48px) 20px; }
+.area-shortcuts button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; padding: 12px 18px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.area-shortcuts button[aria-pressed="true"] { border-color: var(--red); background: #f4e5dd; color: var(--red-dark); }
+.area-shortcuts small { font-size: 10px; font-weight: 400; margin-left: 5px; }
+.planner { margin: 0 clamp(16px, 3vw, 48px) 18px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 24px; background: var(--ink); color: white; border-radius: 16px; box-shadow: var(--shadow); }
+.planner-title { display: flex; align-items: center; gap: 13px; white-space: nowrap; }
+.planner-title > span { color: #e3a75d; font-family: serif; font-size: 22px; }
+.planner-title strong, .planner-title small { display: block; }
+.planner-title strong { font-size: 14px; } .planner-title small { color: #aeb1ab; font-size: 11px; margin-top: 2px; }
+.filter-pills { display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
+.filter-pills::-webkit-scrollbar { display: none; }
+.filter-pill { flex: 0 0 auto; padding: 10px 14px; border: 1px solid #4c504b; border-radius: 999px; color: #e7e8e5; background: transparent; font-size: 12px; cursor: pointer; transition: .2s ease; }
+.filter-pill:hover { border-color: #a9ada7; }
+.filter-pill.active { color: var(--ink); border-color: #f7efe1; background: #f7efe1; }
+.workspace { margin: 0 clamp(16px, 3vw, 48px); display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(370px, .82fr); height: min(720px, calc(100vh - 110px)); min-height: 570px; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: var(--card); box-shadow: var(--shadow); }
+.map-panel { position: relative; min-width: 0; border-right: 1px solid var(--line); }
+#map { width: 100%; height: 100%; background: #ddd8cb; }
+.map-toolbar { position: absolute; top: 16px; left: 16px; right: 16px; z-index: 500; display: flex; justify-content: space-between; pointer-events: none; }
+.map-toolbar > * { pointer-events: auto; background: rgba(255,253,248,.92); box-shadow: 0 8px 24px rgba(60,50,38,.14); border-radius: 999px; border: 1px solid rgba(217,211,200,.7); }
+.map-toolbar div { padding: 10px 15px; font-size: 12px; } .map-toolbar span { font-weight: 700; color: var(--red); }
+.map-toolbar button { padding: 9px 14px; border: 0; cursor: pointer; color: var(--ink); }
+.map-caption { position: absolute; z-index: 500; bottom: 12px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 30px); padding: 7px 12px; background: rgba(32,35,31,.82); color: white; border-radius: 6px; font-size: 10px; }
+.leaflet-control-attribution { font-size: 9px !important; }
+.maple-marker { background: transparent; border: 0; }
+.marker-pin { width: 30px; height: 30px; display: grid; place-items: center; color: white; font-size: 14px; font-weight: 700; background: var(--red); border: 3px solid white; border-radius: 50% 50% 50% 8px; transform: rotate(-45deg); box-shadow: 0 4px 12px rgba(35,30,25,.3); }
+.marker-pin span { transform: rotate(45deg); }
+.marker-pin.toyama, .marker-pin.gokayama { background: var(--amber); }
+.marker-pin.tokyo-city, .marker-pin.tokyo-west, .marker-pin.tokyo-daytrip { background: #426577; }
+.list-panel { min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+.list-heading { padding: 24px 25px 16px; display: flex; align-items: end; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.list-heading .eyebrow { margin-bottom: 6px; }
+.list-heading h2 { margin: 0; font: 700 25px "Noto Serif JP", serif; }
+.list-heading select { max-width: 140px; padding: 9px 28px 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-size: 11px; }
+.spot-list { overflow-y: auto; padding: 0 24px 30px; }
+.spot-card { padding: 23px 0 24px; border-bottom: 1px solid var(--line); }
+.spot-card:last-child { border-bottom: 0; }
+.spot-top { display: flex; justify-content: space-between; gap: 16px; }
+.area-tag { color: var(--red); font-size: 10px; letter-spacing: .15em; font-weight: 700; }
+.spot-card.toyama .area-tag, .spot-card.gokayama .area-tag { color: #a75a18; }
+.spot-card.tokyo-city .area-tag, .spot-card.tokyo-west .area-tag, .spot-card.tokyo-daytrip .area-tag { color: #426577; }
+.spot-card h3 { margin: 6px 0 3px; font: 700 20px "Noto Serif JP", serif; }
+.spot-card .zh-name { color: var(--muted); font-size: 12px; }
+.peak { flex: 0 0 auto; text-align: right; }
+.peak span { display: block; color: var(--muted); font-size: 9px; letter-spacing: .12em; }
+.peak strong { color: var(--green); font-size: 12px; }
+.address { margin: 13px 0; color: #676b65; font-size: 11px; line-height: 1.55; }
+.source-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 13px; font-size: 10px; color: var(--muted); }
+.foliage-type { display: inline-block; margin: 0 0 10px; padding: 4px 8px; border-radius: 5px; background: #edf1ed; color: var(--green); font-size: 10px; }
+.spot-note { margin: 0 0 12px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+.source-row a { color: var(--green); text-underline-offset: 3px; }
+.data-note { max-width: 1100px; margin: 0 auto 50px; padding: 0 24px; font-size: 12px; color: var(--muted); line-height: 1.9; }
+.source-links { display: flex; flex-wrap: wrap; gap: 20px; }
+.source-links a { color: var(--red); }
+.map-error { padding: 100px 30px; line-height: 1.8; }
+.spot-card { scroll-margin-top: 90px; }
+.actions { display: flex; gap: 8px; }
+.action { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; padding: 8px; text-decoration: none; border-radius: 8px; font-size: 11px; font-weight: 600; }
+.action.x { color: white; background: var(--ink); }
+.action.map { color: var(--red); border: 1px solid #d8aaa3; background: #fffaf6; }
+.weekend-select-wrap { margin-top: 10px; display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 10px; }
+.weekend-select-wrap label { font-size: 10px; font-weight: 700; color: var(--muted); }
+.weekend-select { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: white; font-size: 11px; }
+.empty-state { margin: auto; max-width: 300px; padding: 40px 20px; text-align: center; }
+.empty-state span { font-size: 38px; } .empty-state h3 { font-family: "Noto Serif JP", serif; }
+.empty-state p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+.empty-state button { padding: 10px 16px; color: white; background: var(--red); border: 0; border-radius: 8px; cursor: pointer; }
+.how-it-works { margin: 110px clamp(22px, 5vw, 80px) 100px; }
+.how-it-works > h2 { margin: 0 0 32px; font: 700 clamp(30px, 4vw, 50px) "Noto Serif JP", serif; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.steps article { padding: 28px 32px 10px 0; }
+.steps span { color: var(--red); font: 700 25px serif; }
+.steps h3 { margin: 26px 0 8px; font: 700 19px "Noto Serif JP", serif; }
+.steps p { max-width: 310px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.toast { position: fixed; left: 50%; bottom: 26px; z-index: 2000; transform: translate(-50%, 20px); opacity: 0; padding: 12px 18px; color: white; background: var(--ink); border-radius: 999px; box-shadow: var(--shadow); font-size: 12px; pointer-events: none; transition: .25s ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+footer { padding: 30px clamp(22px, 5vw, 80px); display: flex; justify-content: space-between; gap: 30px; color: #d8d8d3; background: var(--ink); font-size: 11px; }
+footer span { font-family: "Noto Serif JP", serif; font-size: 15px; } footer p { margin: 0; }
+@media (max-width: 900px) {
+  .header-note { display: none; }
+  .intro { grid-template-columns: 1fr; min-height: auto; gap: 24px; }
+  .planner { align-items: flex-start; flex-direction: column; }
+  .filter-pills { width: 100%; }
+  .workspace { height: auto; min-height: 0; grid-template-columns: 1fr; overflow: visible; }
+  .map-panel { height: 54vh; min-height: 420px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .list-panel { max-height: none; }
+  .spot-list { overflow: visible; }
+}
+@media (max-width: 600px) {
+  .masthead { height: 64px; }
+  .intro { padding-top: 45px; }
+  h1 { font-size: 44px; }
+  .planner { margin-inline: 12px; border-radius: 14px; }
+  .workspace { margin-inline: 12px; border-radius: 16px; }
+  .map-panel { min-height: 390px; }
+  .list-heading { padding-inline: 18px; }
+  .spot-list { padding-inline: 18px; }
+  .steps { grid-template-columns: 1fr; }
+  .steps article { border-top: 1px solid var(--line); }
+  .steps article:first-child { border-top: 0; }
+  footer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }

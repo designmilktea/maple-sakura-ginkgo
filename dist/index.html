@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f1e9">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="探索金澤、富山、東京與近郊的楓葉與銀杏景點，依地區與例年見頃篩選，查看最新照片並安排週末。">
+  <title>週末賞楓地圖｜金澤・富山・東京</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="./map-ui.css">
+  <link rel="stylesheet" href="./design-system.css">
+</head>
+<body>
+  <main class="map-app" aria-label="週末賞楓地圖">
+    <div id="map" aria-label="金澤富山東京賞楓景點地圖"></div>
+    <header class="explore-controls">
+      <div class="filter-row">
+        <button type="button" id="areaFilter" class="filter-trigger" aria-label="地區：全部地區" aria-haspopup="dialog" aria-controls="filterDialog" aria-expanded="false"><span class="trigger-value"><span id="areaValue">全部地區</span><span aria-hidden="true">⌄</span></span></button>
+        <button type="button" id="peakFilter" class="filter-trigger" aria-label="例年見頃：不限見頃，可複選" aria-haspopup="dialog" aria-controls="filterDialog" aria-expanded="false"><span class="trigger-value"><span id="peakValue">不限見頃</span><span aria-hidden="true">⌄</span></span></button>
+      </div>
+      <div class="weekend-label">我的賞楓週末 <span>個人預測</span></div>
+      <div id="weekendFilters" class="filter-pills" role="group" aria-label="依週末篩選"></div>
+      <div class="cloud-toolbar"><span id="cloudScope">此瀏覽器的安排</span><button id="cloudPanelButton" type="button">我的行程／共編</button></div>
+      <div class="results-row"><button type="button" id="listButton" class="list-button" aria-controls="listPanel" aria-expanded="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M3 6h1M3 12h1M3 18h1"/></svg>景點清單 <span id="visibleCount">60</span></button><button type="button" id="resetFilters" class="reset-filters" hidden>清除篩選</button></div>
+    </header>
+    <div class="map-tools"><button id="fitMap" type="button" aria-label="顯示所有符合篩選的景點" title="重新置中"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button></div>
+    <div class="foliage-legend" role="group" aria-label="地圖圖例"><span><i class="legend-maple">楓</i>紅葉</span><span><i class="legend-ginkgo">杏</i>銀杏</span><span><i class="legend-both">✉</i>楓樹與銀杏</span><button class="icon-button" id="aboutButton" type="button" aria-label="使用方式與資料來源" aria-controls="aboutPanel" aria-expanded="false" title="使用方式與資料來源">?</button></div>
+    <div id="mapCoverage" class="map-coverage" role="status" hidden></div>
+    <div id="mapServiceNotice" class="map-service-notice" role="status" hidden></div>
+    <div id="mapEmpty" class="map-empty" hidden><strong id="mapEmptyTitle">沒有符合這組條件的景點</strong><p id="mapEmptyDescription">換個時段，或清除篩選重新探索。</p><button type="button" id="openUnmappedList" hidden>查看景點清單</button> <button type="button" id="clearPeak" hidden>清除見頃</button> <button type="button" id="showAll">清除全部</button></div>
+    <section id="detailSheet" class="detail-sheet" data-state="half" role="region" aria-labelledby="detailTitle" aria-hidden="true" inert>
+      <div id="sheetDragZone" class="sheet-drag-zone">
+        <button id="sheetHandle" class="sheet-handle" type="button" aria-label="展開景點詳情" aria-expanded="false"><span></span></button>
+        <div class="detail-heading"><div class="detail-name"><div class="name-copy-row"><h1 id="detailTitle" lang="ja"></h1><div class="heading-tools"><button id="copyJapanese" class="copy-button" type="button" aria-label="複製日文名稱" title="複製日文名稱"></button><button id="shareSpot" class="copy-button" type="button" aria-label="分享景點" title="分享景點"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8H5v13h14V8h-3M12 15V2m-4 4 4-4 4 4"/></svg></button><button type="button" id="closeDetail" class="copy-button" aria-label="關閉景點詳情" title="關閉景點詳情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div><div class="chinese-copy-row"><p id="detailChinese" class="chinese-name"></p><button id="copyChinese" class="copy-button" type="button" aria-label="複製繁中名稱" title="複製繁中名稱"></button></div><p id="detailRegion" class="eyebrow"></p></div></div>
+      </div>
+      <div class="detail-actions"><a id="detailX" class="action x" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">𝕏</span><span>最新圖片</span></a><a id="detailMaps" class="action maps" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Google Maps</span></a></div>
+      <div id="sheetBody" class="sheet-body">
+        <div class="season-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3"/></svg><div class="detail-row-content"><span class="field-label">例年見頃</span><div id="detailPeak" class="season-values"></div><span id="detailFoliage" class="foliage-type"></span></div></div>
+        <div class="weekend-box detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16l-6-4-6 4Z"/></svg><div class="detail-row-content"><label for="detailWeekend" class="field-label">我的賞楓週末</label><select id="detailWeekend" class="weekend-select"></select></div></div>
+        <div class="detail-section address-copy-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><div class="detail-row-content"><span class="field-label">地址</span><p id="detailAddress" lang="ja"></p></div><button id="copyAddress" class="copy-button" type="button" aria-label="複製地址" title="複製地址"></button></div>
+        <div id="detailNote" class="spot-note" hidden></div>
+        <p id="detailLocationStatus" class="spot-note" hidden></p>
+        <p id="detailAccess" class="spot-note" hidden></p>
+        <footer class="detail-provenance"><span class="field-label">資料來源</span><div id="detailSources" class="source-links"></div><p class="updated"><span id="detailUpdated">資料核對 2026/11/1</span><span id="detailMapPrecision">地圖標記為景點區域示意</span></p></footer>
+      </div>
+    </section>
+    <section id="listPanel" class="list-panel" aria-labelledby="listTitle" hidden>
+      <div class="list-heading"><div><p class="eyebrow">EXPLORE THE MAP</p><h2 id="listTitle">全部景點</h2><p id="resultSummary" class="result-summary"></p></div><button id="closeList" class="icon-button" type="button" aria-label="關閉景點清單"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div id="spotList" class="spot-list"></div>
+      <div id="emptyState" class="empty-state" hidden>沒有符合篩選的景點，請調整地區或週末。</div>
+    </section>
+    <section id="aboutPanel" class="about-panel" aria-labelledby="aboutTitle" hidden>
+      <div class="list-heading"><h2 id="aboutTitle">用最新照片，安排賞楓週末</h2><button id="closeAbout" type="button" class="icon-button" aria-label="關閉使用說明"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div class="about-content"><ol><li>點選地圖標記，或從景點清單開啟詳情。</li><li>開啟 X 最新圖片，確認樹葉變色情況。</li><li>選擇自己的賞楓週末，再用週末篩選。</li></ol><p>詳情面板可上下拖曳，或點擊頂部把手調整高度。點擊地圖空白處會收合；× 會關閉。</p><p>同一景點只保留一筆資料與分享網址，楓樹與銀杏各自記錄例年見頃。選擇時段後，兩種皆符合顯示信封，只有一種符合顯示楓或杏。未選時段時，圖示只表示已知種類。</p><p>位置待核對的新增景點可從清單查看、分享及開啟外部地圖，暫不放置標記。見頃待確認或有衝突的種類不參與時段篩選。原有未分樹種紅葉資料維持原本時段，不複製為銀杏日期。</p><p>歷年見頃與個人安排均不代表即時預報。景點資料來源位於各景點詳情內。TRAVEL HUB 兩縣完整清單仍持續整理。</p><div class="source-links"><a href="https://www.gotokyo.org/en/story/guide/autumn-leaves-forecast/index.html" target="_blank" rel="noopener noreferrer">GO TOKYO ↗</a><a href="https://tenki.jp/kouyou/4/" target="_blank" rel="noopener noreferrer">tenki.jp ↗</a><a href="https://travelhub.slt-inc.jp/koyo/" target="_blank" rel="noopener noreferrer">TRAVEL HUB ↗</a></div></div>
+    </section>
+    <div id="selectionStatus" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+  <dialog id="filterDialog" class="filter-dialog" aria-labelledby="filterDialogTitle">
+    <div class="filter-dialog-header"><div><p id="filterDialogEyebrow" class="eyebrow">CHOOSE AN AREA</p><h2 id="filterDialogTitle">選擇地區</h2></div><button id="closeFilterDialog" type="button" class="icon-button" aria-label="關閉篩選選單" autofocus><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div id="filterQuickChoices" class="filter-quick-choices" aria-label="常用範圍"></div>
+    <div id="filterChoices" class="filter-choices"></div>
+    <div id="filterDialogFooter" class="filter-dialog-footer" hidden><p id="filterSelectionSummary" role="status" aria-live="polite">不限見頃</p><button id="donePeakFilter" type="button">完成</button></div>
+  </dialog>
+  <dialog id="cloudDialog" class="cloud-dialog" aria-labelledby="cloudTitle">
+    <div class="tools-dialog-heading"><h2 id="cloudTitle">我的賞楓行程</h2><button id="cloudClose" class="icon-button" type="button" aria-label="關閉行程管理">×</button></div>
+    <p id="cloudStatus" role="status" aria-live="polite">正在連線 Firebase…</p>
+    <div class="cloud-actions"><span id="cloudUser">未登入</span><button id="cloudLogin" type="button">使用 Google 登入</button><button id="cloudLogout" type="button" hidden>登出</button></div>
+    <section><h3>建立共編行程</h3><label for="cloudPlanTitle">行程名稱</label><input id="cloudPlanTitle" maxlength="80" placeholder="例如：東京秋季週末"><button id="cloudCreate" type="button">建立空白行程</button></section>
+    <section><h3>已加入的行程</h3><label for="cloudPlanChoice" class="sr-only">選擇共編行程</label><select id="cloudPlanChoice"></select><button id="cloudOpen" type="button">開啟行程</button><button id="cloudJoin" type="button" hidden>接受邀請並加入共編</button></section>
+    <section><h3>目前行程</h3><div class="cloud-actions"><button id="cloudImport" type="button" hidden>匯入此瀏覽器安排（不覆蓋）</button><button id="cloudLocal" type="button">切回此瀏覽器安排</button></div><div class="cloud-actions"><button id="cloudInvite" type="button" hidden>產生7天邀請連結</button><button id="cloudRevoke" type="button" hidden>撤銷現有邀請</button><button id="cloudMembers" type="button" hidden>管理成員</button></div><label for="cloudInviteLink" class="sr-only">共編邀請連結</label><textarea id="cloudInviteLink" readonly rows="3" hidden></textarea><button id="cloudCopyInvite" type="button">複製邀請連結</button><div id="cloudMemberList"></div></section>
+    <p class="cloud-note">本機安排不會自動上傳。共編以同一行程為範圍；若同一景點已被他人更新，系統會請你確認最新安排，不直接覆蓋。</p>
+  </dialog>
+  <dialog id="spotToolsDialog" class="spot-tools-dialog" aria-labelledby="spotToolsTitle">
+    <div class="tools-dialog-heading"><h2 id="spotToolsTitle">分享景點</h2><button id="closeSpotTools" class="icon-button" type="button" aria-label="關閉分享與複製視窗"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <p id="spotToolsDescription"></p>
+    <label id="spotToolsLabel" for="spotToolsText">景點連結</label>
+    <textarea id="spotToolsText" rows="3" readonly spellcheck="false"></textarea>
+    <p id="localShareNotice" class="local-share-notice" hidden>目前是本機預覽網址，朋友需使用正式上線網址才能開啟。</p>
+    <button id="copySpotTools" class="tools-copy-action" type="button">複製景點連結</button>
+    <p id="manualCopyHint" hidden>無法自動複製，請長按文字或使用 ⌘C／Ctrl+C 複製。</p>
+  </dialog>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./tokyo-spots.js"></script>
+  <script src="./foliage-data.js"></script>
+  <script src="./foliage.js"></script>
+  <script src="./sheet-ui.js"></script>
+  <script src="./filters-ui.js"></script>
+  <script src="./spot-tools.js"></script>
+  <script src="./collaboration-ui.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

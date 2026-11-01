@@ -1,0 +1,554 @@
+{
+  "schemaVersion": "1.0",
+  "reviewedAt": "2026-11-02",
+  "status": "applied_locally_25_area_pins_11_withheld",
+  "coordinateSystem": "WGS84",
+  "targetSource": "research/ginkgo-inventory.source.json",
+  "mergeKey": "id",
+  "allowedChanges": [
+    "lat",
+    "lng",
+    "coordinateReview"
+  ],
+  "precondition": "Existing lat and lng must both be null; fail rather than overwrite. Only use if venue-area schematic markers are accepted.",
+  "updates": [
+    {
+      "id": "toyama-heiwa",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.6895561,
+      "lng": 137.2073439,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "corridor_representative",
+        "label": "平和通銀杏道路・官方標記",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://jl-db.nfaj.go.jp/location/160212009/",
+        "sourceType": "government_marker",
+        "dataUrl": null,
+        "note": "道路沿線示意點，不是護國神社大殿或停車場。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "toyama-baba",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.7419828,
+      "lng": 137.2255224,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "馬場紀念公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,49W",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是單株銀杏或特定入口。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "toyama-jonichiji",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.852978,
+      "lng": 136.983039,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "species_viewing_area",
+        "label": "上日寺大銀杏",
+        "viewingAreaConfirmed": true,
+        "entranceVerified": false,
+        "sourceUrl": "https://commons.wikimedia.org/wiki/Category:Jonichiji_no_Icho",
+        "sourceType": "open_geographic_object",
+        "dataUrl": null,
+        "note": "座標為公開地理物件記錄，不是測量成果；參道通行出發前確認。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "kanazawa-higashibetsuin",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.57510405,
+      "lng": 136.65483986,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "真宗大谷派金澤別院・寺院示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.mapion.co.jp/phonebook/M06005/17201/ILSP0061237492_ipclm/",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是本願寺金澤別院、卯辰山大谷廟所或名古屋東別院；銀杏點待園內確認。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "ishikawa-yamanobunkakan",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.3096454,
+      "lng": 136.3106002,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "深田久彌山之文化館・景點位置",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.hot-ishikawa.jp/spot/detail_6362.html",
+        "sourceType": "official_tourism_map_target",
+        "dataUrl": null,
+        "note": "景點示意；不是單株銀杏GPS。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "ishikawa-yakuoin",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.28804,
+      "lng": 136.36158,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "藥王院溫泉寺・寺院示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.hot-ishikawa.jp/spot/detail_6634.html",
+        "sourceType": "official_tourism_map_target",
+        "dataUrl": null,
+        "note": "官方頁列境內免費參觀；不是高尾山藥王院，銀杏獨立時段未確認。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-ueno",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.7144758,
+      "lng": 139.7735108,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "上野恩賜公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,8Y",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是管理所地址的精確銀杏定位或保證可用入口。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-hikarigaoka",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.764845,
+      "lng": 139.629501,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "species_viewing_area",
+        "label": "官方秋季植物地圖7號銀杏觀賞點（代表點）",
+        "viewingAreaConfirmed": true,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.tokyo-park.or.jp/park/hikarigaoka/assets/%E5%90%84%E6%9C%88%E3%81%AE%E8%A6%8B%E3%81%94%E3%82%8D%E6%A4%8D%E7%89%A9%EF%BC%889%EF%BD%9E11%E6%9C%88%EF%BC%89.pdf",
+        "sourceType": "operator_map_link",
+        "dataUrl": null,
+        "note": "同園多個7號代表位置保存在alternates；仍只保留一個景點／分享ID。不是每株樹GPS或停車入口。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-shiba",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.6546392,
+      "lng": 139.7486162,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "都立芝公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,4U",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不另建港區立芝公園；不是管理所、增上寺或每株銀杏定位。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-kiba",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.6731619,
+      "lng": 139.8084098,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "木場公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,8TW",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "管理所地址不當樹的位置；示意點不是銀杏單株或入口。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-koganei",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.7162256,
+      "lng": 139.5184543,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "小金井公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,XY",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是江戶東京建築園門票入口，也不宣稱銀杏最佳點。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-johoku",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.7564932,
+      "lng": 139.6737617,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "城北中央公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,QU",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "跨練馬與板橋；銀杏位置仍需園內確認。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-toyama-park",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.7074576,
+      "lng": 139.7049774,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "戶山公園・大久保地區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,TU",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是富山縣也不是西戶山公園；不聲稱箱根山地區銀杏點。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-yasukuni",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.694136,
+      "lng": 139.743849,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "靖國神社・官方景點標記",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.yasukuni.or.jp/access.html",
+        "sourceType": "operator_map_marker",
+        "dataUrl": null,
+        "note": "神社境內區域示意，不是大鳥居銀杏並木精確入口。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-gyoko",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.681726,
+      "lng": 139.764341,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "corridor_representative",
+        "label": "行幸通遊步道・沿線代表位置",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.nightview.info/detail/gyoukou/",
+        "sourceType": "secondary_geographic_reference",
+        "dataUrl": null,
+        "note": "道路沿線代表點，不是東京站月台、地下通路或保證最佳銀杏點。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-kitanomaru",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.6914038,
+      "lng": 139.7505525,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "北之丸公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,RN",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是武道館建築入口或銀杏單株；園內各觀賞點另參照環境省公園圖。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-yokohama-nihonodori",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.446873,
+      "lng": 139.642619,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "corridor_representative",
+        "label": "日本大通・官方賞葉地圖標記",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.welcome.city.yokohama.jp/hottopics/autumn_color/",
+        "sourceType": "official_tourism_named_kml_point",
+        "dataUrl": "https://www.google.com/maps/d/kml?mid=1l2BIJcbRIKaUoo8b24PG9HSwTEaqCcs&forcekml=1",
+        "note": "這是官方秋季景點圖的道路代表點，不是Google ll視角或日本大通站月台；不表示整條路同步變色。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-yokohama-yamashita",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.4458738,
+      "lng": 139.6497488,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "corridor_representative",
+        "label": "山下公園通・官方賞葉地圖代表標記",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.welcome.city.yokohama.jp/hottopics/autumn_color/",
+        "sourceType": "official_tourism_named_kml_point",
+        "dataUrl": "https://www.google.com/maps/d/kml?mid=1l2BIJcbRIKaUoo8b24PG9HSwTEaqCcs&forcekml=1",
+        "note": "官方將道路景點連至山下公園介紹，該標記為公園通觀賞區域的代表位置，非精確路側樹木或停車入口；不可聲稱在車道／某株樹上。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-sankeien",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.4164735,
+      "lng": 139.6592496,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "三溪園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,5I",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "使用實際景點POI，不把原官方iframe視圖中心當銀杏點；需購票且有開園時間。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-egara",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.3257157,
+      "lng": 139.5640685,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "荏柄天神社・境內示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SAYC,J,2XFYW",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是鶴岡八幡宮已倒伏舊大銀杏；見頃衝突不因定位完成而消失。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-tokorozawa-koku",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.797983,
+      "lng": 139.47372,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "所澤航空紀念公園・官方連結園區POI",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.parks.or.jp/tokorozawa-kokuu/guide/001/001581.html",
+        "sourceType": "operator_linked_venue_poi",
+        "dataUrl": null,
+        "note": "不是@視圖中心，也不是鐘塔北側銀杏的精確位置；館舍整修提醒仍保留。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-chiba-park",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.62039834,
+      "lng": 140.11456738,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "千葉公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.mapion.co.jp/phonebook/M07012/12101/ILSP0000183138_ipclm/",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是牡丹園大銀杏精確定位；市府舊季節指南僅用來確認園內觀賞描述，現況需更新。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-sakura-castle",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 35.7234821,
+      "lng": 140.2186027,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "佐倉城址公園・園區示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SC34A,J,GD0",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "不是自由廣場銀杏單株；不能把相鄰國立歷史民俗博物館的停車場當公園停車場。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-sairenji",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.0718919902271,
+      "lng": 140.439192652702,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "西蓮寺・市府地圖標記",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://www.city.namegata.ibaraki.jp/map.php?code=177",
+        "sourceType": "government_map_marker",
+        "dataUrl": null,
+        "note": "市府標記代表寺院區域，不是每一株大銀杏的座標。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    },
+    {
+      "id": "tokyo-bannaji",
+      "expected": {
+        "lat": null,
+        "lng": null
+      },
+      "lat": 36.3375648,
+      "lng": 139.4522883,
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "venue_area",
+        "label": "鑁阿寺・境內示意",
+        "viewingAreaConfirmed": false,
+        "entranceVerified": false,
+        "sourceUrl": "https://mapfan.com/spots/SCAQC,J,1T3UK",
+        "sourceType": "map_provider_poi",
+        "dataUrl": null,
+        "note": "維持一個景點ID，不為大日苑或大銀杏另建重複景點。",
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      }
+    }
+  ],
+  "withheldIds": [
+    "toyama-gofuku",
+    "toyama-sonkoji",
+    "toyama-choeiji",
+    "toyama-shosenji",
+    "toyama-jokoji",
+    "ishikawa-higashino-ginkgo",
+    "ishikawa-sentsuji",
+    "ishikawa-ikage",
+    "tokyo-koshu-ginkgo",
+    "tokyo-todai-hongo",
+    "tokyo-chichibu-muse"
+  ]
+}
