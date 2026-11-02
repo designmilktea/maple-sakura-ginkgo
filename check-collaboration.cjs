@@ -16,9 +16,9 @@ const evaluate=code=>vm.runInContext(code,context);
 const uiSource=fs.readFileSync(__dirname+'/dist/collaboration-ui.js','utf8');
 function bootUI(){
   const elements=new Map(),location=new URL('https://map.example/');
-  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',hidden:false,value:'',dataset:{},focus(){},select(){},replaceChildren(){},addEventListener(){}});return elements.get(id);};
+  const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',hidden:false,value:'',dataset:{},focus(){},select(){},children:[],replaceChildren(){this.children=[];},append(...nodes){this.children.push(...nodes);},addEventListener(){}});return elements.get(id);};
   const cx=vm.createContext({URL,URLSearchParams,Date,Promise,Set,console,
-    document:{getElementById:get,querySelectorAll:()=>[]},
+    document:{getElementById:get,querySelectorAll:()=>[],createElement:()=>({})},
     window:{location,history:{replaceState(a,b,url){location.href=url;}},confirm:()=>false},
     renderFilters(){},renderSpots(){},renderDetail(){},showToast(){},selectedSpotId:null,
     saved:{kenrokuen:'2026-11-07'},spots:[{id:'kenrokuen'},{id:'toyama-baba'}]
@@ -46,7 +46,7 @@ function bootUI(){
   assert.equal(ui.run("validCloudDate('2026-11-07')"),true);
   for(const value of ['2026-11-08','2026-02-31','2026-13-01','bad'])assert.equal(ui.run('validCloudDate('+JSON.stringify(value)+')'),false);
   assert.equal(ui.run("handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:''}})"),false);
-  ui.run(`cloudState.user={uid:'alice'};var writeCalls=[];var listener;var denied;
+  ui.run(`cloudState.authReady=true;cloudState.user={uid:'alice'};var writeCalls=[];var listener;var denied;
     cloudState.api={getPlan:async id=>({id,title:'測試共編',ownerUid:'alice'}),
       watchAccess:(id,u,error)=>{denied=error;return ()=>{};},
       watchPlan:(id,change,error)=>{listener=change;return ()=>{};},
@@ -72,10 +72,97 @@ function bootUI(){
   assert.equal(ui.location.searchParams.has('plan'),false);
   ui.location.search='?plan='+id;ui.location.hash='join='+'a'.repeat(48);
   ui.run('cloudState.user=null');
-  await ui.run(`cloudOpen('${id}')`);
+  await assert.rejects(()=>ui.run(`cloudOpen('${id}')`),/登入/);
   assert.equal(ui.run('cloudState.ready'),false);
-  assert.equal(ui.run('saved.kenrokuen'),undefined);
+  assert.equal(ui.run('saved.kenrokuen'),'2026-11-07');
   assert.ok(ui.location.hash.includes('join='));
+  // Verify default HTML containment: hidden + inert ancestors remove all shared
+  // fields, headings and actions from rendering, accessibility and keyboard use.
+  const html=fs.readFileSync(__dirname+'/dist/index.html','utf8');
+  const dialog=html.match(/<dialog id="cloudDialog"[\s\S]*?<\/dialog>/)[0];
+  const stack=[],ancestors=new Map();
+  for(const match of dialog.matchAll(/<(\/?)([a-z][a-z0-9]*)([^>]*)>/gi)){
+    const [,closing,tag,attrs]=match;
+    if(closing){assert.equal(stack.pop()?.tag,tag);continue;}
+    const id=attrs.match(/id="([^"]+)"/)?.[1];
+    if(id)ancestors.set(id,[...stack]);
+    if(!['input','br','hr','img','meta','link'].includes(tag))stack.push({tag,id,attrs});
+  }
+  for(const field of ['cloudPlanTitle','cloudCreate','cloudPlanChoice','cloudOpen','cloudJoin','cloudLocal','cloudImport','cloudInvite','cloudRevoke','cloudMembers','cloudInviteLink','cloudCopyInvite','cloudMemberList']){
+    assert.ok(ancestors.get(field).some(a=>a.id==='cloudAuthenticated'&&/\bhidden\b/.test(a.attrs)&&/\binert\b/.test(a.attrs)),field+' must start hidden/inert');
+  }
+  assert.match(fs.readFileSync(__dirname+'/dist/styles.css','utf8'),/\[hidden\]\s*\{\s*display:\s*none\s*!important/);
+  const gates=['cloudAuthenticated','cloudBrowse','cloudCurrent','cloudInvitation'];
+  const gate=(t,id,hidden)=>{assert.equal(t.get(id).hidden,hidden,id);assert.equal(t.get(id).inert,hidden,id+' keyboard gate');};
+  const t=bootUI();t.run('cloudSyncControls()');
+  for(const id of gates)gate(t,id,true);
+  assert.equal(t.get('cloudLogin').hidden,true);
+  t.run(`var calls={join:0,write:0,stop:0};var snapshot;var accessError;
+    cloudState.api={listPlans:async()=>[{id:'${id}',title:'東京秋季週末'}],
+      getPlan:async id=>({id,title:'東京秋季週末',ownerUid:'alice'}),
+      watchAccess:(id,user,error)=>{accessError=error;return ()=>calls.stop++;},
+      watchPlan:(id,callback)=>{snapshot=callback;return ()=>calls.stop++;},
+      joinPlan:async()=>calls.join++,writeWeekend:async()=>calls.write++};`);
+  await t.run('cloudAuthChanged(null)');
+  for(const id of gates)gate(t,id,true);
+  assert.equal(t.get('cloudLogin').hidden,false);
+  t.location.search='?plan='+id;t.location.hash='join='+'a'.repeat(48);
+  await t.run("cloudAuthChanged({uid:'alice'})");
+  gate(t,'cloudAuthenticated',false);gate(t,'cloudBrowse',false);gate(t,'cloudCurrent',true);gate(t,'cloudInvitation',false);
+  assert.equal(t.run('calls.join'),0);assert.equal(t.run('calls.write'),0);
+  assert.equal(t.run('saved.kenrokuen'),'2026-11-07');assert.ok(t.location.hash.includes('join='));
+  assert.equal(t.get('cloudJoin').hidden,false);
+  await t.run('cloudJoin()');
+  assert.equal(t.run('calls.join'),1);assert.equal(t.location.hash,'');
+  gate(t,'cloudBrowse',true);gate(t,'cloudCurrent',false);
+  assert.equal(t.get('cloudInvite').hidden,false);
+  t.run("snapshot([{id:'kenrokuen',revision:1,weekend:{toDate:()=>new Date('2026-11-14T00:00:00Z')}}],{fromCache:false,pending:false})");
+  assert.equal(t.run('saved.kenrokuen'),'2026-11-14');
+  await t.run('cloudImport()'); // confirm() is false
+  assert.equal(t.run('calls.write'),0);
+  t.get('cloudInviteLink').value='private invite';t.get('cloudPlanTitle').value='private title';
+  await t.run('cloudAuthChanged(null)');
+  for(const id of gates)gate(t,id,true);
+  assert.equal(t.run('calls.stop'),2);assert.equal(t.run('saved.kenrokuen'),'2026-11-07');
+  assert.equal(t.run('cloudState.plan'),null);assert.equal(t.get('cloudInviteLink').value,'');
+  assert.equal(t.get('cloudPlanTitle').value,'');assert.equal(t.get('cloudPlanChoice').children.length,0);
+  t.run("snapshot([{id:'kenrokuen',revision:2}],{fromCache:false,pending:false})");
+  assert.equal(t.run('saved.kenrokuen'),'2026-11-07'); // stale snapshot cannot return
+  // Persisted authentication restoration opens an existing route only after auth.
+  const restored=bootUI();restored.location.search='?plan='+id;
+  restored.run(`cloudState.api={listPlans:async()=>[],getPlan:async id=>({id,title:'restored',ownerUid:'alice'}),watchAccess:()=>()=>{},watchPlan:()=>()=>{}};cloudSyncControls()`);
+  assert.equal(restored.run('saved.kenrokuen'),'2026-11-07');gate(restored,'cloudAuthenticated',true);
+  await restored.run("cloudAuthChanged({uid:'bob'})");
+  gate(restored,'cloudCurrent',false);
+  for(const id of ['cloudInvite','cloudRevoke','cloudMembers','cloudCopyInvite'])assert.equal(restored.get(id).hidden,true,id+' owner only');
+  await restored.run('cloudAuthChanged(null)');assert.equal(restored.run('saved.kenrokuen'),'2026-11-07');
+  // Popup failure/cancellation cannot reveal shared controls or lose invitations.
+  for(const code of ['auth/popup-closed-by-user','auth/cancelled-popup-request','auth/popup-blocked','auth/network-request-failed','auth/unauthorized-domain']){
+    t.location.search='?plan='+id;t.location.hash='join='+'a'.repeat(48);
+    t.run(`cloudState.api.login=async()=>{throw {code:${JSON.stringify(code)}}}`);
+    await t.run('cloudAction(cloudLogin)');
+    assert.ok(t.get('cloudStatus').textContent);assert.equal(t.get('cloudLogin').disabled,false);
+    for(const id of gates)gate(t,id,true);
+    assert.ok(t.location.hash.includes('join='));assert.equal(t.run('saved.kenrokuen'),'2026-11-07');
+  }
+  t.run("cloudState.api.login=async()=>cloudAuthChanged({uid:'alice'})");
+  await t.run('cloudAction(cloudLogin)');gate(t,'cloudAuthenticated',false);
+  assert.equal(t.get('cloudLogin').hidden,true);assert.equal(t.run('calls.join'),1);
+  await t.run('cloudAuthChanged(null)');
+  // A failed shared-plan open returns to the browser's saved weekends and choices.
+  t.location.search='';t.location.hash='';
+  await t.run("cloudAuthChanged({uid:'alice'})");
+  t.run("cloudState.api.getPlan=async()=>{throw {code:'permission-denied'}}");
+  await t.run(`cloudOpen('${id}')`);
+  gate(t,'cloudBrowse',false);gate(t,'cloudCurrent',true);
+  assert.equal(t.run('saved.kenrokuen'),'2026-11-07');assert.match(t.get('cloudStatus').textContent,/存取權/);
+  await t.run('cloudAuthChanged(null)');
+  // A delayed list response from the old account must not repopulate the UI.
+  t.run('var resolvePlans;cloudState.api.listPlans=()=>new Promise(resolve=>resolvePlans=resolve)');
+  const changing=t.run("cloudAuthChanged({uid:'alice'})");
+  await t.run('cloudAuthChanged(null)');t.run(`resolvePlans([{id:'${id}',title:'private'}])`);await changing;
+  assert.equal(t.get('cloudPlanChoice').children.length,0);gate(t,'cloudAuthenticated',true);
+  console.log('PASS: initial HTML hidden/inert containment, loading/signed-out gates, auth restoration, owner/member UI, explicit invite acceptance, cancelled/failed login, sign-out subscription/data cleanup, stale snapshot/list rejection and local/import preservation.');
   console.log('PASS: transaction revision conflicts, tombstone clearing, authenticated SDK writes, Saturday validation, explicit cloud scope, no local upload/overwrite, offline edit lock, access revocation clearing, local restoration and signed-out invite preservation.');
   console.log('LIMIT: SDK/UI tests use mocks. Firestore Rules compilation is checked separately by Firebase; Emulator authorization and real two-account Google Sign-in still require end-to-end verification.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

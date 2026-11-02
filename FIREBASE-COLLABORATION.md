@@ -2,6 +2,18 @@
 
 專案：maple-sakura-ginkgo；Web App：MSG map；資料庫：(default)，Standard，asia-east1。
 
+## 2026-11-02 登入與介面分流修復
+
+- 已讀取 Authentication 設定：Google provider 原已啟用；前端設定與現有 Web App 一致，authDomain 保持 maple-sakura-ginkgo.firebaseapp.com。
+- 僅以 authorizedDomains 欄位更新加入 designmilktea.github.io，讀回確認保留 localhost、maple-sakura-ginkgo.firebaseapp.com、maple-sakura-ginkgo.web.app。未加入 Shooboost 網域。
+- 已讀取現有 (default) Standard / asia-east1 資料庫及已部署規則；本次不修改或部署 Firestore 規則、資料或 Auth provider。
+- 共編容器預設 hidden + inert；登入確認中只有簡短提示，未登入只呈現登入及狀態，登入後依未開啟／目前行程顯示操作。成員不顯示建立者管理功能。
+- 收到邀請仍使用本機安排，登入後保留 fragment，必須明確接受才加入。登出及切換帳號會停止訂閱、清除共編介面並恢復本機安排；延遲回應不得重新填入舊共編資料。
+- 自動測試：node check-mvp.cjs、node check-collaboration.cjs、兩個 research --check 均通過。新增涵蓋 HTML 預設隱藏及 inert、登入確認／成功／取消／失敗／登出、登入恢復、邀請明確接受、建立者 UI、本機安排及拒絕匯入保存、舊訂閱與清單回應失效。
+- 測試限制：SDK/UI 使用模擬，不能替代真實 Google OAuth 與雙帳號權限測試；本機缺少 Java，未執行 Firestore Emulator。本次發布流程仍僅上傳 dist 到 GitHub Pages，不操作舊 Shooboost Sites。
+
+以下為先前開發紀錄；其中未發布或尚未修復授權網域的描述不代表本次狀態。
+
 ## 本輪交付與狀態
 
 最新瀏覽器驗證（2026-11-02）：HTTP 預覽 http://127.0.0.1:4173/ 可正常載入，Firebase SDK 與行程管理介面已就緒；點擊 Google 登入後確認回傳 auth/unauthorized-domain。須先在 Firebase Authentication > Settings > Authorized domains 加入 127.0.0.1（及要使用的 localhost；不含協定或埠），才能繼續真實登入與雙帳號共編測試。本輪未變更 Auth 設定，未建立雲端測試資料。

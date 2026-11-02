@@ -7,7 +7,7 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 // Memory-only Firestore cache: never retain another account's shared plan on disk.
 const db=getFirestore(app);
-export const observeAuth=callback=>onAuthStateChanged(auth,callback);
+export const observeAuth=(callback,onError)=>onAuthStateChanged(auth,callback,onError);
 export const login=()=>signInWithPopup(auth,new GoogleAuthProvider());
 export const logout=()=>signOut(auth);
 const planRef=id=>doc(db,'weekendPlans',id);

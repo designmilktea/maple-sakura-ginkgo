@@ -68,12 +68,17 @@
   </dialog>
   <dialog id="cloudDialog" class="cloud-dialog" aria-labelledby="cloudTitle">
     <div class="tools-dialog-heading"><h2 id="cloudTitle">我的賞楓行程</h2><button id="cloudClose" class="icon-button" type="button" aria-label="關閉行程管理">×</button></div>
-    <p id="cloudStatus" role="status" aria-live="polite">正在連線 Firebase…</p>
-    <div class="cloud-actions"><span id="cloudUser">未登入</span><button id="cloudLogin" type="button">使用 Google 登入</button><button id="cloudLogout" type="button" hidden>登出</button></div>
+    <p id="cloudStatus" role="status" aria-live="polite">正在確認登入狀態…</p>
+    <div class="cloud-actions"><span id="cloudUser" hidden></span><button id="cloudLogin" type="button" hidden disabled>使用 Google 登入</button><button id="cloudLogout" type="button" hidden>登出</button></div>
+    <div id="cloudAuthenticated" hidden inert>
+    <div id="cloudBrowse" hidden inert>
     <section><h3>建立共編行程</h3><label for="cloudPlanTitle">行程名稱</label><input id="cloudPlanTitle" maxlength="80" placeholder="例如：東京秋季週末"><button id="cloudCreate" type="button">建立空白行程</button></section>
-    <section><h3>已加入的行程</h3><label for="cloudPlanChoice" class="sr-only">選擇共編行程</label><select id="cloudPlanChoice"></select><button id="cloudOpen" type="button">開啟行程</button><button id="cloudJoin" type="button" hidden>接受邀請並加入共編</button></section>
-    <section><h3>目前行程</h3><div class="cloud-actions"><button id="cloudImport" type="button" hidden>匯入此瀏覽器安排（不覆蓋）</button><button id="cloudLocal" type="button">切回此瀏覽器安排</button></div><div class="cloud-actions"><button id="cloudInvite" type="button" hidden>產生7天邀請連結</button><button id="cloudRevoke" type="button" hidden>撤銷現有邀請</button><button id="cloudMembers" type="button" hidden>管理成員</button></div><label for="cloudInviteLink" class="sr-only">共編邀請連結</label><textarea id="cloudInviteLink" readonly rows="3" hidden></textarea><button id="cloudCopyInvite" type="button">複製邀請連結</button><div id="cloudMemberList"></div></section>
+    <section><h3>已加入的行程</h3><label for="cloudPlanChoice" class="sr-only">選擇共編行程</label><select id="cloudPlanChoice"></select><button id="cloudOpen" type="button">開啟行程</button></section>
+    </div>
+    <section id="cloudInvitation" hidden inert><p>你收到共編邀請。加入前請確認邀請來源。</p><button id="cloudJoin" type="button" hidden>接受邀請並加入共編</button></section>
+    <section id="cloudCurrent" hidden inert><h3>目前行程</h3><p id="cloudCurrentTitle"></p><div class="cloud-actions"><button id="cloudImport" type="button" hidden>匯入此瀏覽器安排（不覆蓋）</button><button id="cloudLocal" type="button">切回此瀏覽器安排</button></div><div class="cloud-actions"><button id="cloudInvite" type="button" hidden>產生7天邀請連結</button><button id="cloudRevoke" type="button" hidden>撤銷現有邀請</button><button id="cloudMembers" type="button" hidden>管理成員</button></div><label for="cloudInviteLink" class="sr-only">共編邀請連結</label><textarea id="cloudInviteLink" readonly rows="3" hidden></textarea><button id="cloudCopyInvite" type="button" hidden>複製邀請連結</button><div id="cloudMemberList"></div></section>
     <p class="cloud-note">本機安排不會自動上傳。共編以同一行程為範圍；若同一景點已被他人更新，系統會請你確認最新安排，不直接覆蓋。</p>
+    </div>
   </dialog>
   <dialog id="spotToolsDialog" class="spot-tools-dialog" aria-labelledby="spotToolsTitle">
     <div class="tools-dialog-heading"><h2 id="spotToolsTitle">分享景點</h2><button id="closeSpotTools" class="icon-button" type="button" aria-label="關閉分享與複製視窗"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
