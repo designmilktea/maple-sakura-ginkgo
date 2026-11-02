@@ -15,7 +15,10 @@ const prefectureGroups = [
   {region:'東京與近郊',name:'埼玉縣',all:'saitama',children:['nagatoro']},
   {region:'東京與近郊',name:'栃木縣',all:'tochigi',children:['nikko']},
   {region:'東京與近郊',name:'千葉縣',all:'chiba',children:[]},
-  {region:'東京與近郊',name:'茨城縣',all:'ibaraki',children:[]}
+  {region:'東京與近郊',name:'茨城縣',all:'ibaraki',children:[]},
+  {region:'富士山周邊',name:'山梨縣',all:'fuji-yamanashi',children:['fuji-five-lakes']},
+  {region:'富士山周邊',name:'靜岡縣',all:'fuji-shizuoka',children:['fuji-south','fuji-gotemba']},
+  {region:'輕井澤與碓冰峠',name:'輕井澤',all:'karuizawa-all',children:['karuizawa-old']}
 ];
 
 function parsePeakWindow(text){
@@ -85,7 +88,7 @@ function renderChoicePanel(kind){
   const quick=document.getElementById('filterQuickChoices');
   quick.setAttribute('aria-label',isArea?'常用範圍':'不限見頃');
   if(isArea){
-    quick.innerHTML=`<p class="choice-section-label">常用範圍</p>${choiceRow('all','全部地區',activeArea)}${choiceRow('hokuriku','北陸全部',activeArea,'石川縣・富山縣')}${choiceRow('tokyo-all','東京與近郊全部',activeArea,'東京都・神奈川縣・埼玉縣・栃木縣・千葉縣・茨城縣')}`;
+    quick.innerHTML=`<p class="choice-section-label">常用範圍</p>${choiceRow('all','全部地區',activeArea)}${choiceRow('hokuriku','北陸全部',activeArea,'石川縣・富山縣')}${choiceRow('tokyo-all','東京與近郊全部',activeArea,'東京都・神奈川縣・埼玉縣・栃木縣・千葉縣・茨城縣')}${choiceRow('fuji-all','富士山周邊全部',activeArea,'富士五湖・富士宮・御殿場')}${choiceRow('karuizawa-all','輕井澤全部',activeArea,'含舊碓冰峠縣界展望台')}`;
     document.getElementById('filterChoices').innerHTML=prefectureGroups.map(group=>`<section class="choice-group"><p class="choice-section-label">${group.region}</p>${choiceRow(group.all,`${group.name}全部`,activeArea,'','prefecture-choice')}${group.children.map(value=>choiceRow(value,areaLabels[value],activeArea,'','child-choice')).join('')}</section>`).join('');
   }else{
     quick.innerHTML=choiceRow('all','不限見頃',selectedPeakValues(),'可複選・歷年季節參考，非即時見頃','',true);

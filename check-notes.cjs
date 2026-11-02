@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const html=fs.readFileSync(__dirname+'/dist/index.html','utf8');
-const files=['tokyo-spots.js','foliage-data.js','foliage.js','notes-ui.js','sheet-ui.js','filters-ui.js','spot-tools.js','collaboration-ui.js','app.js'];
+const files=['tokyo-spots.js','foliage-data.js','fuji-karuizawa-data.js','foliage.js','notes-ui.js','sheet-ui.js','filters-ui.js','spot-tools.js','collaboration-ui.js','app.js'];
 const source=files.map(file=>fs.readFileSync(__dirname+'/dist/'+file,'utf8')).join('\n')
   .replace("if(typeof initCollaboration==='function')initCollaboration();",'');
 function boot(initial={}){
@@ -34,6 +34,31 @@ async function openShared(app){
   app.run("changes([],{fromCache:false,pending:false});notesChanges([],{fromCache:false,pending:false});openSpot('kenrokuen')");
 }
 (async()=>{
+  const regional=boot({[weekendKey]:JSON.stringify({kenrokuen:'2026-11-07'})});
+  const regionalIds=regional.run('regionalFoliageResearch.spots.map(s=>s.id)');
+  for(const id of regionalIds){
+    regional.run(`openSpot('${id}');notesStartEditing()`);regional.input(`${id}\n交通備忘 🍁`);
+    await regional.run('notesSave()');
+    assert.equal(regional.get('spotNotesText').textContent,`${id}\n交通備忘 🍁`);
+  }
+  const regionalReload=boot(Object.fromEntries(regional.memory));
+  for(const id of regionalIds){
+    regionalReload.run(`openSpot('${id}')`);
+    assert.equal(regionalReload.get('spotNotesText').textContent,`${id}\n交通備忘 🍁`);
+  }
+  const regionalLocalNotes=regionalReload.memory.get(noteKey);
+  await openShared(regionalReload);
+  for(const id of regionalIds){
+    regionalReload.run(`openSpot('${id}');notesStartEditing()`);regionalReload.input(`共編 ${id}`);
+    await regionalReload.run('notesSave()');
+    assert.equal(regionalReload.run('noteCalls.at(-1).spot'),id);
+    assert.equal(regionalReload.get('spotNotesText').textContent,`共編 ${id}`);
+  }
+  assert.equal(regionalReload.memory.get(noteKey),regionalLocalNotes);
+  assert.equal(regionalReload.memory.get(weekendKey),JSON.stringify({kenrokuen:'2026-11-07'}));
+  await regionalReload.run('cloudAuthChanged(null)');
+  assert.equal(regionalReload.get('spotNotesText').textContent,`${regionalIds.at(-1)}\n交通備忘 🍁`);
+  console.log('PASS: six new destinations retain separate local notes across reload, scope cloud notes by destination and restore browser data on sign-out.');
   assert.ok(html.indexOf('id="detailWeekend"')<html.indexOf('id="spotNotesHeading"'));
   assert.ok(html.indexOf('id="spotNotesHeading"')<html.indexOf('class="season-row'));
   assert.match(html,/id="spotNotesEditor" hidden inert/);

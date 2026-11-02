@@ -1,0 +1,584 @@
+{
+  "schemaVersion": "research-coordinate-audit-1.0",
+  "checkedAt": "2026-11-02",
+  "baselineCommit": "35cacbc0e8288dc7eb2f22c53ef4f2df8998ae64",
+  "status": "research_only_no_integration_or_deployment",
+  "sourceCatalog": "fuji-karuizawa-inventory.source.json#/sources",
+  "counts": {
+    "reviewedShortlist": 23,
+    "acceptedSourceRepresentativePoints": 6,
+    "proposedFirstBatch": 12,
+    "automaticallyImportable": 0
+  },
+  "coordinatePolicy": "只有官方明確q、GeoCoordinates、markers或POI !3d/!4d可作研究代表點。@、ll、pb視窗中心、GIS mpx/mpy不可直接採用。未實地測量、未保證入口或無障礙。",
+  "spots": [
+    {
+      "id": "fuji-kawaguchiko-momiji-corridor",
+      "zh": "河口湖紅葉迴廊",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "fuji-corridor"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "常時可散策、免費；周遊巴士「久保田一竹美術館」下車後步行約5分鐘。",
+        "limitations": "入口細節、當期交通管制與夜間點燈另查。"
+      },
+      "seasonDecision": {
+        "action": "adopt_local_maple_range",
+        "reason": "採地方地點專頁楓樹10月下旬至11月中旬；縣級廣域範圍保留為差異，不當同一精度競爭。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "fuji-corridor",
+        "mapUrl": "https://maps.app.goo.gl/5gF4majgJogYBRBx8",
+        "kind": "poi_representative",
+        "note": "官方短連結轉址中的 !3d/!4d POI；代表迴廊，不是所有入口。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.525818,
+        "lng": 138.7623326
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-kawaguchiko-momiji-tunnel",
+      "zh": "河口湖紅葉隧道",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "fuji-tunnel"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "自然生活館巴士站步行約20分鐘；官方列10台停車。",
+        "limitations": "未核實停車場入口與道路安全停留點，不以路上座標導航停車。"
+      },
+      "seasonDecision": {
+        "action": "keep_species_peak",
+        "reason": "保留楓樹11月上旬至中旬。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "fuji-tunnel",
+        "mapUrl": "https://maps.google.com/maps?q=35.514954,138.737808",
+        "kind": "road_viewing_area_representative",
+        "note": "官方地點頁明列的 q 座標；道路觀賞區，不代表可在此停車。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.514954,
+        "lng": 138.737808
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-itchiku-garden",
+      "zh": "久保田一竹美術館庭園",
+      "proposedBatch": "species_pending",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "itchiku-access",
+        "itchiku-garden"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "4至11月10:00–17:00、最晚16:30入館；一般票1,500日圓；個人免預約，巴士團須預約。",
+        "limitations": "庭園獨立進入規則與樹種仍待核；作品名稱不是植物證據。官方 ll=35.527616,138.759727 是視窗中心，不採點位。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不新增樹種峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-museum-park",
+      "zh": "富士山博物館公園",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "yoshida-park",
+        "museum-place"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "博物館巴士站步行約1分鐘；室內館9:30–17:00，最晚16:30；通常週二休館（假日除外）。",
+        "limitations": "室內開館日、票價不套到戶外迴廊；館舍 q=35.45803,138.805403 未證明是迴廊入口。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "10月下旬至11月上旬先保留整體參考；2026祭典10/24–11/8不當峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-kaneyama-falls",
+      "zh": "鐘山瀑布",
+      "proposedBatch": "combine_child",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "yoshida-park",
+        "yoshida-autumn"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "官方公園頁將瀑布列在園區遊覽範圍，另有獨立賞景介紹。",
+        "limitations": "建議第一批作博物館公園附近觀賞點；保留研究ID，但不先產生第二個週末／筆記目的地。獨立頁p=33本輪擷取失敗。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不複製鄰近迴廊峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-arakurayama",
+      "zh": "新倉山淺間公園・忠靈塔",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "arakura-place"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "下吉田站至忠靈塔約25分鐘；展望台需上398階；公園24小時；停車場有不同費率。",
+        "limitations": "官方 q=35.501391,138.801631 為公園代表點；不直接稱展望台精確位置。須分開停車、階梯入口、觀景台。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "楓樹次級證據保留；無分種峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-onshirin-maple",
+      "zh": "恩賜林雞爪楓迴廊",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "yoshida-autumn",
+        "onshirin-access"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "官方確認150株以上、約800公尺迴廊；組合交通頁通往上吉田5605-3。",
+        "limitations": "組合辦公室與庭園交通不證明800m迴廊入口，地址／代表點保持待核。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不把即時色づき始め或區域日期當例年峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-asahigaoka",
+      "zh": "旭日丘湖畔綠地公園",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "asahigaoka",
+        "asahigaoka-event"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "官方確認湖畔步道及數百株楓樹等；2026祭典10/30–11/15另列。",
+        "limitations": "原記錄平野506-296是頁尾觀光協會地址，已撤回；現有來源未單列公園門牌。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "10月下旬至11月上旬保留整體參考；活動期不當峰期。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "asahigaoka",
+        "mapUrl": "https://www.google.com/maps?q=35.408271,138.878694",
+        "kind": "park_representative",
+        "note": "官方頁 MAP 元件 embed-url 的 q；公園代表點，未核每個步道入口。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.408271,
+        "lng": 138.878694
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-tanuki-lake",
+      "zh": "田貫湖",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "tanuki-place",
+        "fujinomiya-season"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "湖畔有周遊步道，官方稱可隨時來訪；露營需預約。2024更新的富岳露臺在休暇村富士前。",
+        "limitations": "佐折634-1是設施／湖區所在地，不當每個入口；優先補休暇村前露臺與步道座標，不用湖心／露營櫃台。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "11/10–20為カエデ他合列，保留整體參考。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-shiraito-falls",
+      "zh": "白絲瀑布（富士宮）",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "shiraito-place",
+        "fujinomiya-season"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "停車至音止瀑布約5分鐘，再至白絲約5分鐘；到瀑底約100階。停車場冬季提早關閉。",
+        "limitations": "上井出273-1是停車場地址；觀景區座標另核。不要把停車場9:00–17:00當瀑布開放保證。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "11/10–20為ウルシ、カエデ合列，保留整體參考。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-nishiyama-honmonji",
+      "zh": "西山本門寺",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "nishiyama-place",
+        "shizuoka-autumn"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "地點頁確認西山671，但營業／定休日欄空白。",
+        "limitations": "官方內嵌地圖只有視窗中心35.237478572733856,138.56174597605704；未核到大銀杏／可進入路線，座標不採。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不從11月祭典或舊照片推銀杏峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-murayama-sengen",
+      "zh": "村山淺間神社",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "murayama-tree"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "縣文化財頁明列一般公開、隨時、有停車場；樹所在地村山1151。",
+        "limitations": "仍須依現地公告，文化財圖釘不代表停車場或步道入口。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "銀杏存在確定，獨立見頃未知。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "murayama-tree",
+        "mapUrl": "https://maps.google.com/maps?q=35.26141557,138.6661613",
+        "kind": "cultural_asset_marker",
+        "note": "縣文化財頁 static map 的 markers 與外連 q 一致；非所有者聯絡地址。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.26141557,
+        "lng": 138.6661613
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-fujioka-ginkgo",
+      "zh": "富士岡銀杏地藏尊",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "fujioka-season",
+        "fujioka-address"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "市府明列銀杏例年12月上旬；地址資料為富士岡81。",
+        "limitations": "官方連結實際指向ふじタウンマップ；mpx=138.732814598386,mpy=35.1596095095691 只有視窗中心，未核特徵標記；公開時段／入口待核。"
+      },
+      "seasonDecision": {
+        "action": "keep_species_peak",
+        "reason": "保留銀杏12月上旬，不提前套11月御殿場日期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-ninooka-shrine",
+      "zh": "二之岡神社",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "gotemba-autumn"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "觀光專題列東田中1939、有停車，確認銀杏落葉景觀。",
+        "limitations": "目前獨立管理頁／入口和可公開時段未補齊。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不把御殿場全市11月中下旬套作銀杏峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-niihashi-sengen",
+      "zh": "新橋淺間神社",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "niihashi-place",
+        "gotemba-autumn"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "御殿場站富士山口步行約5分鐘；社務所平日9–12、13–16，境內可在社務所關門時進入。",
+        "limitations": "社務所週末休息不等於境內不開放。圖釘代表神社，兩種樹的各自位置仍未知。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "已確認楓＋銀杏存在；不保證同時見頃。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "niihashi-place",
+        "mapUrl": "https://maps.app.goo.gl/8zZbC9ALdm4p1YJW9",
+        "kind": "shrine_representative",
+        "note": "官方短連結轉址 !3d/!4d 的 POI；不是 @ 視窗中心的 138.9278804，也非特定樹木。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.3006101,
+        "lng": 138.9304607
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-chichibunomiya",
+      "zh": "秩父宮紀念公園",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "gotemba-autumn",
+        "chichibu-observation"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "東田中1507-7；楓樹及草坪廣場銀杏存在有各自證據。",
+        "limitations": "2024觀察與舊祭典不是2026開放公告；本輪未取得可採的新官方開園頁，時間／入口待核。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "不把楓香當Acer，也不把2024/11/27照片當峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "fuji-kitaguchi-sengen",
+      "zh": "北口本宮冨士淺間神社",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "kitaguchi-place",
+        "yoshida-course"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "觀光頁列8:30–17:00；浅間神社前巴士站步行約1分鐘；銀杏在手水舍附近。",
+        "limitations": "神社 q=35.47079,138.792407 是場所代表點，未定位到手水舍銀杏，先不匯入樹點。"
+      },
+      "seasonDecision": {
+        "action": "keep_unknown",
+        "reason": "整個神社的即時紅葉狀態不能替代銀杏峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-kumoba",
+      "zh": "雲場池",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "kumoba-town",
+        "kumoba-place"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "町府確認秋季楓樹與公廁；雲場池附近沒有停車場，建議步行、自行車、巴士。",
+        "limitations": "官方舊停車公告連結目前轉首頁；改用町府地點頁。內嵌只有地圖中心，未取得可採的步道入口點。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "保留10月中旬至11月上旬整體參考，不當銀杏日期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-usui-lookout",
+      "zh": "舊碓冰峠展望台",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "usui-j47",
+        "usui-place"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "地方供稿列車行交通與5台停車；觀光協會確認長野／群馬縣界同一展望台。",
+        "limitations": "停車容量屬頁面資訊，未實地核查；4km遊步道不是所有到達方式必須步行4km。"
+      },
+      "seasonDecision": {
+        "action": "adopt_primary_mixed_reference",
+        "reason": "採2026/10/20地方供稿10月中旬至11月上旬作整體參考；Walker較短範圍留存，楓樹peak仍null。"
+      },
+      "coordinateEvidence": {
+        "sourceId": "usui-j47",
+        "mapUrl": "https://www.google.com/maps?q=36.3674048,138.6562626",
+        "kind": "lookout_representative",
+        "note": "地方供稿頁 GeoCoordinates 與 place q 一致；跨縣單一目的地，入口另核。",
+        "surveyAccuracyMetres": null,
+        "entranceVerified": false,
+        "fieldVerified": false
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 36.3674048,
+        "lng": 138.6562626
+      },
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-shiraito-falls",
+      "zh": "白絲瀑布（輕井澤）",
+      "proposedBatch": "species_pending",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "karuizawa-shiraito",
+        "shiraito-walker"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "町府：無固定開館時間／休館日；巴士後步行約5分鐘，有公廁與停車。",
+        "limitations": "官方只有一般紅葉說明，無可採楓／銀杏個別存在證據；道路通行與冬季條件需另查。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "10月中旬仍為次級整體參考。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-taliesin",
+      "zh": "輕井澤塔列辛・鹽澤湖",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "taliesin-place",
+        "taliesin-walker",
+        "taliesin-photo"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "觀光協會確認長倉塩沢217及鹽澤湖園區範圍。",
+        "limitations": "本輪園方網站擷取逾時；2026票價、休園與入園口未補齊。官方內嵌視窗中心不採，銀杏商家說法不升格。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "楓樹次級；銀杏仍null，整體10月中旬至11月中旬不複製為分種峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-lake-garden",
+      "zh": "輕井澤湖畔花園",
+      "proposedBatch": "first_batch",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "lakegarden-price",
+        "lakegarden-access",
+        "lakegarden-autumn"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "園方2026開園4/17–11/8，通常9:15–17:00、最晚閉園前30分鐘；週三提早1小時關園（玫瑰季除外）；秋季成人1,500日圓。",
+        "limitations": "園方地圖只有視窗中心，入口點仍待核。惡天可能臨時休園；2026/11/8是營業結束而非葉況結束。"
+      },
+      "seasonDecision": {
+        "action": "keep_open_ended_onset",
+        "reason": "10月中旬後開始可看紅葉，不填虛構峰期結束。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    },
+    {
+      "id": "karuizawa-prince-road",
+      "zh": "輕井澤王子大道",
+      "proposedBatch": "followup",
+      "checkedAt": "2026-11-02",
+      "sourceIds": [
+        "prince-road"
+      ],
+      "access": {
+        "method": "desk_research_not_live_or_on_site",
+        "summary": "Walker明列道路及兩樹種，屬次級資料。",
+        "limitations": "線狀道路需核人行觀賞段、代表點與道路管理資料；不是王子購物廣場地址。"
+      },
+      "seasonDecision": {
+        "action": "keep_mixed_reference",
+        "reason": "保留兩樹種次級證據，整體10月中旬至11月中旬不當兩者共同峰期。"
+      },
+      "coordinateEvidence": null,
+      "acceptedResearchCoordinates": null,
+      "readyForAutomaticImport": false
+    }
+  ]
+}

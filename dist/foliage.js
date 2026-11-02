@@ -5,14 +5,15 @@ function initFoliageData(destinations){
     spot.legacyPeakWindow=parsePeakWindow(spot.peak);
     spot.species=null;
   });
-  for(const record of foliageResearch.spots){
-    if(record.ginkgo.present!==true) continue;
+  Object.assign(foliageResearch.sources,regionalFoliageResearch.sources);
+  for(const record of [...foliageResearch.spots,...regionalFoliageResearch.spots]){
+    if(record.maple.present!==true&&record.ginkgo.present!==true) continue;
     let spot=destinations.find(item=>item.id===record.id);
     if(!spot){
-      const area=record.regionGroup==='toyama'?'toyama':record.regionGroup==='kanazawa'?(record.municipality==='金沢市'?'kanazawa':'ishikawa'):record.prefecture==='東京都'?(record.municipality==='八王子市'||record.municipality==='小金井市'?'tokyo-west':'tokyo-city'):'tokyo-daytrip';
+      const area=record.area||(record.regionGroup==='toyama'?'toyama':record.regionGroup==='kanazawa'?(record.municipality==='金沢市'?'kanazawa':'ishikawa'):record.prefecture==='東京都'?(record.municipality==='八王子市'||record.municipality==='小金井市'?'tokyo-west':'tokyo-city'):'tokyo-daytrip');
       spot={id:record.id,ja:record.ja,zh:record.zh,address:record.address,area,
         region:`${record.prefecture}・${record.municipality}`,lat:record.coordinates?.lat??null,lng:record.coordinates?.lng??null,
-        searchName:record.xSearchName,source:foliageResearch.sources[record.sources[0]].url,
+        searchName:record.xSearchName,source:foliageResearch.sources[record.sources[0]].url,note:record.note||'',
         peak:'',peakWindow:null,legacyPeak:null,legacyPeakWindow:null};
       destinations.push(spot);
     }

@@ -68,7 +68,10 @@ const areaLabels = {
   'tokyo-city':'東京市區', 'tokyo-west':'多摩・山區', 'tokyo-daytrip':'東京出發一日遊',
   'ishikawa-all':'石川縣全部','toyama-all':'富山縣全部','tokyo-prefecture':'東京都全部',
   kanagawa:'神奈川縣全部',saitama:'埼玉縣全部',tochigi:'栃木縣全部',chiba:'千葉縣全部',ibaraki:'茨城縣全部',
-  kamakura:'鎌倉',hakone:'箱根',nagatoro:'長瀞',nikko:'日光'
+  kamakura:'鎌倉',hakone:'箱根',nagatoro:'長瀞',nikko:'日光',
+  'fuji-all':'富士山周邊全部','fuji-yamanashi':'富士山周邊・山梨縣','fuji-shizuoka':'富士山周邊・靜岡縣',
+  'fuji-five-lakes':'富士五湖・富士吉田','fuji-south':'富士宮・富士市','fuji-gotemba':'御殿場',
+  'karuizawa-all':'輕井澤全部','karuizawa-old':'舊輕井澤・碓冰峠'
 };
 const initialArea = new URLSearchParams(window.location.search).get('area');
 let activeArea = Object.hasOwn(areaLabels,initialArea) ? initialArea : 'all';
@@ -165,7 +168,11 @@ function filteredSpots(){
 function matchesArea(spot,area){
   if(area==='all') return true;
   if(area==='tokyo-all') return spot.area.startsWith('tokyo-');
-  if(area==='hokuriku') return !spot.area.startsWith('tokyo-');
+  if(area==='hokuriku') return ['kanazawa','ishikawa','toyama','gokayama'].includes(spot.area);
+  if(area==='fuji-all') return spot.area.startsWith('fuji-');
+  if(area==='fuji-yamanashi') return spot.area==='fuji-five-lakes';
+  if(area==='fuji-shizuoka') return ['fuji-south','fuji-gotemba'].includes(spot.area);
+  if(area==='karuizawa-all') return spot.area.startsWith('karuizawa-');
   if(area==='ishikawa-all') return ['kanazawa','ishikawa'].includes(spot.area);
   if(area==='toyama-all') return ['toyama','gokayama'].includes(spot.area);
   if(area==='tokyo-prefecture') return ['tokyo-city','tokyo-west'].includes(spot.area);

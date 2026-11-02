@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f5f1e9">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="description" content="探索金澤、富山、東京與近郊的楓葉與銀杏景點，依地區與例年見頃篩選，查看最新照片並安排週末。">
-  <title>週末賞楓地圖｜金澤・富山・東京</title>
+  <meta name="description" content="探索北陸、東京與近郊、富士山周邊及輕井澤的楓葉與銀杏景點，依地區與例年見頃篩選，查看最新照片並安排週末。">
+  <title>週末賞楓地圖｜北陸・東京・富士山・輕井澤</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
 </head>
 <body>
   <main class="map-app" aria-label="週末賞楓地圖">
-    <div id="map" aria-label="金澤富山東京賞楓景點地圖"></div>
+    <div id="map" aria-label="北陸東京富士山輕井澤賞楓景點地圖"></div>
     <header class="explore-controls">
       <div class="filter-row">
         <button type="button" id="areaFilter" class="filter-trigger" aria-label="地區：全部地區" aria-haspopup="dialog" aria-controls="filterDialog" aria-expanded="false"><span class="trigger-value"><span id="areaValue">全部地區</span><span aria-hidden="true">⌄</span></span></button>
@@ -126,12 +126,13 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./tokyo-spots.js"></script>
   <script src="./foliage-data.js"></script>
-  <script src="./foliage.js"></script>
+  <script src="./fuji-karuizawa-data.js?v=20261102-regions1"></script>
+  <script src="./foliage.js?v=20261102-regions1"></script>
   <script src="./notes-ui.js?v=20261102-notes1"></script>
   <script src="./sheet-ui.js?v=20261102-notes1"></script>
-  <script src="./filters-ui.js?v=20261102-notes1"></script>
+  <script src="./filters-ui.js?v=20261102-regions1"></script>
   <script src="./spot-tools.js"></script>
   <script src="./collaboration-ui.js?v=20261102-notes1"></script>
-  <script src="./app.js?v=20261102-notes1"></script>
+  <script src="./app.js?v=20261102-regions1"></script>
 </body>
 </html>

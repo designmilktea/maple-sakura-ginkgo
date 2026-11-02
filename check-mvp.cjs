@@ -17,7 +17,7 @@ assert.ok(toolbar.indexOf('id="shareSpot"')<toolbar.indexOf('id="closeDetail"'))
 assert.equal((markup.match(/id="shareSpot"/g)||[]).length,1);
 assert.match(toolbar, /id="shareSpot"[^>]*aria-label="分享景點"/);
 assert.doesNotMatch(toolbar.match(/<button id="shareSpot"[\s\S]*?<\/button>/)[0], /<span>/);
-const source = ['tokyo-spots.js','foliage-data.js','foliage.js','sheet-ui.js','filters-ui.js','spot-tools.js','app.js'].map(file=>fs.readFileSync(`${__dirname}/dist/${file}`, 'utf8')).join('\n');
+const source = ['tokyo-spots.js','foliage-data.js','fuji-karuizawa-data.js','foliage.js','sheet-ui.js','filters-ui.js','spot-tools.js','app.js'].map(file=>fs.readFileSync(`${__dirname}/dist/${file}`, 'utf8')).join('\n');
 function boot(initial='{}', denyStorage=false, href='http://localhost:4173/'){ 
   const elements=new Map();
   const memory={value:initial};
@@ -38,6 +38,46 @@ function boot(initial='{}', denyStorage=false, href='http://localhost:4173/'){
   return {run(code){return vm.runInContext(code,context);},memory,elements};
 }
 const app=boot();
+// Expansion must preserve every original ID while keeping new regions independent.
+const regionalIds=['fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'];
+const oldResearch=JSON.parse(fs.readFileSync(__dirname+'/research/ginkgo-spots.json','utf8'));
+const oldIds=app.run('spots.filter(s=>!s.research).map(s=>s.id)');
+oldIds.push(...oldResearch.spots.filter(s=>s.ginkgo.present===true).map(s=>s.id));
+assert.equal(new Set(oldIds).size,96);
+assert.equal(app.run(`spots.filter(s=>${JSON.stringify([...new Set(oldIds)])}.includes(s.id)).length`),96);
+assert.deepEqual(Array.from(app.run('regionalFoliageResearch.spots.map(s=>s.id)')),regionalIds);
+for(const [area,count] of [['hokuriku',50],['tokyo-all',46],['fuji-all',5],['fuji-yamanashi',3],['fuji-shizuoka',2],['fuji-south',1],['fuji-gotemba',1],['karuizawa-all',1]]){
+  const regionApp=boot('{}',false,`https://maple.example/?area=${area}`);
+  assert.equal(regionApp.run('filteredSpots().length'),count,area);
+  assert.equal(regionApp.run('activeArea'),area);
+}
+for(const id of regionalIds){
+  const linked=boot('{"kenrokuen":"2026-11-07"}',false,`https://maple.example/?spot=${id}`);
+  assert.equal(linked.run('selectedSpotId'),id);
+  assert.equal(linked.run('saved.kenrokuen'),'2026-11-07');
+  assert.equal(linked.run(`hasMapLocation(spots.find(s=>s.id==='${id}'))`),true);
+  assert.match(linked.elements.get('detailMapPrecision').textContent,/非已核實入口/);
+  assert.ok(linked.elements.get('detailSources').innerHTML.includes('https://'));
+  assert.equal(new URL(linked.run(`spotShareUrl('${id}')`)).searchParams.get('spot'),id);
+  linked.run(`onSaveWeekend({target:{dataset:{id:'${id}'},value:'skip'}})`);
+  const restored=boot(linked.memory.value);
+  assert.equal(restored.run(`saved['${id}']`),'skip');
+  restored.run(`onSaveWeekend({target:{dataset:{id:'${id}'},value:weekends[1].value}});setFilter('saved')`);
+  assert.equal(restored.run(`filteredSpots().some(s=>s.id==='${id}')`),true);
+}
+for(const [id,kind] of regionalIds.map(id=>[id,id==='fuji-niihashi-sengen'?'both':id==='fuji-murayama-sengen'?'ginkgo':'maple'])){
+  assert.equal(app.run(`foliageKind(spots.find(s=>s.id==='${id}'),[])`),kind);
+}
+for(const id of ['fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout']){
+  assert.equal(app.run(`matchesPeak(spots.find(s=>s.id==='${id}'),'11-middle')`),false);
+}
+app.run("setArea('fuji-all');setPeak('11-early')");
+assert.deepEqual(Array.from(app.run('filteredSpots().map(s=>s.id)')),regionalIds.slice(0,2));
+app.run("setPeak('10-late')");
+assert.deepEqual(Array.from(app.run('filteredSpots().map(s=>s.id)')),[regionalIds[0]]);
+app.run('resetAllFilters();renderChoicePanel("area")');
+assert.match(app.elements.get('filterChoices').innerHTML,/富士山周邊|輕井澤/);
+console.log('PASS: original 96 IDs, six selected additions, region isolation, species-only seasons, source/precision details, deep links and new local weekend reloads.');
 assert.ok(markup.indexOf('class="weekend-box detail-info-row"')<markup.indexOf('class="season-row detail-info-row"'));
 app.run('renderDetail(spots.find(s=>s.ja===s.zh))');
 assert.equal(app.elements.get('detailChinese').textContent,app.run('spots.find(s=>s.ja===s.zh).zh'));
@@ -73,7 +113,7 @@ for(const protocol of ['http:','https:']){
   assert.equal(result.calls.length,1); // no fallback host or retry loop
 }
 const fileApp=boot('{}',false,'file:///preview/index.html');
-assert.equal(fileApp.run('spots.length'),96);
+assert.equal(fileApp.run('spots.length'),102);
 assert.equal(fileApp.elements.get('mapServiceNotice').hidden,false);
 function checkListShortcuts(instance){
   const html=instance.elements.get('spotList').innerHTML;
@@ -148,7 +188,7 @@ assert.equal(multiPeak.run('JSON.stringify(selectedPeakValues())'),'["11-late"]'
 assert.equal(multiPeak.elements.get('filterDialogFooter').hidden,true);
 multiPeak.run('resetAllFilters()');
 assert.equal(multiPeak.run('selectedPeakValues().length'),0);
-assert.equal(multiPeak.run('filteredSpots().length'),96);
+assert.equal(multiPeak.run('filteredSpots().length'),102);
 assert.equal(multiPeak.run('saved["tokyo-showa"]'),'2026-11-14');
 console.log('PASS: list season information removed; multi-period union, chronological summaries, checkbox states, open picker, clear/last-toggle reset, disjoint windows, species markers, combined filters and saved-plan preservation.');
 const listWeekends=boot();
@@ -187,8 +227,8 @@ changeListWeekend(listDenied,'toyama-baba',nextWeekend);
 assert.equal(listDenied.run('saved["toyama-baba"]'),nextWeekend);
 assert.match(listDenied.elements.get('toast').textContent,/僅在本次頁面/);
 console.log('PASS: per-card weekend options, delegated save/clear, list/detail sync, unrelated selection, reload persistence, filtered-out focus recovery, and blocked-storage fallback.');
-assert.equal(app.run('spots.length'),96);
-assert.equal(app.run('new Set(spots.map(s=>s.id)).size'),96);
+assert.equal(app.run('spots.length'),102);
+assert.equal(app.run('new Set(spots.map(s=>s.id)).size'),102);
 assert.equal(app.run('tokyoSpots.length'),24);
 assert.equal(app.run('tokyoSpots.every(s=>s.address && s.source && Number.isFinite(s.lat) && Number.isFinite(s.lng))'),true);
 assert.equal(app.run('optionMarkup().startsWith(`<option value="">尚未選擇</option>`)'),true);
@@ -215,8 +255,8 @@ const past=boot('{"kenrokuen":"2025-11-01"}');
 assert.ok(past.run('optionMarkup(saved.kenrokuen).includes("2025-11-01")'));
 past.run(`activeWeekend='2025-11-01'`);
 assert.equal(past.run('filteredSpots().length'),1);
-assert.equal(boot('broken JSON').run('filteredSpots().length'),96);
-assert.equal(boot('{}',true).run('filteredSpots().length'),96);
+assert.equal(boot('broken JSON').run('filteredSpots().length'),102);
+assert.equal(boot('{}',true).run('filteredSpots().length'),102);
 const expanded=boot('{"kenrokuen":"2026-11-07"}');
 assert.equal(expanded.run('saved.kenrokuen'),'2026-11-07');
 expanded.run(`activeArea='tokyo-all'`);
@@ -284,7 +324,7 @@ assert.doesNotMatch(controls,/cloud-toolbar|cloudScope/);
 assert.match(fs.readFileSync(__dirname+'/dist/design-system.css','utf8'),/\.results-row \.list-button\{color:#000;-webkit-text-fill-color:#000;/);
 console.log('PASS: all-saved dates with combined filters, list snap/drag/keyboard/background collapse/close, compact header and plan edit control.');
 const seasonal=boot();
-assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),85);
+assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),91);
 assert.equal(seasonal.run('spots.filter(s=>!hasMapLocation(s)).length'),11);
 const coordinateUpdates=JSON.parse(fs.readFileSync(`${__dirname}/research/ginkgo-coordinate-updates.json`,'utf8'));
 for(const update of coordinateUpdates.updates){
@@ -331,15 +371,15 @@ seasonal.run(`setPeak('11-late');onSaveWeekend({target:{dataset:{id:'tokyo-rikug
 assert.equal(seasonal.run('filteredSpots().length'),1);
 assert.equal(seasonal.run('filteredSpots()[0].id'),'tokyo-rikugien');
 seasonal.run('resetAllFilters()');
-assert.equal(seasonal.run('filteredSpots().length'),96);
+assert.equal(seasonal.run('filteredSpots().length'),102);
 assert.ok(seasonal.run('saved["tokyo-rikugien"]'));
 checkListShortcuts(seasonal);
 const ginkgo=boot('{"kenrokuen":"2026-11-07","toyama-baba":"2026-11-14"}');
 assert.equal(ginkgo.run('saved.kenrokuen'),'2026-11-07');
 assert.equal(ginkgo.run('saved["toyama-baba"]'),'2026-11-14');
-assert.equal(ginkgo.run('spots.filter(s=>s.research).length'),45);
+assert.equal(ginkgo.run('spots.filter(s=>s.research).length'),51);
 assert.equal(ginkgo.run('spots.some(s=>s.id==="tokyo-zenpukuji-river"||s.id==="tokyo-wadabori")'),false);
-assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&hasMapLocation(s)).length'),25);
+assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&hasMapLocation(s)).length'),31);
 assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&!hasMapLocation(s)).length'),11);
 assert.equal(ginkgo.run('spots.find(s=>s.id==="kenrokuen").species.ginkgo.peak'),null);
 assert.equal(ginkgo.run('spots.find(s=>s.id==="kenrokuen").species.maple.peak'),null);
@@ -396,9 +436,9 @@ assert.equal(ginkgo.run('filteredSpots()[0].id'),'toyama-baba');
 const newLink=boot('{}',false,'https://maple.example/?spot=tokyo-hikarigaoka');
 assert.equal(newLink.run('selectedSpotId'),'tokyo-hikarigaoka');
 assert.equal(newLink.run('spotShareUrl("tokyo-hikarigaoka")'),'https://maple.example/?spot=tokyo-hikarigaoka');
-console.log('PASS: 45 merged ginkgo records, 85 mapped destinations (25 audited new pins), 11 list-only, original 60 pins unchanged, per-pin precision metadata and deep links, independent species seasons, marker variants and preserved saved weekends.');
+console.log('PASS: 51 merged species records, 91 mapped destinations (25 audited ginkgo additions and 6 regional additions), 11 list-only, original 60 pins unchanged, per-pin precision metadata and deep links, independent species seasons, marker variants and preserved saved weekends.');
 console.log('PASS: every rendered destination has independent, accessible, icon-only X/Maps links with exact per-spot URLs, including alternate X search names, filtered results and empty results.');
-console.log('PASS: 96 destinations, date/storage/X rules, sheet behavior, independent species seasons, inclusive season overlap, prefecture groups, three-way intersection, empty states, and reset without deleting saved plans.');
+console.log('PASS: 102 destinations, date/storage/X rules, sheet behavior, independent species seasons, inclusive season overlap, prefecture groups, three-way intersection, empty states, and reset without deleting saved plans.');
 async function checkSpotTools(){
   const linked=boot('{"kenrokuen":"2026-11-07"}',false,'https://maple.example/?area=hokuriku&spot=tokyo-rikugien');
   assert.equal(linked.run('selectedSpotId'),'tokyo-rikugien');

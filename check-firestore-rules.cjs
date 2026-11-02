@@ -40,6 +40,32 @@ async function deny(p){await assertFails(p);checks++;}
     await deny(setDoc(doc(other,`${path}/spots/natadera`),assignment('other')));
     await deny(setDoc(doc(member,`${path}/spots/kenrokuen`),{...assignment('member',2),extra:true}));
     await deny(setDoc(doc(member,`${path}/spots/natadera`),{...assignment('member'),weekend:'invalid'}));
+    // Newly published destinations use the same plan-scoped schema and permissions.
+    const addedDestinations=[
+      'fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka',
+      'fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'
+    ];
+    for(const spotId of addedDestinations){
+      for(const db of [other,anon]){
+        await deny(setDoc(doc(db,`${path}/spots/${spotId}`),assignment(db===other?'other':'anonymous')));
+        await deny(setDoc(doc(db,`${path}/notes/${spotId}`),note(db===other?'other':'anonymous','unauthorized')));
+      }
+      await allow(setDoc(doc(member,`${path}/spots/${spotId}`),{...assignment('member'),weekend:Timestamp.fromDate(new Date('2026-11-07T00:00:00Z'))}));
+      await allow(setDoc(doc(member,`${path}/spots/${spotId}`),{...assignment('member',2),weekend:'skip'}));
+      await allow(setDoc(doc(member,`${path}/notes/${spotId}`),note('member','第一次筆記')));
+      await allow(setDoc(doc(member,`${path}/notes/${spotId}`),note('member','更新筆記',2)));
+      await deny(setDoc(doc(member,`${path}/spots/${spotId}`),{...assignment('member',2),weekend:'skip'}));
+      await deny(setDoc(doc(member,`${path}/notes/${spotId}`),note('member','舊版本',2)));
+      for(const db of [other,anon]){
+        await deny(setDoc(doc(db,`${path}/spots/${spotId}`),{...assignment(db===other?'other':'anonymous',3),weekend:'skip'}));
+        await deny(setDoc(doc(db,`${path}/notes/${spotId}`),note(db===other?'other':'anonymous','unauthorized update',3)));
+      }
+    }
+    // Similar-but-unpublished destinations must not inherit access from the new region.
+    for(const spotId of ['fuji-unknown-spot','karuizawa-unknown-spot']){
+      await deny(setDoc(doc(member,`${path}/spots/${spotId}`),{...assignment('member'),weekend:'skip'}));
+      await deny(setDoc(doc(member,`${path}/notes/${spotId}`),note('member','unknown destination')));
+    }
     // Explicit skip is a bounded sentinel, retaining the same revision history.
     const skipRef=doc(member,`${path}/spots/shiko-park`);
     await allow(setDoc(skipRef,{...assignment('member'),weekend:'skip'}));

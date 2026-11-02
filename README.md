@@ -1,6 +1,6 @@
 # 週末賞楓地圖
 
-Mobile-friendly static MVP for Kanazawa, Toyama, Tokyo and nearby day-trip autumn foliage destinations.
+Mobile-friendly static map for Hokuriku, Tokyo and nearby day trips, Mount Fuji surroundings, and Karuizawa.
 
 ## Run locally
 
@@ -89,3 +89,13 @@ Weekend assignment update (2026-11-02): detail and list selectors support `skip`
 
 
 Spot notes (2026-11-02): each destination has one plain-text 「行程筆記」 between its weekend selector and historical season section. Notes support up to 1,000 Unicode codepoints, multiline editing, explicit save/cancel, and revision conflict comparison without losing the draft. Browser-only notes use `hokuriku-maple-notes-v1` independently of saved weekends. Shared notes live at `weekendPlans/{planId}/notes/{spotId}` with exactly `text`, `revision`, `updatedBy`, and server `updatedAt`; empty text keeps a revisioned clear. Read/write remains plan-member scoped. The updater is shown as 「你」 or 「行程成員」 without storing names/emails. Switching plans/signing out clears shared notes/subscriptions/drafts and restores browser notes. Explicit browser import includes notes but skips existing or previously cleared records; it never automatically uploads notes. Plan deletion also cleans notes with resumable server-only pagination. `node check-notes.cjs` covers UI/storage/scope/conflicts/import; `node check-firestore-rules.cjs` under the isolated emulator passes 291 authorization and actual SDK checks. Real two-account Google sign-in notes UX is still a manual verification.
+
+## Fuji / Karuizawa expansion (2026-11-02)
+
+Added six selected destinations from the 29-record research inventory, retaining all original 96 destinations (102 total; 91 mapped, 11 list-only). New areas have explicit membership and do not leak into Hokuriku or Tokyo. The six map pins are official source representative points, not verified entrances or individual tree positions; details retain that disclosure. Unknown species seasons stay unknown and do not match a selected date. Mixed autumn dates remain descriptive references only.
+
+Run `node research/prepare-fuji-karuizawa.cjs --check` to verify the selected data. The generator explicitly selects six IDs and never automatically imports pending candidates. Research and per-point limitations are in FUJI-KARUIZAWA-AUDIT.md; the full inventory remains a research snapshot.
+
+Validation: MVP, collaboration and notes checks pass, including new destination local reloads and cloud-note isolation; 379 Firestore emulator checks pass. Rules only append the six known IDs, with all previous rules unchanged. Desktop Chrome rendered the new corridor detail and five Fuji pins. An isolated browser at 390×844 verified the Karuizawa detail, expansion and region picker without horizontal overflow. This expansion has not been tested on physical iPhone Safari or with two real accounts; earlier user-confirmed account testing does not count as testing these new destinations.
+
+Deployment: the six-ID rules update was compiled, deployed only to Firestore rules, and read back exactly equal to the reviewed local source before website publishing.
