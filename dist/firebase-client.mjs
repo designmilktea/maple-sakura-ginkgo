@@ -1,6 +1,6 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
-import {getFirestore,doc,collection,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,runTransaction,writeBatch,serverTimestamp,Timestamp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js';
+import {getFirestore,doc,collection,getDoc,getDocs,getDocsFromServer,query,limit,setDoc,updateDoc,deleteDoc,onSnapshot,runTransaction,writeBatch,serverTimestamp,Timestamp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js';
 import {firebaseConfig} from './firebase-config.mjs';
 
 const app=initializeApp(firebaseConfig);
@@ -16,7 +16,13 @@ const requireUser=()=>{if(!auth.currentUser)throw Error('請先登入');return a
 export async function listPlans(){
   const user=requireUser();
   const snapshot=await getDocs(collection(db,'weekendPlanUsers',user.uid,'plans'));
-  return snapshot.docs.map(d=>({id:d.id,...d.data()}));
+  const plans=await Promise.all(snapshot.docs.map(async d=>{
+    try{return await getPlan(d.id);}catch(error){
+      if(['permission-denied','not-found'].includes(error.code))return null;
+      throw error;
+    }
+  }));
+  return plans.filter(Boolean);
 }
 export async function createPlan(title){
   const user=requireUser(),ref=doc(collection(db,'weekendPlans')),batch=writeBatch(db);
@@ -27,7 +33,7 @@ export async function createPlan(title){
 }
 export async function getPlan(id){
   const result=await getDoc(planRef(id));
-  if(!result.exists())throw Error('找不到行程');
+  if(!result.exists())throw Object.assign(Error('找不到行程'),{code:'not-found'});
   return {id,...result.data()};
 }
 export function watchPlan(id,onChange,onError){
@@ -35,9 +41,43 @@ export function watchPlan(id,onChange,onError){
     onChange(snapshot.docs.map(d=>({id:d.id,...d.data()})),{fromCache:snapshot.metadata.fromCache,pending:snapshot.metadata.hasPendingWrites});
   },onError);
 }
-export function watchAccess(id,user,onRemoved){
-  return onSnapshot(planRef(id),()=>{},onRemoved);
+export function watchAccess(id,user,onRemoved,onChange=()=>{}){
+  return onSnapshot(planRef(id),snapshot=>{
+    if(!snapshot.exists()){onRemoved({code:'not-found',message:'此行程已刪除。'});return;}
+    onChange({id,...snapshot.data()});
+  },onRemoved);
 }
+export async function deletePlan(id){
+  const user=requireUser();
+  const sameUser=()=>{if(requireUser().uid!==user.uid)throw Error('登入帳號已變更，請重新開啟行程');};
+  await runTransaction(db,async tx=>{
+    sameUser();
+    const previous=await tx.get(planRef(id));
+    if(!previous.exists())throw Error('找不到行程');
+    if(previous.data().ownerUid!==user.uid)throw Error('僅建立者可刪除行程');
+    if(!previous.data().deletingAt)tx.update(planRef(id),{deletingAt:serverTimestamp()});
+  });
+  // Freeze access before cleanup. Server-only pages prevent cached empty results
+  // from deleting the parent early. Leaving deletingAt makes interrupted work resumable.
+  for(const kind of ['spots','invites','members']){
+    while(true){
+      sameUser();
+      const page=await getDocsFromServer(query(collection(db,'weekendPlans',id,kind),limit(kind==='members'?8:100)));
+      if(page.empty)break;
+      sameUser();const batch=writeBatch(db);
+      for(const item of page.docs){
+        if(kind==='members')batch.delete(indexRef(item.id,id));
+        batch.delete(item.ref);
+      }
+      await batch.commit();
+    }
+  }
+  sameUser();const batch=writeBatch(db);
+  batch.set(doc(db,'weekendPlanDeletions',id),{deletedAt:serverTimestamp()});
+  batch.delete(indexRef(user.uid,id));batch.delete(planRef(id));
+  await batch.commit();
+}
+
 export async function writeWeekend(id,spotId,weekend,expectedRevision){
   const user=requireUser(),ref=doc(db,'weekendPlans',id,'spots',spotId);
   await runTransaction(db,async tx=>{

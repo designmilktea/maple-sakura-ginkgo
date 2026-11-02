@@ -185,13 +185,12 @@ function setFilter(value){ activeWeekend=value; renderFilters(); renderSpots(); 
 
 function renderFilters(){
   const items = [
-    {value:'all',label:'全部景點'},
     ...weekends.map(w=>({value:w.value,label:w.short})),
     ...oldWeekends().map(date=>({value:date,label:`已保存 ${date}`})),
     {value:'unsaved',label:'尚未選擇'}
   ];
   document.getElementById('weekendFilters').innerHTML = items.map(i=>`<button class="filter-pill ${activeWeekend===i.value?'active':''}" aria-pressed="${activeWeekend===i.value}" data-filter="${i.value}" type="button">${i.label}</button>`).join('');
-  document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>setFilter(btn.dataset.filter)));
+  document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>setFilter(activeWeekend===btn.dataset.filter?'all':btn.dataset.filter)));
 }
 
 function renderSpots(){

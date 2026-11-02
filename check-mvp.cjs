@@ -38,6 +38,12 @@ function boot(initial='{}', denyStorage=false, href='http://localhost:4173/'){
   return {run(code){return vm.runInContext(code,context);},memory,elements};
 }
 const app=boot();
+assert.ok(markup.indexOf('class="weekend-box detail-info-row"')<markup.indexOf('class="season-row detail-info-row"'));
+app.run('renderDetail(spots.find(s=>s.ja===s.zh))');
+assert.equal(app.elements.get('detailChinese').textContent,app.run('spots.find(s=>s.ja===s.zh).zh'));
+app.run('renderFilters()');
+assert.doesNotMatch(app.elements.get('weekendFilters').innerHTML,/全部景點|data-filter="all"/);
+
 assert.match(markup,/<meta name="referrer" content="strict-origin-when-cross-origin">/);
 const mapSetup=fs.readFileSync(`${__dirname}/dist/app.js`,'utf8').split("const map = ")[1].split('\nfunction markerIcon')[0];
 function checkTileSetup(protocol){

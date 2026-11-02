@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="./map-ui.css">
-  <link rel="stylesheet" href="./design-system.css">
+  <link rel="stylesheet" href="./design-system.css?v=20261102-plans2">
 </head>
 <body>
   <main class="map-app" aria-label="週末賞楓地圖">
@@ -24,7 +24,7 @@
       </div>
       <div class="weekend-label">我的賞楓週末 <span>個人預測</span></div>
       <div id="weekendFilters" class="filter-pills" role="group" aria-label="依週末篩選"></div>
-      <div class="cloud-toolbar"><span id="cloudScope">此瀏覽器的安排</span><button id="cloudPanelButton" type="button">我的行程／共編</button></div>
+      <div class="cloud-toolbar"><span id="cloudScope">瀏覽器暫存</span><button id="cloudPanelButton" type="button">我的行程／共編</button></div>
       <div class="results-row"><button type="button" id="listButton" class="list-button" aria-controls="listPanel" aria-expanded="false"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M3 6h1M3 12h1M3 18h1"/></svg>景點清單 <span id="visibleCount">60</span></button><button type="button" id="resetFilters" class="reset-filters" hidden>清除篩選</button></div>
     </header>
     <div class="map-tools"><button id="fitMap" type="button" aria-label="顯示所有符合篩選的景點" title="重新置中"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg></button></div>
@@ -39,8 +39,8 @@
       </div>
       <div class="detail-actions"><a id="detailX" class="action x" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">𝕏</span><span>最新圖片</span></a><a id="detailMaps" class="action maps" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Google Maps</span></a></div>
       <div id="sheetBody" class="sheet-body">
-        <div class="season-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3"/></svg><div class="detail-row-content"><span class="field-label">例年見頃</span><div id="detailPeak" class="season-values"></div><span id="detailFoliage" class="foliage-type"></span></div></div>
         <div class="weekend-box detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16l-6-4-6 4Z"/></svg><div class="detail-row-content"><label for="detailWeekend" class="field-label">我的賞楓週末</label><select id="detailWeekend" class="weekend-select"></select></div></div>
+        <div class="season-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3"/></svg><div class="detail-row-content"><span class="field-label">例年見頃</span><div id="detailPeak" class="season-values"></div><span id="detailFoliage" class="foliage-type"></span></div></div>
         <div class="detail-section address-copy-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><div class="detail-row-content"><span class="field-label">地址</span><p id="detailAddress" lang="ja"></p></div><button id="copyAddress" class="copy-button" type="button" aria-label="複製地址" title="複製地址"></button></div>
         <div id="detailNote" class="spot-note" hidden></div>
         <p id="detailLocationStatus" class="spot-note" hidden></p>
@@ -72,13 +72,27 @@
     <div class="cloud-actions"><span id="cloudUser" hidden></span><button id="cloudLogin" type="button" hidden disabled>使用 Google 登入</button><button id="cloudLogout" type="button" hidden>登出</button></div>
     <div id="cloudAuthenticated" hidden inert>
     <div id="cloudBrowse" hidden inert>
-    <section><h3>建立共編行程</h3><label for="cloudPlanTitle">行程名稱</label><input id="cloudPlanTitle" maxlength="80" placeholder="例如：東京秋季週末"><button id="cloudCreate" type="button">建立空白行程</button></section>
-    <section><h3>已加入的行程</h3><label for="cloudPlanChoice" class="sr-only">選擇共編行程</label><select id="cloudPlanChoice"></select><button id="cloudOpen" type="button">開啟行程</button></section>
+    <section aria-labelledby="cloudChooseTitle"><h3 id="cloudChooseTitle">選擇行程</h3><label for="cloudPlanChoice" class="sr-only">選擇行程</label><select id="cloudPlanChoice"><option value="">瀏覽器暫存</option></select><div class="cloud-actions"><button id="cloudOpen" type="button">使用瀏覽器暫存</button><button id="cloudReturn" type="button" hidden>返回目前行程</button></div></section>
+    <section aria-labelledby="cloudCreateTitle"><h3 id="cloudCreateTitle">建立共編行程</h3><label for="cloudPlanTitle">行程名稱</label><input id="cloudPlanTitle" maxlength="80" placeholder="例如：東京秋季週末" aria-describedby="cloudTitleError"><p id="cloudTitleError" class="cloud-field-error" role="alert" hidden></p><button id="cloudCreate" type="button">新增行程</button></section>
     </div>
     <section id="cloudInvitation" hidden inert><p>你收到共編邀請。加入前請確認邀請來源。</p><button id="cloudJoin" type="button" hidden>接受邀請並加入共編</button></section>
-    <section id="cloudCurrent" hidden inert><h3>目前行程</h3><p id="cloudCurrentTitle"></p><div class="cloud-actions"><button id="cloudImport" type="button" hidden>匯入此瀏覽器安排（不覆蓋）</button><button id="cloudLocal" type="button">切回此瀏覽器安排</button></div><div class="cloud-actions"><button id="cloudInvite" type="button" hidden>產生7天邀請連結</button><button id="cloudRevoke" type="button" hidden>撤銷現有邀請</button><button id="cloudMembers" type="button" hidden>管理成員</button></div><label for="cloudInviteLink" class="sr-only">共編邀請連結</label><textarea id="cloudInviteLink" readonly rows="3" hidden></textarea><button id="cloudCopyInvite" type="button" hidden>複製邀請連結</button><div id="cloudMemberList"></div></section>
-    <p class="cloud-note">本機安排不會自動上傳。共編以同一行程為範圍；若同一景點已被他人更新，系統會請你確認最新安排，不直接覆蓋。</p>
+    <section id="cloudCurrent" hidden inert aria-labelledby="cloudCurrentHeading">
+      <h3 id="cloudCurrentHeading">目前行程</h3><p id="cloudCurrentTitle" class="cloud-plan-name"></p>
+      <button id="cloudLocal" type="button">選擇其他行程</button>
+      <section class="cloud-management" aria-labelledby="cloudManageHeading">
+        <h3 id="cloudManageHeading">管理行程</h3>
+        <div class="cloud-actions"><button id="cloudImport" type="button" hidden>匯入瀏覽器暫存（不覆蓋）</button></div>
+        <div class="cloud-actions"><button id="cloudInvite" type="button" hidden>產生7天邀請連結</button><button id="cloudRevoke" type="button" hidden>撤銷現有邀請</button><button id="cloudMembers" type="button" hidden>管理成員</button></div>
+        <div id="cloudInviteField" hidden><label for="cloudInviteLink">共編邀請連結</label><textarea id="cloudInviteLink" readonly rows="3" hidden></textarea><button id="cloudCopyInvite" type="button" hidden>複製邀請連結</button></div><div id="cloudMemberList"></div>
+        <div class="cloud-danger-zone" id="cloudDeleteArea" hidden><button id="cloudDelete" class="destructive-button" type="button" hidden>刪除行程</button><p>僅建立者可刪除，刪除後所有成員將無法存取此行程。</p></div>
+      </section>
+    </section>
+    <p class="cloud-note">瀏覽器暫存不會自動上傳。共編以同一行程為範圍；若同一景點已被他人更新，系統會請你確認最新安排，不直接覆蓋。</p>
     </div>
+  </dialog>
+  <dialog id="cloudDeleteDialog" class="cloud-dialog cloud-delete-dialog" aria-labelledby="cloudDeleteTitle" aria-describedby="cloudDeleteDescription">
+    <h2 id="cloudDeleteTitle">刪除行程？</h2><p id="cloudDeleteDescription"></p>
+    <div class="cloud-confirm-actions"><button id="cloudDeleteCancel" type="button" autofocus>取消</button><button id="cloudDeleteConfirm" class="destructive-button" type="button">刪除行程</button></div>
   </dialog>
   <dialog id="spotToolsDialog" class="spot-tools-dialog" aria-labelledby="spotToolsTitle">
     <div class="tools-dialog-heading"><h2 id="spotToolsTitle">分享景點</h2><button id="closeSpotTools" class="icon-button" type="button" aria-label="關閉分享與複製視窗"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
@@ -93,10 +107,10 @@
   <script src="./tokyo-spots.js"></script>
   <script src="./foliage-data.js"></script>
   <script src="./foliage.js"></script>
-  <script src="./sheet-ui.js"></script>
+  <script src="./sheet-ui.js?v=20261102-plans2"></script>
   <script src="./filters-ui.js"></script>
   <script src="./spot-tools.js"></script>
-  <script src="./collaboration-ui.js?v=20261102-auth1"></script>
-  <script src="./app.js"></script>
+  <script src="./collaboration-ui.js?v=20261102-plans2"></script>
+  <script src="./app.js?v=20261102-plans2"></script>
 </body>
 </html>

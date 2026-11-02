@@ -1,13 +1,15 @@
 rules_version = '2';
 // Prototype rules. Legacy /users and /users/{uid}/saves rules retained unchanged.
 // weekendPlans/{20-char id}: title (1..80), ownerUid (1..128, immutable),
-//   createdAt (server timestamp, immutable).
+//   createdAt (server timestamp, immutable), optional deletingAt (server time, immutable).
+// Deletion is irreversible: owner marks first, cleans scoped subcollections, then parent.
 // members/{uid}: uid, role='editor', inviteToken (48 hex), joinedAt (immutable).
 // invites/{48-hex token}: createdAt (immutable), expiresAt (max 8 days, immutable),
 //   revoked (bool; only false -> true). Only owner lists tokens.
 // spots/{known spot id}: weekend (Saturday 00:00 UTC timestamp or null tombstone),
 //   revision (positive int <= 10M, increments exactly one), updatedBy, updatedAt.
 // weekendPlanUsers/{uid}/plans/{planId}: title (1..80), joinedAt (server time).
+// weekendPlanDeletions/{planId}: deletedAt server timestamp, permanent ID tombstone.
 // No emails or display names are stored. No collection-group queries or global lists.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -21,18 +23,29 @@ service cloud.firestore {
       return isAuthenticated() && planExists(id)
         && get(/databases/$(database)/documents/weekendPlans/$(id)).data.ownerUid == request.auth.uid;
     }
+    function activePlan(id) {
+      return planExists(id) && !('deletingAt' in get(/databases/$(database)/documents/weekendPlans/$(id)).data);
+    }
+    function activePlanAfter(id) {
+      return !('deletingAt' in getAfter(/databases/$(database)/documents/weekendPlans/$(id)).data)
+        && getAfter(/databases/$(database)/documents/weekendPlans/$(id)).data.ownerUid is string;
+    }
+    function deletingOwner(id) {
+      return planOwner(id) && 'deletingAt' in get(/databases/$(database)/documents/weekendPlans/$(id)).data;
+    }
     function member(id) {
-      return isAuthenticated() && planExists(id) &&
+      return isAuthenticated() && activePlan(id) &&
         (planOwner(id) || exists(/databases/$(database)/documents/weekendPlans/$(id)/members/$(request.auth.uid)));
     }
     function memberAfter(id) {
-      return isAuthenticated() &&
+      return isAuthenticated() && activePlanAfter(id) &&
         (getAfter(/databases/$(database)/documents/weekendPlans/$(id)).data.ownerUid == request.auth.uid ||
          exists(/databases/$(database)/documents/weekendPlans/$(id)/members/$(request.auth.uid)));
     }
     function validPlan(d) {
       return d.keys().hasAll(['title','ownerUid','createdAt']) &&
-        d.keys().hasOnly(['title','ownerUid','createdAt']) &&
+        d.keys().hasOnly(['title','ownerUid','createdAt','deletingAt']) &&
+        (!('deletingAt' in d) || d.deletingAt is timestamp) &&
         str(d.title,1,80) && str(d.ownerUid,1,128) && d.createdAt is timestamp;
     }
     function validInvite(d) {
@@ -63,6 +76,9 @@ service cloud.firestore {
         str(d.updatedBy,1,128) && d.updatedBy == request.auth.uid &&
         d.updatedAt == request.time;
     }
+    function validDeletion(d) {
+      return d.keys().hasAll(['deletedAt']) && d.keys().hasOnly(['deletedAt']) && d.deletedAt == request.time;
+    }
     function validIndex(d) {
       return d.keys().hasAll(['title','joinedAt']) && d.keys().hasOnly(['title','joinedAt']) &&
         str(d.title,1,80) && d.joinedAt is timestamp;
@@ -75,52 +91,68 @@ service cloud.firestore {
       }
     }
     match /weekendPlans/{planId} {
-      allow get: if member(planId);
+      allow get: if member(planId) || deletingOwner(planId);
       allow list: if false;
       allow create: if isAuthenticated() && planId.matches('^[A-Za-z0-9]{20}$') &&
-        validPlan(request.resource.data) && uidUnchanged(request.resource.data.ownerUid) &&
+        !exists(/databases/$(database)/documents/weekendPlanDeletions/$(planId)) &&
+        validPlan(request.resource.data) && !('deletingAt' in request.resource.data) && uidUnchanged(request.resource.data.ownerUid) &&
         request.resource.data.createdAt == request.time;
       allow update: if planOwner(planId) && validPlan(request.resource.data) &&
-        uidNotModified('ownerUid') && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if false;
+        uidNotModified('ownerUid') && request.resource.data.createdAt == resource.data.createdAt &&
+        // Active title edits remain valid; deletion can only be started once.
+        !('deletingAt' in resource.data) &&
+        (!('deletingAt' in request.resource.data) ||
+          (request.resource.data.deletingAt == request.time && request.resource.data.title == resource.data.title));
+      allow delete: if deletingOwner(planId) &&
+        getAfter(/databases/$(database)/documents/weekendPlanDeletions/$(planId)).data.deletedAt is timestamp;
       match /invites/{token} {
         // No PII; only a known high-entropy token may be fetched by a signed-in invitee.
-        allow get: if isAuthenticated() && planExists(planId) && token.matches('^[a-f0-9]{48}$');
+        allow get: if isAuthenticated() && (activePlan(planId) || deletingOwner(planId)) && token.matches('^[a-f0-9]{48}$');
         allow list: if planOwner(planId);
-        allow create: if planOwner(planId) && token.matches('^[a-f0-9]{48}$') &&
+        allow create: if planOwner(planId) && activePlanAfter(planId) && token.matches('^[a-f0-9]{48}$') &&
           validInvite(request.resource.data) && request.resource.data.createdAt == request.time &&
           request.resource.data.expiresAt > request.time && request.resource.data.revoked == false;
-        allow update: if planOwner(planId) && validInvite(request.resource.data) &&
+        allow update: if planOwner(planId) && activePlanAfter(planId) && validInvite(request.resource.data) &&
           request.resource.data.createdAt == resource.data.createdAt &&
           request.resource.data.expiresAt == resource.data.expiresAt &&
           resource.data.revoked == false && request.resource.data.revoked == true;
-        allow delete: if false;
+        allow delete: if deletingOwner(planId);
       }
       match /members/{uid} {
-        allow get: if isAuthenticated() && planExists(planId) && (isOwner(uid) || planOwner(planId));
+        allow get: if isAuthenticated() && ((activePlan(planId) && isOwner(uid)) || planOwner(planId));
         allow list: if planOwner(planId);
-        allow create: if isOwner(uid) && planExists(planId) && validMember(request.resource.data) &&
+        allow create: if isOwner(uid) && activePlanAfter(planId) && validMember(request.resource.data) &&
           uidUnchanged(request.resource.data.uid) && request.resource.data.joinedAt == request.time &&
           validToken(planId,request.resource.data.inviteToken);
         allow update: if false;
-        allow delete: if planOwner(planId) && uid != get(/databases/$(database)/documents/weekendPlans/$(planId)).data.ownerUid;
+        allow delete: if planOwner(planId) && (deletingOwner(planId) ||
+          uid != get(/databases/$(database)/documents/weekendPlans/$(planId)).data.ownerUid);
       }
       match /spots/{spotId} {
-        allow read: if member(planId);
-        allow create: if member(planId) && knownSpot(spotId) && validAssignment(request.resource.data) &&
+        allow read: if member(planId) || deletingOwner(planId);
+        allow create: if member(planId) && activePlanAfter(planId) && knownSpot(spotId) && validAssignment(request.resource.data) &&
           request.resource.data.revision == 1;
-        allow update: if member(planId) && knownSpot(spotId) && validAssignment(request.resource.data) &&
+        allow update: if member(planId) && activePlanAfter(planId) && knownSpot(spotId) && validAssignment(request.resource.data) &&
           request.resource.data.revision == resource.data.revision + 1;
-        // Clearing saves a revisioned tombstone, never deletes conflict history.
-        allow delete: if false;
+        // Active plans retain revisioned tombstones; only deletion cleanup removes them.
+        allow delete: if deletingOwner(planId);
       }
+    }
+    // Permanent non-readable marker prevents reusing an ID to access orphaned data.
+    match /weekendPlanDeletions/{planId} {
+      allow read, update, delete: if false;
+      allow create: if deletingOwner(planId) &&
+        !existsAfter(/databases/$(database)/documents/weekendPlans/$(planId)) &&
+        validDeletion(request.resource.data);
     }
     match /weekendPlanUsers/{uid}/plans/{planId} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && memberAfter(planId) && validIndex(request.resource.data) &&
         request.resource.data.title == getAfter(/databases/$(database)/documents/weekendPlans/$(planId)).data.title &&
         request.resource.data.joinedAt == request.time;
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isOwner(uid) || (deletingOwner(planId) &&
+        exists(/databases/$(database)/documents/weekendPlans/$(planId)/members/$(uid)));
     }
   }
 }

@@ -2,6 +2,24 @@
 
 專案：maple-sakura-ginkgo；Web App：MSG map；資料庫：(default)，Standard，asia-east1。
 
+## 2026-11-02 行程管理與資訊架構
+
+- 詳情顯示真實繁體中文名稱（同日文亦照常顯示），個人週末安排先於例年見頃。手機圖例移至底部安全區上方24px。
+- 週末篩選取消「全部景點」；再點已選條件即取消，既有清除篩選仍可使用。
+- 登入後先「選擇行程」再「建立共編行程」，新增按鈕為「新增行程」。本機統一稱「瀏覽器暫存」，選單預設本機；「選擇其他行程」只切換管理頁面，明確開啟後才切換資料範圍。
+- 「目前行程」下集中「管理行程」；刪除限建立者，使用具行程名稱及不可復原說明的確認對話框，預設焦點取消。
+- deletePlan 先交易標記 deletingAt，規則立即停止成員存取及所有共編寫入；伺服器分頁清除 spots、invites、members 與現有成員索引，最後原子寫入無個資的永久刪除標記並刪除父行程及建立者索引。中斷可由建立者重新開啟並繼續刪除。本機安排始終保留。
+- 永久刪除標記 weekendPlanDeletions/{planId} 僅含 deletedAt，不可讀取、更新或刪除；禁止重用舊ID，以免殘留子文件被新建行程重新授權。規則無法證明子集合已空，官方客戶端會先完成伺服器分頁清理；測試同時覆蓋惡意提早刪父文件時的舊ID防重建。
+- 已移除的歷史成員若仍有私人索引，客戶端會過濾失效行程，不擴大建立者權限去讀取或掃描其他帳號資料。既有 /users、/users/{uid}/saves 原樣保留。
+- node check-mvp.cjs、node check-collaboration.cjs 與兩個 research --check；另新增 check-firestore-rules.cjs，Standard Emulator 通過169項規則與實際客戶端整合檢查（含121景點、121邀請、19成員分頁及中斷續刪）。僅 demo 專案測試，未刪除正式行程。
+- firebase.emulator.json 提供獨立本機設定；Pages CI 使用固定版本 Firebase 工具與 Java21，每次發布前執行此測試，發布仍只上傳 dist。
+- 前一輪 Google 登入／雙帳號邀請與同步已由使用者回報全部正常；本輪新刪除功能尚無正式站雙帳號破壞性實測。
+
+安全審核：
+```json
+{"score":4,"summary":"新增刪除限建立者且不可回復；刪除期間權限凍結、分頁清理、原子永久標記及防重建經Emulator驗證。規則為prototype，仍需正式帳號驗證。","findings":[{"check":"legacy validation","severity":"minor","issue":"沿用users/saves原規則不限制schema，本輪保持不變。","recommendation":"另行盤點既有資料後強化。"},{"check":"subcollection completeness","severity":"minor","issue":"規則無法查證所有子集合已空；惡意建立者可能跳過清理。","recommendation":"官方客戶端已先分頁清理，永久刪除標記阻擋重建並令孤兒資料無法再次取得權限；大量使用後可另評估可信伺服器清理。"}]}
+```
+
 ## 2026-11-02 登入與介面分流修復
 
 - 已讀取 Authentication 設定：Google provider 原已啟用；前端設定與現有 Web App 一致，authDomain 保持 maple-sakura-ginkgo.firebaseapp.com。

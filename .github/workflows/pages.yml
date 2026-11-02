@@ -26,6 +26,15 @@ jobs:
           node check-collaboration.cjs
           node research/prepare-ginkgo-research.cjs --check
           node research/prepare-ginkgo-coordinate-updates.cjs --check
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Check plan deletion permissions in isolated emulator
+        run: |
+          npm install --prefix "$RUNNER_TEMP/firebase-test" --no-audit --no-fund firebase@13.1.0 @firebase/rules-unit-testing@6.0.0 firebase-tools@15.34.2
+          export NODE_PATH="$RUNNER_TEMP/firebase-test/node_modules"
+          "$RUNNER_TEMP/firebase-test/node_modules/.bin/firebase" emulators:exec --config firebase.emulator.json --only firestore --project demo-maple-rules 'node check-firestore-rules.cjs'
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

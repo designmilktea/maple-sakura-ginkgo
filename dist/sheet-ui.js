@@ -25,8 +25,7 @@ function setSheetState(state, reposition=true){
 function renderDetail(spot){
   document.getElementById('detailRegion').textContent=spot.region;
   document.getElementById('detailTitle').textContent=spot.ja;
-  document.getElementById('detailChinese').textContent=spot.zh===spot.ja?'繁中同名':spot.zh;
-  document.getElementById('detailChinese').classList.toggle('same-name',spot.zh===spot.ja);
+  document.getElementById('detailChinese').textContent=spot.zh;
   document.getElementById('detailPeak').innerHTML=renderSeasonRows(spot);
   document.getElementById('detailAddress').textContent=spot.address;
   const foliage=document.getElementById('detailFoliage');

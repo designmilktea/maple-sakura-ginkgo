@@ -135,4 +135,16 @@ body.has-selection .map-service-notice{display:none}
 #cloudMemberList>div{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
 @media(max-width:760px){.map-service-notice{left:12px;bottom:calc(175px + env(safe-area-inset-bottom));max-width:calc(100% - 24px)}}
 body.has-selection .map-coverage{display:none}
-@media(max-width:760px){.explore-controls .filter-row{margin-top:0}.foliage-legend{bottom:calc(105px + env(safe-area-inset-bottom));right:12px;font-size:12px;gap:10px;padding:4px 4px 4px 12px;max-width:calc(100% - 24px)}.map-coverage{left:12px;font-size:12px}body.has-selection .foliage-legend{display:none}}
+@media(max-width:760px){.explore-controls .filter-row{margin-top:0}.foliage-legend{bottom:calc(24px + env(safe-area-inset-bottom));right:12px;font-size:12px;gap:10px;padding:4px 4px 4px 12px;max-width:calc(100% - 24px)}.map-coverage{left:12px;font-size:12px}body.has-selection .foliage-legend{display:none}}
+
+/* Current-plan actions follow the same hierarchy and touch targets as map controls. */
+.cloud-plan-name{font-size:var(--text-heading);font-weight:600;margin:0 0 12px;overflow-wrap:anywhere}
+.cloud-dialog .cloud-management{padding:16px;background:#f5f1e9;border:1px solid var(--line);border-radius:var(--radius-control)}
+.cloud-dialog button:disabled{opacity:.5;cursor:wait}
+.cloud-danger-zone{border-top:1px solid var(--line);margin-top:20px;padding-top:16px}
+.cloud-danger-zone p{font-size:var(--text-caption);color:var(--muted);margin:8px 0 0}
+.cloud-dialog .destructive-button{color:var(--red-dark);border-color:#d5aaa4;background:#fff8f5}
+.cloud-confirm-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:24px}
+.cloud-delete-dialog{max-width:420px}.cloud-delete-dialog p{overflow-wrap:anywhere}
+.cloud-field-error{font-size:var(--text-label);color:var(--red);margin:0 0 12px}
+.cloud-dialog input[aria-invalid="true"]{border-color:var(--red)}
