@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="./map-ui.css">
-  <link rel="stylesheet" href="./design-system.css?v=20261102-skip1">
+  <link rel="stylesheet" href="./design-system.css?v=20261102-notes1">
 </head>
 <body>
   <main class="map-app" aria-label="週末賞楓地圖">
@@ -39,6 +39,21 @@
       <div class="detail-actions"><a id="detailX" class="action x" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">𝕏</span><span>最新圖片</span></a><a id="detailMaps" class="action maps" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Google Maps</span></a></div>
       <div id="sheetBody" class="sheet-body">
         <div class="weekend-box detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16l-6-4-6 4Z"/></svg><div class="detail-row-content"><label for="detailWeekend" class="field-label">我的賞楓週末</label><select id="detailWeekend" class="weekend-select"></select></div></div>
+        <section class="spot-notes detail-info-row" aria-labelledby="spotNotesHeading">
+          <svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H5v18h14V8M14 3v5h5M8 12h8M8 16h5"/></svg>
+          <div class="detail-row-content">
+            <div class="notes-heading"><h2 id="spotNotesHeading" class="field-label">行程筆記</h2><button id="spotNotesEdit" class="notes-text-button" type="button">新增筆記</button></div>
+            <p id="spotNotesText" class="notes-text" hidden></p><p id="spotNotesMeta" class="notes-meta" hidden></p>
+            <div id="spotNotesEditor" hidden inert>
+              <label class="sr-only" for="spotNotesInput">編輯景點行程筆記</label>
+              <textarea id="spotNotesInput" rows="4" placeholder="交通、集合時間、想記住的事…" aria-describedby="spotNotesCount spotNotesStatus"></textarea>
+              <p id="spotNotesCount" class="notes-meta">0 / 1,000 字</p>
+              <div id="spotNotesConflict" class="notes-conflict" hidden><p>筆記已有新版，你的草稿仍保留。</p><span class="field-label">最新筆記</span><p id="spotNotesLatest" class="notes-text"></p><div class="notes-actions"><button id="spotNotesUseLatest" type="button">載入最新筆記</button><button id="spotNotesKeepDraft" type="button">保留草稿繼續編輯</button></div></div>
+              <div class="notes-actions"><button id="spotNotesCancel" type="button">取消</button><button id="spotNotesSave" class="notes-save" type="button">儲存</button></div>
+            </div>
+            <p id="spotNotesStatus" class="notes-status" role="status" aria-live="polite"></p>
+          </div>
+        </section>
         <div class="season-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h3"/></svg><div class="detail-row-content"><span class="field-label">例年見頃</span><div id="detailPeak" class="season-values"></div><span id="detailFoliage" class="foliage-type"></span></div></div>
         <div class="detail-section address-copy-row detail-info-row"><svg class="detail-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><div class="detail-row-content"><span class="field-label">地址</span><p id="detailAddress" lang="ja"></p></div><button id="copyAddress" class="copy-button" type="button" aria-label="複製地址" title="複製地址"></button></div>
         <div id="detailNote" class="spot-note" hidden></div>
@@ -112,10 +127,11 @@
   <script src="./tokyo-spots.js"></script>
   <script src="./foliage-data.js"></script>
   <script src="./foliage.js"></script>
-  <script src="./sheet-ui.js?v=20261102-skip1"></script>
-  <script src="./filters-ui.js?v=20261102-skip1"></script>
+  <script src="./notes-ui.js?v=20261102-notes1"></script>
+  <script src="./sheet-ui.js?v=20261102-notes1"></script>
+  <script src="./filters-ui.js?v=20261102-notes1"></script>
   <script src="./spot-tools.js"></script>
-  <script src="./collaboration-ui.js?v=20261102-skip1"></script>
-  <script src="./app.js?v=20261102-skip1"></script>
+  <script src="./collaboration-ui.js?v=20261102-notes1"></script>
+  <script src="./app.js?v=20261102-notes1"></script>
 </body>
 </html>

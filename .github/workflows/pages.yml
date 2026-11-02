@@ -24,6 +24,7 @@ jobs:
         run: |
           node check-mvp.cjs
           node check-collaboration.cjs
+          node check-notes.cjs
           node research/prepare-ginkgo-research.cjs --check
           node research/prepare-ginkgo-coordinate-updates.cjs --check
       - uses: actions/setup-java@v4

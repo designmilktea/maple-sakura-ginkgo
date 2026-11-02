@@ -261,6 +261,7 @@ document.getElementById('spotList').addEventListener('change',event=>{
   if(event.target.dataset.weekendOrigin==='list') onSaveWeekend(event);
 });
 
+if(typeof initSpotNotes==='function')initSpotNotes();
 renderFilters(); setArea(activeArea);
 initSheetUI();
 initFilterUI();

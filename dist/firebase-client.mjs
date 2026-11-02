@@ -41,6 +41,22 @@ export function watchPlan(id,onChange,onError){
     onChange(snapshot.docs.map(d=>({id:d.id,...d.data()})),{fromCache:snapshot.metadata.fromCache,pending:snapshot.metadata.hasPendingWrites});
   },onError);
 }
+export function watchNotes(id,onChange,onError){
+  return onSnapshot(collection(db,'weekendPlans',id,'notes'),{includeMetadataChanges:true},snapshot=>{
+    onChange(snapshot.docs.map(d=>({id:d.id,...d.data()})),{fromCache:snapshot.metadata.fromCache,pending:snapshot.metadata.hasPendingWrites});
+  },onError);
+}
+export async function writeNote(id,spotId,text,expectedRevision){
+  const user=requireUser(),ref=doc(db,'weekendPlans',id,'notes',spotId);
+  if(typeof text!=='string'||Array.from(text).length>1000)throw Error('筆記上限為 1,000 字');
+  return runTransaction(db,async tx=>{
+    if(requireUser().uid!==user.uid)throw Error('登入帳號已變更，請重新開啟行程');
+    const previous=await tx.get(ref),latest=previous.exists()?previous.data():{text:'',revision:0};
+    if(latest.revision!==expectedRevision)throw Object.assign(Error('筆記已由其他成員更新'),{code:'notes/conflict',latest});
+    tx.set(ref,{text,revision:latest.revision+1,updatedBy:user.uid,updatedAt:serverTimestamp()});
+    return {text,revision:latest.revision+1,updatedBy:user.uid};
+  });
+}
 export function watchAccess(id,user,onRemoved,onChange=()=>{}){
   return onSnapshot(planRef(id),snapshot=>{
     if(!snapshot.exists()){onRemoved({code:'not-found',message:'此行程已刪除。'});return;}
@@ -59,7 +75,7 @@ export async function deletePlan(id){
   });
   // Freeze access before cleanup. Server-only pages prevent cached empty results
   // from deleting the parent early. Leaving deletingAt makes interrupted work resumable.
-  for(const kind of ['spots','invites','members']){
+  for(const kind of ['spots','notes','invites','members']){
     while(true){
       sameUser();
       const page=await getDocsFromServer(query(collection(db,'weekendPlans',id,kind),limit(kind==='members'?8:100)));

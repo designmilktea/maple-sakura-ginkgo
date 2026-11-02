@@ -57,6 +57,7 @@ function renderDetail(spot){
   document.getElementById('detailSources').innerHTML=[...links].map(([url,label])=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`).join('');
   document.getElementById('detailUpdated').textContent=`資料核對 ${(spot.researchedAt||'2026-11-01').replaceAll('-','/')}`;
   document.getElementById('detailMapPrecision').textContent=hasMapLocation(spot)?(spot.research?.coordinateReview?.displayDisclaimer||'地圖標記為景點區域示意'):'觀賞位置待核對・尚未標記';
+  if(typeof renderSpotNotes==='function')renderSpotNotes(spot.id);
   if(typeof cloudSyncControls==='function')cloudSyncControls();
 }
 function openSpot(id, syncUrl=true){

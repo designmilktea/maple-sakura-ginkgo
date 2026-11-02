@@ -44,6 +44,7 @@ function cloudSyncControls(){
   for(const id of ['cloudCreate','cloudOpen','cloudJoin'])cloudElement(id).disabled=!cloudState.api||!cloudState.user||cloudState.pending.size>0;
   cloudElement('cloudOpen').disabled=cloudElement('cloudOpen').disabled||cloudState.choicesLoading;
   cloudElement('cloudCopyInvite').hidden=!owner||!cloudElement('cloudInviteLink').value;
+  if(typeof renderSpotNotes==='function'&&selectedSpotId)renderSpotNotes(selectedSpotId);
 }
 function cloudSetLoading(open){
   const dialog=cloudElement('cloudLoadingDialog');
@@ -63,6 +64,7 @@ function cloudSetLoading(open){
   }
 }
 function cloudStop(){
+  if(typeof notesResetCloud==='function')notesResetCloud();
   cloudSetLoading(false);
   cloudState.stops.forEach(stop=>stop());cloudState.stops=[];cloudState.epoch++;
   cloudState.ready=false;cloudState.revisions={};cloudState.choicesLoading=false;cloudState.choicesRequest++;
@@ -107,6 +109,13 @@ async function cloudOpen(id){
       cloudMessage('此行程正在刪除，已停止共編。建立者可繼續完成刪除。');cloudRefresh();
     }));
     if(plan.deletingAt){cloudSetLoading(false);cloudMessage('此行程尚未刪除完成，請按「繼續刪除行程」。');return;}
+    if(typeof cloudState.api.watchNotes==='function')cloudState.stops.push(cloudState.api.watchNotes(id,(records,meta)=>{
+      if(epoch!==cloudState.epoch)return;
+      notesReceive(records,meta);
+    },error=>{
+      if(epoch!==cloudState.epoch)return;
+      cloudState.pending.clear();cloudLocal();cloudFail(error);
+    }));
     cloudState.stops.push(cloudState.api.watchPlan(id,(records,meta)=>{
       if(epoch!==cloudState.epoch)return;
       // Clears are revisioned tombstones; missing/older records cannot undo a confirmed write.
@@ -194,16 +203,32 @@ async function cloudImport(){
   const epoch=cloudState.epoch,planId=cloudState.plan.id;
   const local=cloudState.localSaved||{};
   const entries=Object.entries(local).filter(([id,date])=>spots.some(s=>s.id===id)&&validCloudChoice(date));
-  if(!window.confirm('將瀏覽器暫存中的 '+entries.length+' 筆安排加入目前共編行程？已有安排或曾清除的景點不會覆蓋。'))return;
-  // Individual transactions never replace the entire shared plan.
-  for(const [id,value]of entries){
-    if(Object.hasOwn(cloudState.revisions,id))continue;
-    if(epoch!==cloudState.epoch||!cloudState.ready)throw Error('同步中斷，請重新確認後匯入');
-    cloudState.pending.add(id);
-    try{await cloudState.api.writeWeekend(planId,id,value,0);}
-    finally{if(epoch===cloudState.epoch)cloudState.pending.delete(id);}
-  }
-  showToast('匯入完成，原本的瀏覽器暫存仍保留');
+  const notes=typeof noteState==='undefined'?[]:Object.entries(noteState.local).filter(([,record])=>record.text);
+  if(notes.length&&!noteState.ready)throw Error('請等待筆記同步完成');
+  if(!window.confirm('將瀏覽器暫存中的 '+entries.length+' 筆安排與 '+notes.length+' 則筆記加入目前共編行程？已有安排、筆記或曾清除的紀錄不會覆蓋。'))return;
+  cloudState.pending.add('__import__');cloudSyncControls();
+  try{
+    // Independent transactions never overwrite an existing assignment or note.
+    for(const [id,value]of entries){
+      if(Object.hasOwn(cloudState.revisions,id))continue;
+      if(epoch!==cloudState.epoch||!cloudState.ready)throw Error('同步中斷，請重新確認後匯入');
+      await cloudState.api.writeWeekend(planId,id,value,0);
+    }
+    for(const [id,record]of notes){
+      if(Object.hasOwn(noteState.shared,id))continue;
+      if(epoch!==cloudState.epoch||!cloudState.ready||!noteState.ready)throw Error('同步中斷，請重新確認後匯入');
+      try{
+        const receipt=await cloudState.api.writeNote(planId,id,record.text,0);
+        if(epoch!==cloudState.epoch)return;
+        notesApply(id,{...receipt,updatedAt:Date.now()});
+      }catch(error){
+        if(error.code!=='notes/conflict')throw error;
+        if(epoch!==cloudState.epoch)return;
+        notesApply(id,error.latest); // A concurrently created note is also preserved.
+      }
+    }
+    if(epoch===cloudState.epoch)showToast('匯入完成，原本的瀏覽器暫存仍保留');
+  }finally{if(epoch===cloudState.epoch){cloudState.pending.delete('__import__');cloudRefresh();}}
 }
 async function cloudLogin(){
   if(!cloudState.api)throw Error('Firebase 尚未載入，請稍後再試');
@@ -243,7 +268,7 @@ let cloudDeleteTarget=null;
 function cloudRequestDelete(){
   if(!cloudState.plan||!cloudState.user||cloudState.plan.ownerUid!==cloudState.user.uid||cloudState.pending.size)return;
   cloudDeleteTarget={id:cloudState.plan.id,epoch:cloudState.epoch};
-  cloudElement('cloudDeleteDescription').textContent='「'+cloudState.plan.title+'」的共編安排、邀請與成員將永久刪除，所有成員都將無法存取。瀏覽器暫存不受影響。此操作無法復原。';
+  cloudElement('cloudDeleteDescription').textContent='「'+cloudState.plan.title+'」的共編安排、筆記、邀請與成員將永久刪除，所有成員都將無法存取。瀏覽器暫存不受影響。此操作無法復原。';
   cloudElement('cloudDeleteDialog').showModal();
 }
 async function cloudDelete(target){
@@ -330,7 +355,7 @@ function initCollaboration(){
   if(!['http:','https:'].includes(window.location.protocol)){
     cloudState.authReady=true;cloudMessage('登入與共編需透過 HTTP／HTTPS 網站使用。');cloudSyncControls();return;
   }
-  import('./firebase-client.mjs?v=20261102-skip1').then(api=>{
+  import('./firebase-client.mjs?v=20261102-notes1').then(api=>{
     cloudState.api=api;
     api.observeAuth(user=>{cloudAuthChanged(user);},error=>{
       cloudAuthChanged(null);cloudFail(error);

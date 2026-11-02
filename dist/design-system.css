@@ -173,3 +173,18 @@ body.has-list .detail-sheet{visibility:hidden;pointer-events:none}
 
 /* A deliberate skip stays distinct from a scheduled weekend. */
 .marker-pin.is-skipped{border-style:dashed;opacity:.7}
+
+/* Notes follow the detail panel's labels, spacing and explicit editing actions. */
+.notes-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.detail-sheet .notes-heading .field-label{margin:0}
+.notes-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:1rem;line-height:1.65;margin:8px 0;user-select:text}
+.notes-meta,.notes-status{font-size:.8125rem;line-height:1.6;color:var(--muted);margin:6px 0}
+.notes-status:empty{display:none}
+.notes-text-button{border:0;background:transparent;color:var(--red);font:inherit;font-size:.9375rem;min-height:44px;padding:8px 0 8px 12px}
+.spot-notes textarea{box-sizing:border-box;display:block;width:100%;min-height:120px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--card);color:var(--ink);font:400 1rem/1.6 var(--font-ui)}
+.notes-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:10px}
+.notes-actions button{min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:.9375rem}
+.notes-actions .notes-save{background:var(--red);color:#fff;border-color:var(--red)}
+.notes-conflict{border-left:3px solid var(--red);padding-left:12px;margin:12px 0;font-size:.9375rem;line-height:1.6}
+.notes-conflict .notes-text{max-height:180px;overflow:auto}
+.spot-notes button:disabled{opacity:.5;cursor:wait}

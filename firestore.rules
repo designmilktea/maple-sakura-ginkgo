@@ -9,6 +9,8 @@ rules_version = '2';
 // spots/{known spot id}: weekend (Saturday 00:00 UTC timestamp, 'skip', or null),
 //   'skip' means explicitly not attending this time; null clears the assignment.
 //   revision (positive int <= 10M, increments exactly one), updatedBy, updatedAt.
+// notes/{known spot id}: text (0..1000 Unicode codepoints; empty revisioned clear),
+//   revision (1..10M, increments one), updatedBy (auth UID), updatedAt (server time).
 // weekendPlanUsers/{uid}/plans/{planId}: title (1..80), joinedAt (server time).
 // weekendPlanDeletions/{planId}: deletedAt server timestamp, permanent ID tombstone.
 // No emails or display names are stored. No collection-group queries or global lists.
@@ -77,6 +79,15 @@ service cloud.firestore {
         str(d.updatedBy,1,128) && d.updatedBy == request.auth.uid &&
         d.updatedAt == request.time;
     }
+    function validNote(d) {
+      return d.keys().hasAll(['text','revision','updatedBy','updatedAt']) &&
+        d.keys().hasOnly(['text','revision','updatedBy','updatedAt']) &&
+        // RE2 enforces Unicode codepoints rather than storage length.
+        d.text is string && d.text.size() <= 4000 && d.text.matches('(?s)^.{0,1000}$') &&
+        d.revision is int && d.revision >= 1 && d.revision <= 10000000 &&
+        str(d.updatedBy,1,128) && d.updatedBy == request.auth.uid &&
+        d.updatedAt == request.time;
+    }
     function validDeletion(d) {
       return d.keys().hasAll(['deletedAt']) && d.keys().hasOnly(['deletedAt']) && d.deletedAt == request.time;
     }
@@ -128,6 +139,15 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if planOwner(planId) && (deletingOwner(planId) ||
           uid != get(/databases/$(database)/documents/weekendPlans/$(planId)).data.ownerUid);
+      }
+      match /notes/{spotId} {
+        allow read: if member(planId) || deletingOwner(planId);
+        allow create: if member(planId) && activePlanAfter(planId) && knownSpot(spotId) &&
+          validNote(request.resource.data) && request.resource.data.revision == 1;
+        allow update: if member(planId) && activePlanAfter(planId) && knownSpot(spotId) &&
+          validNote(request.resource.data) && request.resource.data.revision == resource.data.revision + 1;
+        // Empty notes retain conflict history until the whole plan is deleted.
+        allow delete: if deletingOwner(planId);
       }
       match /spots/{spotId} {
         allow read: if member(planId) || deletingOwner(planId);
