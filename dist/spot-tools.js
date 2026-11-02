@@ -21,6 +21,7 @@ function restoreSpotFromUrl(){
   // A linked destination must not be hidden by unrelated local filters.
   if(!filteredSpots().some(s=>s.id===id)){
     activeArea='all';activePeak=[];activeWeekend='all';
+    searchQuery='';document.getElementById('spotSearch').value='';document.getElementById('clearSearch').hidden=true;
     renderFilters();renderSpots();
   }
   openSpot(id,false);

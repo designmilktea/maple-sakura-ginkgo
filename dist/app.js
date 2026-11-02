@@ -62,6 +62,7 @@ try {
   }
 } catch { storageAvailable = false; }
 let activeWeekend = 'all';
+let searchQuery = '';
 const areaLabels = {
   all:'全部地區', hokuriku:'北陸全部', 'tokyo-all':'東京與近郊全部',
   kanazawa:'金澤市區', ishikawa:'石川近郊', toyama:'富山・立山', gokayama:'五箇山・庄川',
@@ -157,6 +158,7 @@ function focusSpot(id){
 }
 function filteredSpots(){
   return spots.filter(s => {
+    if(!matchesSearch(s,searchQuery)) return false;
     if(!matchesArea(s,activeArea)) return false;
     if(!matchesPeak(s,activePeak)) return false;
     if(activeWeekend==='all') return true;
@@ -164,6 +166,39 @@ function filteredSpots(){
     if(activeWeekend==='unsaved') return !saved[s.id];
     return saved[s.id]===activeWeekend;
   });
+}
+function normalizeSearch(value){return String(value||'').normalize('NFKC').toLowerCase().trim();}
+function matchesSearch(spot,query){
+  const terms=normalizeSearch(query).split(/\s+/).filter(Boolean);
+  if(!terms.length) return true;
+  const region=matchesArea(spot,'hokuriku')?'北陸':spot.area.startsWith('tokyo-')?'東京與近郊':spot.area.startsWith('fuji-')?'富士山周邊':spot.area.startsWith('karuizawa-')?'輕井澤':'';
+  const text=normalizeSearch([spot.ja,spot.zh,spot.searchName,spot.address,spot.region,areaLabels[spot.area],region,
+    spot.research?.prefecture,spot.research?.municipality,...(spot.aliases||[]),...(spot.research?.aliases||[])].join(' '));
+  return terms.every(term=>text.includes(term));
+}
+function updateSearch(value){
+  searchQuery=String(value).slice(0,160);
+  document.getElementById('clearSearch').hidden=!searchQuery.length;
+  renderSpots(); // Typing filters pins without moving the map or opening a destination.
+}
+function clearSpotSearch(){
+  document.getElementById('spotSearch').value='';
+  updateSearch('');
+  document.getElementById('spotSearch').focus({preventScroll:true});
+}
+function initSpotSearch(){
+  const input=document.getElementById('spotSearch');
+  let composing=false;
+  input.value=searchQuery;
+  input.addEventListener('compositionstart',()=>{composing=true;});
+  input.addEventListener('compositionend',()=>{composing=false;updateSearch(input.value);});
+  input.addEventListener('input',event=>{if(!composing&&!event.isComposing)updateSearch(input.value);});
+  document.getElementById('spotSearchForm').addEventListener('submit',event=>{
+    event.preventDefault();
+    if(composing)return;
+    updateSearch(input.value);input.blur?.();fitVisible();
+  });
+  for(const id of ['clearSearch','clearMapSearch','clearListSearch'])document.getElementById(id).addEventListener('click',clearSpotSearch);
 }
 function matchesArea(spot,area){
   if(area==='all') return true;
@@ -226,6 +261,14 @@ function renderSpots(){
   document.getElementById('mapEmpty').hidden=visible.length>0&&!noPins;
   document.getElementById('mapEmptyTitle').textContent=noPins?'符合的景點已列於清單':'沒有符合這組條件的景點';
   document.getElementById('mapEmptyDescription').textContent=noPins?'觀賞位置待核對，暫不放置地圖標記。':'換個時段，或清除篩選重新探索。';
+  const searching=Boolean(normalizeSearch(searchQuery));
+  if(!visible.length&&searching){
+    document.getElementById('mapEmptyTitle').textContent='找不到符合的景點';
+    document.getElementById('mapEmptyDescription').textContent='試試其他名稱或地區，或清除關鍵字。';
+  }
+  document.getElementById('emptyStateMessage').textContent=searching?'找不到符合的景點，請調整關鍵字或其他篩選。':'沒有符合篩選的景點，請調整地區或週末。';
+  for(const id of ['clearMapSearch','clearListSearch'])document.getElementById(id).hidden=!searching||visible.length>0;
+  document.getElementById('searchStatus').textContent=searching?`找到 ${visible.length} 個符合關鍵字與篩選條件的景點`:'';
   document.getElementById('openUnmappedList').hidden=!noPins;
   spots.forEach(s => {
     const marker = markers.get(s.id); if(!map || !marker) return;
@@ -269,6 +312,7 @@ document.getElementById('spotList').addEventListener('change',event=>{
 });
 
 if(typeof initSpotNotes==='function')initSpotNotes();
+initSpotSearch();
 renderFilters(); setArea(activeArea);
 initSheetUI();
 initFilterUI();

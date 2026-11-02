@@ -61,6 +61,7 @@ function updatePeakChoices(){
 }
 function resetAllFilters(){
   activeArea='all';activePeak=[];activeWeekend='all';
+  searchQuery='';document.getElementById('spotSearch').value='';document.getElementById('clearSearch').hidden=true;
   renderFilters();renderSpots();fitVisible();
 }
 function updateFilterLabels(){
@@ -73,7 +74,7 @@ function updateFilterLabels(){
   document.getElementById('peakFilter').setAttribute('title',peakText||'不限見頃');
   document.getElementById('areaFilter').classList.toggle('has-value',activeArea!=='all');
   document.getElementById('peakFilter').classList.toggle('has-value',peaks.length>0);
-  document.getElementById('resetFilters').hidden=activeArea==='all'&&peaks.length===0&&activeWeekend==='all';
+  document.getElementById('resetFilters').hidden=activeArea==='all'&&peaks.length===0&&activeWeekend==='all'&&!normalizeSearch(searchQuery);
   document.getElementById('clearPeak').hidden=peaks.length===0;
 }
 function choiceRow(value,label,selected,subtitle='',className='',multi=false){

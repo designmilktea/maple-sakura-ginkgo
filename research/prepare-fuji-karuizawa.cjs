@@ -30,7 +30,7 @@ const spots=selected.map(([id,address,note])=>{
   for(const key of s.sourceIds){assert.ok(inventory.sources[key],key);sources[key]=inventory.sources[key];}
   return {id:s.id,ja:s.ja,zh:s.zh,area:s.proposedArea,prefecture:s.prefecture,municipality:s.municipality,
     address:address||s.address,addressPrecision:s.addressPrecision,coordinates:s.coordinates,
-    xSearchName:s.xSearchName,sources:s.sourceIds,maple:s.maple,ginkgo:s.ginkgo,researchedAt:s.researchedAt,note,
+    xSearchName:s.xSearchName,aliases:s.aliases,sources:s.sourceIds,maple:s.maple,ginkgo:s.ginkgo,researchedAt:s.researchedAt,note,
     coordinateReview:{reviewedAt:audit.checkedAt,kind:s.coordinateEvidence.kind,sourceUrl:inventory.sources[s.coordinateEvidence.sourceId].url,
       entranceVerified:false,viewingAreaConfirmed:false,displayDisclaimer:'景點區域示意，非已核實入口或單株位置'},
     integration:{status:'selected_for_app_area_marker',missingChecks:['verify_entrance_before_travel']}};

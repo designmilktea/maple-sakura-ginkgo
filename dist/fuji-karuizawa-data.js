@@ -148,6 +148,9 @@ const regionalFoliageResearch = {
         "lng": 138.7623326
       },
       "xSearchName": "河口湖もみじ回廊",
+      "aliases": [
+        "梨川もみじ回廊"
+      ],
       "sources": [
         "fuji-corridor",
         "yamanashi-overview"
@@ -205,6 +208,9 @@ const regionalFoliageResearch = {
         "lng": 138.737808
       },
       "xSearchName": "もみじトンネル",
+      "aliases": [
+        "河口湖もみじトンネル"
+      ],
       "sources": [
         "fuji-tunnel"
       ],
@@ -261,6 +267,9 @@ const regionalFoliageResearch = {
         "lng": 138.878694
       },
       "xSearchName": "旭日丘湖畔緑地公園",
+      "aliases": [
+        "夕焼けの渚"
+      ],
       "sources": [
         "asahigaoka",
         "asahigaoka-event",
@@ -311,6 +320,7 @@ const regionalFoliageResearch = {
         "lng": 138.6661613
       },
       "xSearchName": "村山浅間神社",
+      "aliases": [],
       "sources": [
         "murayama-tree",
         "shizuoka-autumn"
@@ -360,6 +370,7 @@ const regionalFoliageResearch = {
         "lng": 138.9304607
       },
       "xSearchName": "新橋浅間神社",
+      "aliases": [],
       "sources": [
         "gotemba-autumn",
         "niihashi-place"
@@ -411,6 +422,7 @@ const regionalFoliageResearch = {
         "lng": 138.6562626
       },
       "xSearchName": "旧碓氷峠見晴台",
+      "aliases": [],
       "sources": [
         "usui-j47",
         "usui-weather",

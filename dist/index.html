@@ -12,12 +12,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="./map-ui.css">
-  <link rel="stylesheet" href="./design-system.css?v=20261102-notes1">
+  <link rel="stylesheet" href="./design-system.css?v=20261102-search1">
 </head>
 <body>
   <main class="map-app" aria-label="週末賞楓地圖">
     <div id="map" aria-label="北陸東京富士山輕井澤賞楓景點地圖"></div>
     <header class="explore-controls">
+      <form id="spotSearchForm" class="spot-search" role="search" aria-label="搜尋景點">
+        <button type="submit" class="search-submit" aria-label="搜尋景點"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+        <label class="sr-only" for="spotSearch">搜尋景點、地區或地址</label>
+        <input id="spotSearch" type="search" placeholder="搜尋景點、地區或地址" maxlength="160" enterkeyhint="search" autocomplete="off" spellcheck="false" aria-controls="spotList" aria-describedby="searchStatus">
+        <button id="clearSearch" type="button" class="search-clear" aria-label="清除關鍵字" hidden><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg></button>
+      </form>
+      <p id="searchStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
       <div class="filter-row">
         <button type="button" id="areaFilter" class="filter-trigger" aria-label="地區：全部地區" aria-haspopup="dialog" aria-controls="filterDialog" aria-expanded="false"><span class="trigger-value"><span id="areaValue">全部地區</span><span aria-hidden="true">⌄</span></span></button>
         <button type="button" id="peakFilter" class="filter-trigger" aria-label="例年見頃：不限見頃，可複選" aria-haspopup="dialog" aria-controls="filterDialog" aria-expanded="false"><span class="trigger-value"><span id="peakValue">不限見頃</span><span aria-hidden="true">⌄</span></span></button>
@@ -30,7 +37,7 @@
     <div class="foliage-legend" role="group" aria-label="地圖圖例"><span><i class="legend-maple">楓</i>紅葉</span><span><i class="legend-ginkgo">杏</i>銀杏</span><span><i class="legend-both">✉</i>楓樹與銀杏</span><button class="icon-button" id="aboutButton" type="button" aria-label="使用方式與資料來源" aria-controls="aboutPanel" aria-expanded="false" title="使用方式與資料來源">?</button></div>
     <div id="mapCoverage" class="map-coverage" role="status" hidden></div>
     <div id="mapServiceNotice" class="map-service-notice" role="status" hidden></div>
-    <div id="mapEmpty" class="map-empty" hidden><strong id="mapEmptyTitle">沒有符合這組條件的景點</strong><p id="mapEmptyDescription">換個時段，或清除篩選重新探索。</p><button type="button" id="openUnmappedList" hidden>查看景點清單</button> <button type="button" id="clearPeak" hidden>清除見頃</button> <button type="button" id="showAll">清除全部</button></div>
+    <div id="mapEmpty" class="map-empty" hidden><strong id="mapEmptyTitle">沒有符合這組條件的景點</strong><p id="mapEmptyDescription">換個時段，或清除篩選重新探索。</p><button type="button" id="openUnmappedList" hidden>查看景點清單</button> <button type="button" id="clearMapSearch" hidden>清除關鍵字</button> <button type="button" id="clearPeak" hidden>清除見頃</button> <button type="button" id="showAll">清除全部</button></div>
     <section id="detailSheet" class="detail-sheet" data-state="half" role="region" aria-labelledby="detailTitle" aria-hidden="true" inert>
       <div id="sheetDragZone" class="sheet-drag-zone">
         <button id="sheetHandle" class="sheet-handle" type="button" aria-label="展開景點詳情" aria-expanded="false"><span></span></button>
@@ -68,7 +75,7 @@
         <button id="listHandle" class="sheet-handle list-handle" type="button" aria-label="展開景點清單" aria-expanded="false" aria-controls="listBody"><span></span></button>
         <button id="closeList" class="icon-button" type="button" aria-label="關閉景點清單"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       </div>
-      <div id="listBody" class="list-body"><div id="spotList" class="spot-list"></div><div id="emptyState" class="empty-state" hidden>沒有符合篩選的景點，請調整地區或週末。</div></div>
+      <div id="listBody" class="list-body"><div id="spotList" class="spot-list"></div><div id="emptyState" class="empty-state" hidden><p id="emptyStateMessage">沒有符合篩選的景點，請調整地區或週末。</p><button id="clearListSearch" type="button" class="reset-filters" hidden>清除關鍵字</button></div></div>
     </section>
     <section id="aboutPanel" class="about-panel" aria-labelledby="aboutTitle" hidden>
       <div class="list-heading"><h2 id="aboutTitle">用最新照片，安排賞楓週末</h2><button id="closeAbout" type="button" class="icon-button" aria-label="關閉使用說明"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
@@ -126,13 +133,13 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./tokyo-spots.js"></script>
   <script src="./foliage-data.js"></script>
-  <script src="./fuji-karuizawa-data.js?v=20261102-regions1"></script>
+  <script src="./fuji-karuizawa-data.js?v=20261102-search1"></script>
   <script src="./foliage.js?v=20261102-regions1"></script>
   <script src="./notes-ui.js?v=20261102-notes1"></script>
   <script src="./sheet-ui.js?v=20261102-notes1"></script>
-  <script src="./filters-ui.js?v=20261102-regions1"></script>
-  <script src="./spot-tools.js"></script>
+  <script src="./filters-ui.js?v=20261102-search1"></script>
+  <script src="./spot-tools.js?v=20261102-search1"></script>
   <script src="./collaboration-ui.js?v=20261102-notes1"></script>
-  <script src="./app.js?v=20261102-regions1"></script>
+  <script src="./app.js?v=20261102-search1"></script>
 </body>
 </html>

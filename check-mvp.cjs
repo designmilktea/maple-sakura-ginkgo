@@ -38,6 +38,57 @@ function boot(initial='{}', denyStorage=false, href='http://localhost:4173/'){
   return {run(code){return vm.runInContext(code,context);},memory,elements};
 }
 const app=boot();
+// Search uses public destination fields only and intersects every existing filter.
+assert.ok(controls.indexOf('id="spotSearchForm"')<controls.indexOf('class="filter-row"'));
+assert.match(controls,/role="search"[\s\S]*type="search"[\s\S]*enterkeyhint="search"/);
+assert.match(controls,/<label[^>]+for="spotSearch"/);
+const keyword=boot('{"kenrokuen":"2026-11-07","fuji-kawaguchiko-momiji-corridor":"skip"}');
+keyword.run('var searchFits=0;fitVisible=()=>{searchFits++};');
+function typeKeyword(value){
+  keyword.elements.get('spotSearch').value=value;
+  keyword.elements.get('spotSearch').listeners.input({isComposing:false});
+}
+for(const [query,id] of [['兼六','kenrokuen'],['小石川後樂','tokyo-koishikawa'],['小石川後楽','tokyo-koishikawa'],['梨川もみじ回廊','fuji-kawaguchiko-momiji-corridor'],['新橋　２０８３','fuji-niihashi-sengen'],['河口湖 紅葉','fuji-kawaguchiko-momiji-corridor']]){
+  typeKeyword(query);
+  assert.equal(keyword.run(`filteredSpots().some(s=>s.id==='${id}')`),true,query);
+}
+assert.equal(keyword.run('searchFits'),0,'typing must not move the map');
+assert.equal(keyword.run('normalizeSearch(" ＬＡＫＥ  ")'),'lake');
+assert.equal(keyword.run(`matchesSearch({ja:'Lake Garden',area:'test'},'ｌＡＫｅ garden')`),true);
+assert.equal(keyword.run(`matchesSearch({ja:'Lake Garden',area:'test',note:'秘密筆記'},'秘密筆記')`),false);
+typeKeyword('河口湖 紅葉');keyword.run("setArea('fuji-all');setPeak('11-early');setFilter('skip')");
+assert.deepEqual(Array.from(keyword.run('filteredSpots().map(s=>s.id)')),['fuji-kawaguchiko-momiji-corridor']);
+keyword.run("setFilter('saved')");assert.equal(keyword.run('filteredSpots().length'),0);
+assert.equal(keyword.elements.get('clearMapSearch').hidden,false);
+assert.match(keyword.elements.get('mapEmptyTitle').textContent,/找不到/);
+keyword.elements.get('clearListSearch').listeners.click();
+assert.equal(keyword.run('searchQuery'),'');assert.equal(keyword.run('activeArea'),'fuji-all');
+assert.equal(keyword.run('activeWeekend'),'saved');assert.equal(keyword.run('selectedPeakValues()[0]'),'11-early');
+assert.equal(keyword.elements.get('spotSearch').focused,true);
+keyword.run('resetAllFilters()');typeKeyword('兼六');
+keyword.elements.get('spotSearch').listeners.compositionstart();typeKeyword('zzz組字中');
+assert.equal(keyword.run('searchQuery'),'兼六');
+keyword.elements.get('spotSearchForm').listeners.submit({preventDefault(){}});
+assert.equal(keyword.run('searchQuery'),'兼六');
+keyword.elements.get('spotSearch').value='河口湖';keyword.elements.get('spotSearch').listeners.compositionend();
+assert.equal(keyword.run('searchQuery'),'河口湖');
+const beforeSubmitFits=keyword.run('searchFits');
+keyword.elements.get('spotSearchForm').listeners.submit({preventDefault(){}});
+assert.equal(keyword.run('searchFits'),beforeSubmitFits+1);
+typeKeyword('<img src=x onerror=alert(1)>');
+assert.equal(keyword.run('filteredSpots().length'),0);
+assert.equal(keyword.elements.get('spotList').innerHTML,'');
+keyword.run('resetAllFilters()');typeKeyword('  　');
+assert.equal(keyword.run('filteredSpots().length'),102);
+typeKeyword('河口湖');keyword.run("window.location.href='https://maple.example/?spot=kenrokuen';restoreSpotFromUrl()");
+assert.equal(keyword.run('selectedSpotId'),'kenrokuen');assert.equal(keyword.run('searchQuery'),'');
+typeKeyword('東京');assert.equal(keyword.elements.get('resetFilters').hidden,false);
+keyword.run('resetAllFilters()');assert.equal(keyword.elements.get('clearSearch').hidden,true);
+assert.equal(keyword.elements.get('spotSearch').value,'');
+assert.equal(keyword.run('saved.kenrokuen'),'2026-11-07');
+assert.equal(keyword.run('saved["fuji-kawaguchiko-momiji-corridor"]'),'skip');
+assert.equal(keyword.memory.value,'{"kenrokuen":"2026-11-07","fuji-kawaguchiko-momiji-corridor":"skip"}');
+console.log('PASS: permanent keyword field, Japanese/Chinese names, aliases, addresses, NFKC/case/space normalization, filter intersection, IME, submit-only map fit, empty states, focused clear, clean deep links and untouched saves.');
 // Expansion must preserve every original ID while keeping new regions independent.
 const regionalIds=['fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'];
 const oldResearch=JSON.parse(fs.readFileSync(__dirname+'/research/ginkgo-spots.json','utf8'));

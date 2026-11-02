@@ -99,3 +99,9 @@ Run `node research/prepare-fuji-karuizawa.cjs --check` to verify the selected da
 Validation: MVP, collaboration and notes checks pass, including new destination local reloads and cloud-note isolation; 379 Firestore emulator checks pass. Rules only append the six known IDs, with all previous rules unchanged. Desktop Chrome rendered the new corridor detail and five Fuji pins. An isolated browser at 390×844 verified the Karuizawa detail, expansion and region picker without horizontal overflow. This expansion has not been tested on physical iPhone Safari or with two real accounts; earlier user-confirmed account testing does not count as testing these new destinations.
 
 Deployment: the six-ID rules update was compiled, deployed only to Firestore rules, and read back exactly equal to the reviewed local source before website publishing.
+
+## Keyword search (2026-11-02)
+
+A permanent search field sits above the area/season controls. Search covers Japanese/Traditional Chinese names, available aliases, regions, municipalities and addresses; plan names and local/shared notes are not indexed. Matching normalizes Unicode width and letter case, and requires every whitespace-separated term. Search intersects area, season and weekend filters. Typing updates counts, list and pins without moving the map; submitting fits the results. IME composition is deferred until committed. Clearing keywords preserves other filters; clearing all filters also resets search. Search is transient and is excluded from destination share links.
+
+Validation: check-mvp includes keyword matching, combined filters, IME, empty states, submit-only map movement, clearing, deep-link restoration and unchanged local saves. Existing collaboration, notes and generated-data checks pass. Browser interaction and responsive checks are verified separately after Pages deployment; physical iPhone Safari keyboard behavior remains manual.

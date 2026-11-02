@@ -1,4 +1,12 @@
 /* Shared UI foundations, based on the destination detail panel. */
+.spot-search{display:flex;align-items:center;min-height:48px;gap:0;margin:0 0 12px;border:1px solid var(--line);border-radius:24px;background:var(--card);color:var(--muted)}
+.spot-search:focus-within{border-color:var(--red);box-shadow:0 0 0 2px #94624e20}
+.spot-search input{flex:1;min-width:0;width:100%;min-height:46px;padding:9px 8px 9px 0;border:0;outline:0;background:transparent;color:var(--ink);font:400 1rem/1.5 var(--font-ui);border-radius:0;-webkit-appearance:none;appearance:none}
+.spot-search input::placeholder{color:var(--muted);opacity:1}
+.spot-search input::-webkit-search-cancel-button{display:none}
+.search-submit,.search-clear{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer}
+.search-submit:hover,.search-clear:hover{color:var(--ink);background:#eee9df}
+.search-clear[hidden]{display:none}
 :root{
   --font-ui:-apple-system,BlinkMacSystemFont,'Noto Sans TC',system-ui,sans-serif;
   --text-title:1.5rem;--text-heading:1.125rem;--text-body:1.0625rem;
