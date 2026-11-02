@@ -79,6 +79,8 @@ function bootUI(){
   // Verify default HTML containment: hidden + inert ancestors remove all shared
   // fields, headings and actions from rendering, accessibility and keyboard use.
   const html=fs.readFileSync(__dirname+'/dist/index.html','utf8');
+  assert.match(html,/collaboration-ui\.js\?v=20261102-auth1/);
+  assert.match(uiSource,/firebase-client\.mjs\?v=20261102-auth1/);
   const dialog=html.match(/<dialog id="cloudDialog"[\s\S]*?<\/dialog>/)[0];
   const stack=[],ancestors=new Map();
   for(const match of dialog.matchAll(/<(\/?)([a-z][a-z0-9]*)([^>]*)>/gi)){

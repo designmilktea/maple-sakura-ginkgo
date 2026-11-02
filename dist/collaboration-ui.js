@@ -236,7 +236,7 @@ function initCollaboration(){
   if(!['http:','https:'].includes(window.location.protocol)){
     cloudState.authReady=true;cloudMessage('登入與共編需透過 HTTP／HTTPS 網站使用。');cloudSyncControls();return;
   }
-  import('./firebase-client.mjs').then(api=>{
+  import('./firebase-client.mjs?v=20261102-auth1').then(api=>{
     cloudState.api=api;
     api.observeAuth(user=>{cloudAuthChanged(user);},error=>{
       cloudAuthChanged(null);cloudFail(error);
