@@ -152,7 +152,7 @@ body.has-selection .map-coverage{display:none}
 .weekend-heading #weekendTitle{font:inherit;color:var(--muted);margin:0}
 .weekend-heading .prediction-label{display:inline-block}
 .plan-edit-button{flex-shrink:0;color:var(--muted)}
-.results-row .list-button{color:#292d28;-webkit-text-fill-color:#292d28;appearance:none;-webkit-appearance:none}
+.results-row .list-button{color:#000;-webkit-text-fill-color:#000;appearance:none;-webkit-appearance:none}
 .results-row .list-button span{color:var(--red);-webkit-text-fill-color:var(--red)}
 .list-panel{top:auto;bottom:20px;height:490px;max-height:calc(100dvh - 65px);transition:height .3s var(--ease)}
 .list-panel.is-dragging{transition:none}

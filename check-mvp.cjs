@@ -281,6 +281,7 @@ assert.doesNotMatch(listMarkup,/EXPLORE THE MAP|全部地區|不限見頃|result
 assert.match(listMarkup,/id="listTitle" class="sr-only"/);
 assert.match(controls,/weekend-heading[\s\S]*id="cloudPanelButton"/);
 assert.doesNotMatch(controls,/cloud-toolbar|cloudScope/);
+assert.match(fs.readFileSync(__dirname+'/dist/design-system.css','utf8'),/\.results-row \.list-button\{color:#000;-webkit-text-fill-color:#000;/);
 console.log('PASS: all-saved dates with combined filters, list snap/drag/keyboard/background collapse/close, compact header and plan edit control.');
 const seasonal=boot();
 assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),85);
