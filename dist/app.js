@@ -160,12 +160,12 @@ function filteredSpots(){
   return spots.filter(s => {
     if(!matchesSearch(s,searchQuery)) return false;
     if(!matchesArea(s,activeArea)) return false;
-    if(!matchesPeak(s,activePeak)) return false;
+    if(!matchesPeak(s,activePeak)&&seasonEvidence(s,activePeak)!=='unknown') return false;
     if(activeWeekend==='all') return true;
     if(activeWeekend==='saved') return hasSavedWeekend(saved[s.id]);
     if(activeWeekend==='unsaved') return !saved[s.id];
     return saved[s.id]===activeWeekend;
-  });
+  }).sort((a,b)=>seasonEvidenceRank(a)-seasonEvidenceRank(b));
 }
 function normalizeSearch(value){return String(value||'').normalize('NFKC').toLowerCase().trim();}
 function matchesSearch(spot,query){
@@ -242,12 +242,25 @@ function renderFilters(){
 function renderSpots(){
   const visible = filteredSpots();
   document.getElementById('visibleCount').textContent = visible.length;
-  document.getElementById('spotList').innerHTML = visible.map(spot=>`
+  const periodSelected=selectedPeakValues().length>0;
+  const definite=visible.filter(s=>seasonEvidenceRank(s)===0).length;
+  const seasonal=visible.filter(s=>seasonEvidence(s)==='seasonal').length;
+  const uncertain=visible.filter(s=>seasonEvidence(s)==='unknown').length;
+  const seasonSummary=`例年期符合 ${definite} 處${seasonal?`・季節參考 ${seasonal} 處`:''}・時期待確認 ${uncertain} 處`;
+  document.getElementById('seasonResultSummary').hidden=!periodSelected;
+  document.getElementById('seasonResultSummary').textContent=seasonSummary;
+  let previousRank=-1;
+  document.getElementById('spotList').innerHTML = visible.map(spot=>{
+    const rank=seasonEvidenceRank(spot),label=periodSelected?seasonEvidenceLabel(spot):'';
+    const group=periodSelected&&rank!==previousRank?`<h2 class="list-season-group">${rank===2?'時期待確認・補充景點':rank===1?'季節參考':'例年期符合'}</h2>`:'';
+    previousRank=rank;
+    return `${group}
     <article class="spot-card ${spot.area}" data-spot-id="${spot.id}">
       <button class="spot-summary" type="button" data-open-spot="${spot.id}" aria-label="查看 ${spot.ja} 詳情"><span class="spot-summary-text"><span class="area-tag">${spot.region}</span><h3 lang="ja">${spot.ja}</h3></span><span class="list-arrow" aria-hidden="true">›</span></button>
-      <div class="spot-card-meta">${!hasMapLocation(spot)?'<p class="location-pending">觀賞位置待核對 · 可開啟 Google Maps</p>':''}${saved[spot.id] ? `<p class="saved-badge">${saved[spot.id]==='skip'?'這次不去':`我的週末 · ${saved[spot.id]}`}</p>` : ''}</div>
+      <div class="spot-card-meta">${label?`<p class="season-match-note">${label}</p>`:''}${!hasMapLocation(spot)?'<p class="location-pending">觀賞位置待核對 · 可開啟 Google Maps</p>':''}${saved[spot.id] ? `<p class="saved-badge">${saved[spot.id]==='skip'?'這次不去':`我的週末 · ${saved[spot.id]}`}</p>` : ''}</div>
       <div class="spot-card-footer"><div class="list-weekend-field"><label for="list-weekend-${spot.id}">我的賞楓週末</label><select id="list-weekend-${spot.id}" class="weekend-select list-weekend-select" data-id="${spot.id}" data-weekend-origin="list" aria-label="${spot.ja} 的賞楓週末">${optionMarkup(saved[spot.id]||'')}</select></div><div class="spot-quick-actions" role="group" aria-label="${spot.ja} 的外部連結"><a class="spot-quick-link x" href="${xUrl(spot.searchName||spot.ja)}" target="_blank" rel="noopener noreferrer" aria-label="查看 ${spot.ja} 的 X 最新圖片（另開分頁）" title="X 最新圖片 · ${spot.ja}"><span aria-hidden="true">𝕏</span></a><a class="spot-quick-link maps" href="${mapsUrl(spot)}" target="_blank" rel="noopener noreferrer" aria-label="在 Google Maps 開啟 ${spot.ja}（另開分頁）" title="Google Maps · ${spot.ja}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></a></div></div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
   document.querySelectorAll('[data-open-spot]').forEach(button=>button.addEventListener('click',()=>focusSpot(button.dataset.openSpot)));
   document.getElementById('emptyState').hidden = visible.length > 0;
   document.getElementById('spotList').hidden = visible.length === 0;
@@ -255,8 +268,8 @@ function renderSpots(){
   updateFilterLabels();
   const unmapped=visible.filter(spot=>!hasMapLocation(spot)).length;
   const notice=document.getElementById('mapCoverage');
-  notice.hidden=!unmapped;
-  notice.textContent=`${visible.length-unmapped} 個地圖標記 · ${unmapped} 個位置待核對，可從景點清單查看`;
+  notice.hidden=!unmapped&&!periodSelected;
+  notice.textContent=[periodSelected?seasonSummary:'',unmapped?`${visible.length-unmapped} 個地圖標記 · ${unmapped} 個位置待核對，可從景點清單查看`:''].filter(Boolean).join('。');
   const noPins=visible.length>0&&unmapped===visible.length;
   document.getElementById('mapEmpty').hidden=visible.length>0&&!noPins;
   document.getElementById('mapEmptyTitle').textContent=noPins?'符合的景點已列於清單':'沒有符合這組條件的景點';

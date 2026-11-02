@@ -131,6 +131,164 @@ const regionalFoliageResearch = {
       "publishedAt": null,
       "accessMethod": "opened_page",
       "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "kumoba-place": {
+      "url": "https://karuizawa-kankokyokai.jp/spot/23234",
+      "publisher": "輕井澤觀光協會",
+      "title": "雲場池",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "地點地址與駐車資訊；不是樹種專屬日曆。"
+    },
+    "kumoba-j47": {
+      "url": "https://www.japan47go.travel/ja/detail/20347b0f-1f3a-4a0c-bc89-cd88e2bc8a7d",
+      "publisher": "輕井澤町觀光經濟課／JAPAN 47 GO",
+      "title": "軽井沢（雲場池）の紅葉",
+      "type": "official_supplied_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": "2026-10-06",
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "明列モミジ與ドウダンツツジ、總體最盛期10月中旬至11月上旬。"
+    },
+    "kumoba-nagano": {
+      "url": "https://www.go-nagano.net/nature-and-outdoors/id16956",
+      "publisher": "長野縣觀光機構",
+      "title": "2026 長野紅葉名所",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "雲場池有モミジ、落葉松等；最新資料說明無專用停車場。"
+    },
+    "kumoba-town": {
+      "url": "https://www.town.karuizawa.lg.jp/page/1194.html",
+      "publisher": "輕井澤町",
+      "title": "雲場池",
+      "type": "municipal",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "opened_page",
+      "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "yoshida-park": {
+      "url": "https://www.fujiyoshida.net/feature/index.php?p=mt_fujimuseum_park",
+      "publisher": "ふじよしだ觀光振興服務",
+      "title": "ふじさんミュージアムパーク",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "明列イロハモミジ與每年10月下旬至11月上旬的紅葉描述。"
+    },
+    "yoshida-autumn": {
+      "url": "https://www.fujiyoshida.net/feature/index.php?p=kouyou",
+      "publisher": "ふじよしだ觀光振興服務",
+      "title": "2026年 富士吉田市内の紅葉情報",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "明列鐘山滝イロハモミジ、恩賜林回廊；觀察日期不轉成例年見頃。"
+    },
+    "yoshida-course": {
+      "url": "https://www.fujiyoshida.net/course/index.php?p=course-322",
+      "publisher": "ふじよしだ觀光振興服務",
+      "title": "富士吉田の紅葉を楽しむ日帰り旅",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "含北口本宮神社銀杏與各景點地址；頁內活動日期有舊資料，不採作2026行事。"
+    },
+    "museum-place": {
+      "url": "https://www.fujiyoshida.net/spot/index.php?p=15",
+      "publisher": "富士吉田觀光指南",
+      "title": "ふじさんミュージアム",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "opened_page",
+      "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "kitaguchi-place": {
+      "url": "https://www.fujiyoshida.net/spot/index.php?p=23",
+      "publisher": "富士吉田觀光指南",
+      "title": "北口本宮冨士浅間神社",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "opened_page",
+      "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "kitaguchi-official-guide": {
+      "url": "https://sengenjinja.jp/pdf/keidaiannai.pdf",
+      "publisher": "北口本宮冨士浅間神社",
+      "title": "境内案内図：12 七色もみじ",
+      "type": "operator",
+      "checkedAt": "2026-11-02",
+      "researchNote": "官方導覽兩頁確認楓樹存在；未提供分種例年期或精確樹位。"
+    },
+    "fujinomiya-season": {
+      "url": "https://www.city.fujinomiya.lg.jp/1025200000/p001822.html",
+      "publisher": "富士宮市",
+      "title": "紅葉情報",
+      "type": "government",
+      "checkedAt": "2026-11-02",
+      "publishedAt": "2026-08-12",
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "白糸滝（ウルシ、カエデ）及田貫湖（カエデ他）為11月10至20日頃，屬混合紅葉範圍。"
+    },
+    "tanuki-place": {
+      "url": "https://fujinomiya.gr.jp/guide/122/",
+      "publisher": "富士宮市觀光協會",
+      "title": "田貫湖",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "opened_page",
+      "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "shiraito-place": {
+      "url": "https://fujinomiya.gr.jp/guide/170/",
+      "publisher": "富士宮市觀光協會",
+      "title": "白糸ノ滝",
+      "type": "official_tourism",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "opened_page",
+      "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "chichibu-observation": {
+      "url": "https://www.chichibunomiya.jp/p-info/61554.html",
+      "publisher": "秩父宮紀念公園",
+      "title": "園内の花たち 2024/11/27",
+      "type": "operator",
+      "checkedAt": "2026-11-02",
+      "publishedAt": "2024-11-27",
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "明列草坪廣場銀杏；モミジバフウ為楓香，不能單憑它確認Acer楓樹。"
+    },
+    "fujioka-season": {
+      "url": "https://www.city.fuji.shizuoka.jp/1005330000/miryoku/p007533.html",
+      "publisher": "富士市",
+      "title": "富士岡銀杏地蔵尊（紅葉）",
+      "type": "government",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "page_or_indexed_excerpt",
+      "researchNote": "明列銀杏見頃12月上旬。"
+    },
+    "fujioka-address": {
+      "url": "https://www.city.fuji.shizuoka.jp/documents/4010/fmervo0000001txa.pdf",
+      "publisher": "富士市",
+      "title": "景観重要樹木 富士岡地蔵尊",
+      "type": "government",
+      "checkedAt": "2026-11-02",
+      "publishedAt": null,
+      "accessMethod": "indexed_official_pdf",
+      "researchNote": "資料表核對富士岡81。"
     }
   },
   "spots": [
@@ -177,6 +335,8 @@ const regionalFoliageResearch = {
         "evidenceSourceIds": [],
         "peak": null
       },
+      "autumnReference": null,
+      "mixedAutumn": null,
       "researchedAt": "2026-11-02",
       "note": "梨川沿岸的紅葉步道，與紅葉隧道是不同景點。",
       "coordinateReview": {
@@ -236,6 +396,8 @@ const regionalFoliageResearch = {
         "evidenceSourceIds": [],
         "peak": null
       },
+      "autumnReference": null,
+      "mixedAutumn": null,
       "researchedAt": "2026-11-02",
       "note": "道路沿線的紅葉觀賞區。地圖標記不是停車入口，請使用合法停車空間。",
       "coordinateReview": {
@@ -289,6 +451,31 @@ const regionalFoliageResearch = {
         "evidenceSourceIds": [],
         "peak": null
       },
+      "autumnReference": {
+        "text": "10月下旬〜11月上旬",
+        "start": "10-21",
+        "end": "11-10",
+        "source": "yamanashi-overview",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "ten_day_approximation",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "yamanashi-overview"
+        ],
+        "peak": {
+          "text": "10月下旬〜11月上旬",
+          "start": "10-21",
+          "end": "11-10",
+          "source": "yamanashi-overview",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
+      },
       "researchedAt": "2026-11-02",
       "note": "湖畔步道可賞楓。整體紅葉約10月下旬至11月上旬，楓樹個別見頃待確認。",
       "coordinateReview": {
@@ -339,6 +526,8 @@ const regionalFoliageResearch = {
         ],
         "peak": null
       },
+      "autumnReference": null,
+      "mixedAutumn": null,
       "researchedAt": "2026-11-02",
       "note": "縣指定天然紀念物銀杏。地址為文化財所在地；開放與入口請依現場公告。",
       "coordinateReview": {
@@ -391,6 +580,8 @@ const regionalFoliageResearch = {
         ],
         "peak": null
       },
+      "autumnReference": null,
+      "mixedAutumn": null,
       "researchedAt": "2026-11-02",
       "note": "境內有楓樹與銀杏，各自見頃待確認。社務所休息時仍可進入境內，請尊重參拜空間。",
       "coordinateReview": {
@@ -443,6 +634,31 @@ const regionalFoliageResearch = {
         "evidenceSourceIds": [],
         "peak": null
       },
+      "autumnReference": {
+        "text": "10月中旬〜11月上旬",
+        "start": "10-11",
+        "end": "11-10",
+        "source": "usui-j47",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "ten_day_approximation",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "usui-j47"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月上旬",
+          "start": "10-11",
+          "end": "11-10",
+          "source": "usui-j47",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
+      },
       "researchedAt": "2026-11-02",
       "note": "位於長野與群馬縣界。整體紅葉約10月中旬至11月上旬，楓樹個別見頃待確認。",
       "coordinateReview": {
@@ -457,6 +673,503 @@ const regionalFoliageResearch = {
         "status": "selected_for_app_area_marker",
         "missingChecks": [
           "verify_entrance_before_travel"
+        ]
+      }
+    },
+    {
+      "id": "karuizawa-kumoba",
+      "ja": "雲場池",
+      "zh": "雲場池",
+      "area": "karuizawa-old",
+      "prefecture": "長野県",
+      "municipality": "軽井沢町",
+      "address": "長野県北佐久郡軽井沢町軽井沢（六本辻）",
+      "addressPrecision": "district",
+      "coordinates": {
+        "lat": 36.3507042,
+        "lng": 138.6269455
+      },
+      "xSearchName": "雲場池",
+      "aliases": [],
+      "sources": [
+        "kumoba-place",
+        "kumoba-j47",
+        "kumoba-nagano",
+        "kumoba-town"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "kumoba-j47"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": null,
+        "presenceStatus": "unknown_not_absent",
+        "evidenceSourceIds": [],
+        "peak": null
+      },
+      "autumnReference": {
+        "text": "10月中旬〜11月上旬",
+        "start": "10-11",
+        "end": "11-10",
+        "source": "kumoba-j47",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "ten_day_approximation",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "kumoba-j47"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月上旬",
+          "start": "10-11",
+          "end": "11-10",
+          "source": "kumoba-j47",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "モミジ",
+            "sourceIds": [
+              "kumoba-j47"
+            ]
+          },
+          {
+            "name": "ドウダンツツジ",
+            "sourceIds": [
+              "kumoba-j47"
+            ]
+          }
+        ]
+      },
+      "researchedAt": "2026-11-02",
+      "note": "池畔混合紅葉景觀，已確認楓樹與ドウダンツツジ；銀杏尚未確認。整體紅葉期與楓樹專屬見頃分開記錄。",
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "official_supplied_destination_representative",
+        "sourceUrl": "https://www.japan47go.travel/ja/detail/20347b0f-1f3a-4a0c-bc89-cd88e2bc8a7d",
+        "entranceVerified": false,
+        "viewingAreaConfirmed": false,
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      },
+      "integration": {
+        "status": "selected_for_app_area_marker",
+        "missingChecks": [
+          "verify_entrance_before_travel"
+        ]
+      }
+    },
+    {
+      "id": "fuji-museum-park",
+      "ja": "ふじさんミュージアムパーク",
+      "zh": "富士山博物館公園",
+      "area": "fuji-five-lakes",
+      "prefecture": "山梨県",
+      "municipality": "富士吉田市",
+      "address": "山梨県富士吉田市上吉田東7-27-1",
+      "addressPrecision": "venue",
+      "coordinates": {
+        "lat": 35.45803,
+        "lng": 138.805403
+      },
+      "xSearchName": "ふじさんミュージアムパーク",
+      "aliases": [],
+      "sources": [
+        "yoshida-park",
+        "yoshida-autumn",
+        "yoshida-course",
+        "museum-place"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "yoshida-park"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": null,
+        "presenceStatus": "unknown_not_absent",
+        "evidenceSourceIds": [],
+        "peak": null
+      },
+      "autumnReference": {
+        "text": "10月下旬〜11月上旬",
+        "start": "10-21",
+        "end": "11-10",
+        "source": "yoshida-park",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "ten_day_approximation",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "yoshida-park"
+        ],
+        "peak": {
+          "text": "10月下旬〜11月上旬",
+          "start": "10-21",
+          "end": "11-10",
+          "source": "yoshida-park",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "イロハモミジ",
+            "sourceIds": [
+              "yoshida-park"
+            ]
+          }
+        ]
+      },
+      "researchedAt": "2026-11-02",
+      "note": "公園包含雞爪楓迴廊；鐘山瀑布先作附近觀賞點，不另建立週末安排。館舍代表標記不是迴廊入口。",
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "museum_venue_anchor_for_park",
+        "sourceUrl": "https://www.fujiyoshida.net/spot/index.php?p=15",
+        "entranceVerified": false,
+        "viewingAreaConfirmed": false,
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      },
+      "integration": {
+        "status": "selected_for_app_area_marker",
+        "missingChecks": [
+          "verify_entrance_before_travel"
+        ]
+      }
+    },
+    {
+      "id": "fuji-kitaguchi-sengen",
+      "ja": "北口本宮冨士浅間神社",
+      "zh": "北口本宮冨士淺間神社",
+      "area": "fuji-five-lakes",
+      "prefecture": "山梨県",
+      "municipality": "富士吉田市",
+      "address": "山梨県富士吉田市上吉田5558",
+      "addressPrecision": "venue",
+      "coordinates": {
+        "lat": 35.47079,
+        "lng": 138.792407
+      },
+      "xSearchName": "北口本宮冨士浅間神社",
+      "aliases": [],
+      "sources": [
+        "yoshida-course",
+        "yoshida-autumn",
+        "kitaguchi-place",
+        "kitaguchi-official-guide"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "kitaguchi-official-guide"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "yoshida-course"
+        ],
+        "peak": null
+      },
+      "autumnReference": null,
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "researchedAt": "2026-11-02",
+      "note": "官方境內圖有七色もみじ，官方觀光資料亦確認手水舍附近銀杏；兩種植物各自見頃待確認。",
+      "coordinateReview": {
+        "reviewedAt": "2026-11-02",
+        "kind": "shrine_venue_representative",
+        "sourceUrl": "https://www.fujiyoshida.net/spot/index.php?p=23",
+        "entranceVerified": false,
+        "viewingAreaConfirmed": false,
+        "displayDisclaimer": "景點區域示意，非已核實入口或單株位置"
+      },
+      "integration": {
+        "status": "selected_for_app_area_marker",
+        "missingChecks": [
+          "verify_entrance_before_travel"
+        ]
+      }
+    },
+    {
+      "id": "fuji-tanuki-lake",
+      "ja": "田貫湖",
+      "zh": "田貫湖",
+      "area": "fuji-south",
+      "prefecture": "静岡県",
+      "municipality": "富士宮市",
+      "address": "静岡県富士宮市",
+      "addressPrecision": "municipality",
+      "coordinates": null,
+      "xSearchName": "田貫湖",
+      "aliases": [],
+      "sources": [
+        "fujinomiya-season",
+        "tanuki-place"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": null,
+        "presenceStatus": "unknown_not_absent",
+        "evidenceSourceIds": [],
+        "peak": null
+      },
+      "autumnReference": {
+        "text": "11月10日〜20日頃",
+        "start": "11-10",
+        "end": "11-20",
+        "source": "fujinomiya-season",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "approximate_calendar_days",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": {
+          "text": "11月10日〜20日頃",
+          "start": "11-10",
+          "end": "11-20",
+          "source": "fujinomiya-season",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "approximate_calendar_days",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "カエデ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          }
+        ]
+      },
+      "researchedAt": "2026-11-02",
+      "note": "湖畔混合紅葉含楓樹，整體紅葉期只作景點參考，楓樹專屬見頃待確認。",
+      "coordinateReview": null,
+      "integration": {
+        "status": "selected_for_app_list_only",
+        "missingChecks": [
+          "verify_viewing_area_coordinates",
+          "verify_current_public_access"
+        ]
+      }
+    },
+    {
+      "id": "fuji-shiraito-falls",
+      "ja": "白糸の滝",
+      "zh": "白絲瀑布（富士宮）",
+      "area": "fuji-south",
+      "prefecture": "静岡県",
+      "municipality": "富士宮市",
+      "address": "静岡県富士宮市",
+      "addressPrecision": "municipality",
+      "coordinates": null,
+      "xSearchName": "白糸ノ滝",
+      "aliases": [
+        "白糸ノ滝"
+      ],
+      "sources": [
+        "fujinomiya-season",
+        "shiraito-place"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": null,
+        "presenceStatus": "unknown_not_absent",
+        "evidenceSourceIds": [],
+        "peak": null
+      },
+      "autumnReference": {
+        "text": "11月10日〜20日頃",
+        "start": "11-10",
+        "end": "11-20",
+        "source": "fujinomiya-season",
+        "scope": "mixed_autumn_not_species_specific",
+        "precision": "approximate_calendar_days",
+        "kind": "historical_reference_not_current_forecast"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": {
+          "text": "11月10日〜20日頃",
+          "start": "11-10",
+          "end": "11-20",
+          "source": "fujinomiya-season",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "approximate_calendar_days",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "カエデ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          },
+          {
+            "name": "ウルシ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          }
+        ]
+      },
+      "researchedAt": "2026-11-02",
+      "note": "混合紅葉含楓樹與ウルシ；與輕井澤的白絲瀑布是不同目的地。整體紅葉期不等於楓樹專屬見頃。",
+      "coordinateReview": null,
+      "integration": {
+        "status": "selected_for_app_list_only",
+        "missingChecks": [
+          "verify_viewing_area_coordinates",
+          "verify_current_public_access"
+        ]
+      }
+    },
+    {
+      "id": "fuji-chichibunomiya",
+      "ja": "秩父宮記念公園",
+      "zh": "秩父宮紀念公園",
+      "area": "fuji-gotemba",
+      "prefecture": "静岡県",
+      "municipality": "御殿場市",
+      "address": "静岡県御殿場市東田中1507-7",
+      "addressPrecision": "venue",
+      "coordinates": null,
+      "xSearchName": "秩父宮記念公園",
+      "aliases": [],
+      "sources": [
+        "gotemba-autumn",
+        "chichibu-observation"
+      ],
+      "maple": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "gotemba-autumn"
+        ],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "chichibu-observation"
+        ],
+        "peak": null
+      },
+      "autumnReference": null,
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "researchedAt": "2026-11-02",
+      "note": "園內楓樹及草坪廣場附近銀杏各有存在證據；各自例年見頃待確認，不用舊照片或活動日推定。",
+      "coordinateReview": null,
+      "integration": {
+        "status": "selected_for_app_list_only",
+        "missingChecks": [
+          "verify_viewing_area_coordinates",
+          "verify_current_public_access"
+        ]
+      }
+    },
+    {
+      "id": "fuji-fujioka-ginkgo",
+      "ja": "富士岡銀杏地蔵尊",
+      "zh": "富士岡銀杏地藏尊",
+      "area": "fuji-south",
+      "prefecture": "静岡県",
+      "municipality": "富士市",
+      "address": "静岡県富士市富士岡81",
+      "addressPrecision": "designated_tree_location",
+      "coordinates": null,
+      "xSearchName": "富士岡銀杏地蔵尊",
+      "aliases": [
+        "富士岡地蔵堂の大銀杏"
+      ],
+      "sources": [
+        "fujioka-season",
+        "fujioka-address"
+      ],
+      "maple": {
+        "present": null,
+        "presenceStatus": "unknown_not_absent",
+        "evidenceSourceIds": [],
+        "peak": null
+      },
+      "ginkgo": {
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "fujioka-season"
+        ],
+        "peak": {
+          "text": "12月上旬",
+          "start": "12-01",
+          "end": "12-10",
+          "source": "fujioka-season",
+          "scope": "ginkgo_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        }
+      },
+      "autumnReference": null,
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "researchedAt": "2026-11-02",
+      "note": "銀杏例年見頃約12月上旬；觀賞代表位置尚待核對，先保留清單與詳情。",
+      "coordinateReview": null,
+      "integration": {
+        "status": "selected_for_app_list_only",
+        "missingChecks": [
+          "verify_viewing_area_coordinates",
+          "verify_current_public_access"
         ]
       }
     }

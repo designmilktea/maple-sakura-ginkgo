@@ -43,7 +43,9 @@ async function deny(p){await assertFails(p);checks++;}
     // Newly published destinations use the same plan-scoped schema and permissions.
     const addedDestinations=[
       'fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka',
-      'fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'
+      'fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout',
+      'karuizawa-kumoba','fuji-museum-park','fuji-kitaguchi-sengen','fuji-tanuki-lake',
+      'fuji-shiraito-falls','fuji-chichibunomiya','fuji-fujioka-ginkgo'
     ];
     for(const spotId of addedDestinations){
       for(const db of [other,anon]){

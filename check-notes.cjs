@@ -58,7 +58,7 @@ async function openShared(app){
   assert.equal(regionalReload.memory.get(weekendKey),JSON.stringify({kenrokuen:'2026-11-07'}));
   await regionalReload.run('cloudAuthChanged(null)');
   assert.equal(regionalReload.get('spotNotesText').textContent,`${regionalIds.at(-1)}\n交通備忘 🍁`);
-  console.log('PASS: six new destinations retain separate local notes across reload, scope cloud notes by destination and restore browser data on sign-out.');
+  console.log('PASS: all 13 selected regional destinations retain separate local notes across reload, scope cloud notes by destination and restore browser data on sign-out.');
   assert.ok(html.indexOf('id="detailWeekend"')<html.indexOf('id="spotNotesHeading"'));
   assert.ok(html.indexOf('id="spotNotesHeading"')<html.indexOf('class="season-row'));
   assert.match(html,/id="spotNotesEditor" hidden inert/);

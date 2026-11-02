@@ -101,3 +101,10 @@
 - 待真實兩帳號 Google 登入／加入／編輯／撤銷驗證；目前未為測試建立生產資料或使用者。
 
 I've set up prototype Security Rules to keep the data in Firestore safe. They are designed to be secure for authenticated, plan-scoped collaboration with owner-controlled invitations and validated per-spot writes. However, you should review and verify them before broadly sharing your app. If you'd like, I can help you harden these rules.
+# Seven-destination allowlist release (2026-11-02)
+
+Inspected target: maple-sakura-ginkgo/(default), Standard edition, asia-east1. Deployed rules matched the pre-edit local rules aside from trailing whitespace. This patch only appends seven explicit knownSpot IDs, retaining the original 102 and every legacy /users and /users/{uid}/saves line. No membership, ownership, invitation, revision, schema, length, timestamp, deletion or query predicate changed. No installed firestore-rules-author agent was found; direct authoring followed firestore-rules-creation.
+
+Threat review: unauthenticated and nonmember assignment/note creates and updates remain denied; members retain validated revisioned writes; similar unpublished IDs remain denied. No global listing, cross-plan access, ownership hijacking or privilege escalation was introduced. Existing type, field, length, immutable-field, timestamp, orphan and deletion tests remain in place; each of the seven IDs runs the same member-success/nonmember-denial checks as the first six. All **477 local emulator authorization and shipped-client checks** pass; Firebase syntax validation reports no errors. These are emulator/mock results, not real two-account tests.
+
+The reviewed prototype rules were deployed on 2026-11-02 after explicit user instruction to publish. Only `firestore:rules` was targeted; remote source was read back and matched to the reviewed local source. The deployed allowlist now includes all 109 destination IDs with the same plan-member permissions. No Auth settings or production documents changed. Real two-account and physical-device checks remain unverified; emulator results do not substitute for them.

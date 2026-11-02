@@ -6,9 +6,10 @@
   "sourceCatalog": "fuji-karuizawa-inventory.source.json#/sources",
   "counts": {
     "reviewedShortlist": 23,
-    "acceptedSourceRepresentativePoints": 6,
+    "acceptedSourceRepresentativePoints": 9,
     "proposedFirstBatch": 12,
-    "automaticallyImportable": 0
+    "automaticallyImportable": 0,
+    "locallySelectedDestinations": 13
   },
   "coordinatePolicy": "只有官方明確q、GeoCoordinates、markers或POI !3d/!4d可作研究代表點。@、ll、pb視窗中心、GIS mpx/mpy不可直接採用。未實地測量、未保證入口或無障礙。",
   "spots": [
@@ -116,9 +117,20 @@
         "action": "keep_mixed_reference",
         "reason": "10月下旬至11月上旬先保留整體參考；2026祭典10/24–11/8不當峰期。"
       },
-      "coordinateEvidence": null,
-      "acceptedResearchCoordinates": null,
-      "readyForAutomaticImport": false
+      "coordinateEvidence": {
+        "sourceId": "museum-place",
+        "kind": "museum_venue_anchor_for_park",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.45803,
+        "lng": 138.805403
+      },
+      "readyForAutomaticImport": false,
+      "localIntegrationDecision": "selected_venue_marker_not_entrance_or_tree"
     },
     {
       "id": "fuji-kaneyama-falls",
@@ -432,9 +444,20 @@
         "action": "keep_unknown",
         "reason": "整個神社的即時紅葉狀態不能替代銀杏峰期。"
       },
-      "coordinateEvidence": null,
-      "acceptedResearchCoordinates": null,
-      "readyForAutomaticImport": false
+      "coordinateEvidence": {
+        "sourceId": "kitaguchi-place",
+        "kind": "shrine_venue_representative",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 35.47079,
+        "lng": 138.792407
+      },
+      "readyForAutomaticImport": false,
+      "localIntegrationDecision": "selected_venue_marker_not_entrance_or_tree"
     },
     {
       "id": "karuizawa-kumoba",
@@ -454,9 +477,20 @@
         "action": "keep_mixed_reference",
         "reason": "保留10月中旬至11月上旬整體參考，不當銀杏日期。"
       },
-      "coordinateEvidence": null,
-      "acceptedResearchCoordinates": null,
-      "readyForAutomaticImport": false
+      "coordinateEvidence": {
+        "sourceId": "kumoba-j47",
+        "kind": "official_supplied_destination_representative",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      },
+      "acceptedResearchCoordinates": {
+        "lat": 36.3507042,
+        "lng": 138.6269455
+      },
+      "readyForAutomaticImport": false,
+      "localIntegrationDecision": "selected_venue_marker_not_entrance_or_tree"
     },
     {
       "id": "karuizawa-usui-lookout",

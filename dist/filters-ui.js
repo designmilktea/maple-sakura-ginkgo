@@ -31,13 +31,7 @@ function parsePeakWindow(text){
   return {start:month*100+starts[match[2]],end:endMonth*100+ends[match[4]||match[2]]};
 }
 function matchesPeak(spot,value){
-  if(Array.isArray(value)) return value.length===0||value.some(period=>matchesPeak(spot,period));
-  if(value==='all') return true;
-  if(spot.species) return speciesMatches(spot,'maple',value)||speciesMatches(spot,'ginkgo',value);
-  const slot=seasonSlots.find(s=>s.value===value);
-  const range=spot.peakWindow;
-  if(!slot||!range) return false;
-  return range.start<=range.end ? range.start<=slot.end && range.end>=slot.start : range.start<=slot.end || range.end>=slot.start;
+  return ['all','species','mixed','legacy','seasonal'].includes(seasonEvidence(spot,value));
 }
 function setPeak(value){
   const values=Array.isArray(value)?value:value==='all'?[]:[value];

@@ -14,11 +14,13 @@
       "karuizawa": 10,
       "karuizawa-extension": 1
     },
-    "verifiedCoordinates": 6,
+    "verifiedCoordinates": 9,
     "automaticallyImportableMapSpots": 0,
     "primaryGinkgoInMainScope": 7,
     "verifiedCoordinatesMeaning": "official_source_representative_points_only_not_field_survey",
-    "proposedFirstBatch": 12
+    "proposedFirstBatch": 12,
+    "locallySelectedDestinations": 13,
+    "selectedListOnly": 4
   },
   "contract": {
     "oneSpotOneIdOneWeekendOneNote": true,
@@ -541,6 +543,14 @@
       "publishedAt": null,
       "accessMethod": "opened_page",
       "researchNote": "第二輪位置／開放條件補核；來源日期與查閱日不同。"
+    },
+    "kitaguchi-official-guide": {
+      "url": "https://sengenjinja.jp/pdf/keidaiannai.pdf",
+      "publisher": "北口本宮冨士浅間神社",
+      "title": "境内案内図：12 七色もみじ",
+      "type": "operator",
+      "checkedAt": "2026-11-02",
+      "researchNote": "官方導覽兩頁確認楓樹存在；未提供分種例年期或精確樹位。"
     }
   },
   "spots": [
@@ -826,8 +836,11 @@
       "addressSourceIds": [
         "yoshida-course"
       ],
-      "coordinates": null,
-      "coordinateStatus": "not_geocoded_do_not_plot",
+      "coordinates": {
+        "lat": 35.45803,
+        "lng": 138.805403
+      },
+      "coordinateStatus": "official_source_representative_not_entrance",
       "maple": {
         "present": true,
         "presenceStatus": "confirmed_primary",
@@ -867,11 +880,10 @@
         "priority": "shortlist",
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
-          "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_maple_specific_season"
+          "verify_entrance_before_travel"
         ],
-        "proposedBatch": "first_batch"
+        "proposedBatch": "first_batch",
+        "selectedForLocalApp": true
       },
       "xSearchName": "ふじさんミュージアムパーク",
       "projectPath": "?spot=fuji-museum-park",
@@ -884,7 +896,39 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-museum-park"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-museum-park",
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "yoshida-park"
+        ],
+        "peak": {
+          "text": "10月下旬〜11月上旬",
+          "start": "10-21",
+          "end": "11-10",
+          "source": "yoshida-park",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "イロハモミジ",
+            "sourceIds": [
+              "yoshida-park"
+            ]
+          }
+        ]
+      },
+      "note": "公園包含雞爪楓迴廊；鐘山瀑布先作附近觀賞點，不另建立週末安排。館舍代表標記不是迴廊入口。",
+      "coordinateEvidence": {
+        "sourceId": "museum-place",
+        "kind": "museum_venue_anchor_for_park",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      }
     },
     {
       "id": "fuji-kaneyama-falls",
@@ -1180,6 +1224,22 @@
           "asahigaoka"
         ],
         "checkedAt": "2026-11-02"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "yamanashi-overview"
+        ],
+        "peak": {
+          "text": "10月下旬〜11月上旬",
+          "start": "10-21",
+          "end": "11-10",
+          "source": "yamanashi-overview",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
       }
     },
     {
@@ -1194,7 +1254,7 @@
       "existingSpotId": null,
       "aliases": [],
       "address": "静岡県富士宮市",
-      "addressPrecision": "municipality_only",
+      "addressPrecision": "municipality",
       "addressSourceIds": [],
       "coordinates": null,
       "coordinateStatus": "not_geocoded_do_not_plot",
@@ -1236,12 +1296,10 @@
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
           "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_address_or_entrance",
-          "verify_maple_specific_season",
-          "verify_full_address"
+          "verify_current_public_access"
         ],
-        "proposedBatch": "first_batch"
+        "proposedBatch": "first_batch",
+        "selectedForLocalApp": true
       },
       "xSearchName": "田貫湖",
       "projectPath": "?spot=fuji-tanuki-lake",
@@ -1257,7 +1315,31 @@
         "text": "静岡県富士宮市佐折634-1",
         "kind": "venue_reference_not_all_shore_entrances",
         "sourceId": "tanuki-place"
-      }
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": {
+          "text": "11月10日〜20日頃",
+          "start": "11-10",
+          "end": "11-20",
+          "source": "fujinomiya-season",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "approximate_calendar_days",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "カエデ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          }
+        ]
+      },
+      "note": "湖畔混合紅葉含楓樹，整體紅葉期只作景點參考，楓樹專屬見頃待確認。"
     },
     {
       "id": "fuji-shiraito-falls",
@@ -1273,7 +1355,7 @@
         "白糸ノ滝"
       ],
       "address": "静岡県富士宮市",
-      "addressPrecision": "municipality_only",
+      "addressPrecision": "municipality",
       "addressSourceIds": [],
       "coordinates": null,
       "coordinateStatus": "not_geocoded_do_not_plot",
@@ -1315,12 +1397,10 @@
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
           "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_address_or_entrance",
-          "verify_maple_specific_season",
-          "verify_full_address"
+          "verify_current_public_access"
         ],
-        "proposedBatch": "first_batch"
+        "proposedBatch": "first_batch",
+        "selectedForLocalApp": true
       },
       "xSearchName": "白糸ノ滝",
       "projectPath": "?spot=fuji-shiraito-falls",
@@ -1338,7 +1418,37 @@
         "text": "静岡県富士宮市上井出273-1",
         "kind": "parking_not_waterfall",
         "sourceId": "shiraito-place"
-      }
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "fujinomiya-season"
+        ],
+        "peak": {
+          "text": "11月10日〜20日頃",
+          "start": "11-10",
+          "end": "11-20",
+          "source": "fujinomiya-season",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "approximate_calendar_days",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "カエデ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          },
+          {
+            "name": "ウルシ",
+            "sourceIds": [
+              "fujinomiya-season"
+            ]
+          }
+        ]
+      },
+      "note": "混合紅葉含楓樹與ウルシ；與輕井澤的白絲瀑布是不同目的地。整體紅葉期不等於楓樹專屬見頃。"
     },
     {
       "id": "fuji-nishiyama-honmonji",
@@ -1538,9 +1648,10 @@
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
           "verify_viewing_area_coordinates",
-          "verify_current_access"
+          "verify_current_public_access"
         ],
-        "proposedBatch": "first_batch"
+        "proposedBatch": "first_batch",
+        "selectedForLocalApp": true
       },
       "xSearchName": "富士岡銀杏地蔵尊",
       "projectPath": "?spot=fuji-fujioka-ginkgo",
@@ -1551,7 +1662,14 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-fujioka-ginkgo"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-fujioka-ginkgo",
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "note": "銀杏例年見頃約12月上旬；觀賞代表位置尚待核對，先保留清單與詳情。"
     },
     {
       "id": "fuji-ninooka-shrine",
@@ -1747,11 +1865,10 @@
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
           "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_maple_specific_season",
-          "verify_ginkgo_specific_season"
+          "verify_current_public_access"
         ],
-        "proposedBatch": "followup"
+        "proposedBatch": "followup",
+        "selectedForLocalApp": true
       },
       "xSearchName": "秩父宮記念公園",
       "projectPath": "?spot=fuji-chichibunomiya",
@@ -1762,7 +1879,14 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-chichibunomiya"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-chichibunomiya",
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "note": "園內楓樹及草坪廣場附近銀杏各有存在證據；各自例年見頃待確認，不用舊照片或活動日推定。"
     },
     {
       "id": "fuji-kitaguchi-sengen",
@@ -1780,12 +1904,17 @@
       "addressSourceIds": [
         "yoshida-course"
       ],
-      "coordinates": null,
-      "coordinateStatus": "not_geocoded_do_not_plot",
+      "coordinates": {
+        "lat": 35.47079,
+        "lng": 138.792407
+      },
+      "coordinateStatus": "official_source_representative_not_entrance",
       "maple": {
-        "present": null,
-        "presenceStatus": "unknown_not_absent",
-        "evidenceSourceIds": [],
+        "present": true,
+        "presenceStatus": "confirmed_primary",
+        "evidenceSourceIds": [
+          "kitaguchi-official-guide"
+        ],
         "peak": null
       },
       "ginkgo": {
@@ -1803,7 +1932,8 @@
       "sourceIds": [
         "yoshida-course",
         "yoshida-autumn",
-        "kitaguchi-place"
+        "kitaguchi-place",
+        "kitaguchi-official-guide"
       ],
       "researchNotes": "官方行程頁明列手水舍附近銀杏；不因整體紅葉頁而臆測楓樹或分種日期。",
       "researchedAt": "2026-11-02",
@@ -1812,11 +1942,10 @@
         "priority": "shortlist",
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
-          "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_ginkgo_specific_season"
+          "verify_entrance_before_travel"
         ],
-        "proposedBatch": "followup"
+        "proposedBatch": "followup",
+        "selectedForLocalApp": true
       },
       "xSearchName": "北口本宮冨士浅間神社",
       "projectPath": "?spot=fuji-kitaguchi-sengen",
@@ -1827,7 +1956,22 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-kitaguchi-sengen"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#fuji-kitaguchi-sengen",
+      "mixedAutumn": {
+        "present": null,
+        "evidenceSourceIds": [],
+        "peak": null,
+        "plants": []
+      },
+      "note": "官方境內圖有七色もみじ，官方觀光資料亦確認手水舍附近銀杏；兩種植物各自見頃待確認。",
+      "coordinateEvidence": {
+        "sourceId": "kitaguchi-place",
+        "kind": "shrine_venue_representative",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      }
     },
     {
       "id": "karuizawa-kumoba",
@@ -1841,13 +1985,16 @@
       "existingSpotId": null,
       "aliases": [],
       "address": "長野県北佐久郡軽井沢町軽井沢（六本辻）",
-      "addressPrecision": "district_only",
+      "addressPrecision": "district",
       "addressSourceIds": [
         "kumoba-place",
         "kumoba-j47"
       ],
-      "coordinates": null,
-      "coordinateStatus": "not_geocoded_do_not_plot",
+      "coordinates": {
+        "lat": 36.3507042,
+        "lng": 138.6269455
+      },
+      "coordinateStatus": "official_source_representative_not_entrance",
       "maple": {
         "present": true,
         "presenceStatus": "confirmed_primary",
@@ -1887,12 +2034,10 @@
         "priority": "shortlist",
         "eligibleForAutomaticMapImport": false,
         "missingChecks": [
-          "verify_viewing_area_coordinates",
-          "verify_current_access",
-          "verify_address_or_entrance",
-          "verify_maple_specific_season"
+          "verify_entrance_before_travel"
         ],
-        "proposedBatch": "first_batch"
+        "proposedBatch": "first_batch",
+        "selectedForLocalApp": true
       },
       "xSearchName": "雲場池",
       "projectPath": "?spot=karuizawa-kumoba",
@@ -1906,7 +2051,45 @@
       "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-kumoba",
       "accessAuditSourceIds": [
         "kumoba-town"
-      ]
+      ],
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "kumoba-j47"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月上旬",
+          "start": "10-11",
+          "end": "11-10",
+          "source": "kumoba-j47",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": [
+          {
+            "name": "モミジ",
+            "sourceIds": [
+              "kumoba-j47"
+            ]
+          },
+          {
+            "name": "ドウダンツツジ",
+            "sourceIds": [
+              "kumoba-j47"
+            ]
+          }
+        ]
+      },
+      "note": "池畔混合紅葉景觀，已確認楓樹與ドウダンツツジ；銀杏尚未確認。整體紅葉期與楓樹專屬見頃分開記錄。",
+      "coordinateEvidence": {
+        "sourceId": "kumoba-j47",
+        "kind": "official_supplied_destination_representative",
+        "entranceVerified": false,
+        "fieldVerified": false,
+        "surveyAccuracyMetres": null,
+        "note": "景點場所代表標記，非已核實入口、停車場或單株位置"
+      }
     },
     {
       "id": "karuizawa-usui-lookout",
@@ -2019,6 +2202,22 @@
         "sourceId": "usui-j47",
         "reason": "採地方供稿，保留較短次級候選；未宣稱楓樹獨立峰期。",
         "checkedAt": "2026-11-02"
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "usui-j47"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月上旬",
+          "start": "10-11",
+          "end": "11-10",
+          "source": "usui-j47",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
       }
     },
     {
@@ -2093,7 +2292,23 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-shiraito-falls"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-shiraito-falls",
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "shiraito-walker"
+        ],
+        "peak": {
+          "text": "10月中旬",
+          "start": "10-11",
+          "end": "10-20",
+          "source": "shiraito-walker",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
+      }
     },
     {
       "id": "karuizawa-taliesin",
@@ -2172,7 +2387,23 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-taliesin"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-taliesin",
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "taliesin-walker"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月中旬",
+          "start": "10-11",
+          "end": "11-20",
+          "source": "taliesin-walker",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
+      }
     },
     {
       "id": "karuizawa-lake-garden",
@@ -2326,7 +2557,23 @@
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
       },
-      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-prince-road"
+      "auditRef": "research/fuji-karuizawa-coordinate-audit.source.json#karuizawa-prince-road",
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "prince-road"
+        ],
+        "peak": {
+          "text": "10月中旬〜11月中旬",
+          "start": "10-11",
+          "end": "11-20",
+          "source": "prince-road",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
+      }
     },
     {
       "id": "karuizawa-yukawa-park",
@@ -2721,8 +2968,39 @@
         "status": "not_verified",
         "sameFrameWithFoliageVerified": false,
         "sourceIds": []
+      },
+      "mixedAutumn": {
+        "present": true,
+        "evidenceSourceIds": [
+          "komoro-season"
+        ],
+        "peak": {
+          "text": "11月上旬〜11月中旬",
+          "start": "11-01",
+          "end": "11-20",
+          "source": "komoro-season",
+          "scope": "mixed_autumn_not_species_specific",
+          "precision": "ten_day_approximation",
+          "kind": "historical_reference_not_current_forecast"
+        },
+        "plants": []
       }
     }
   ],
-  "auditStatus": "second_pass_23_shortlisted_reviewed_6_source_points_entrance_checks_remain"
+  "auditStatus": "second_pass_23_shortlisted_reviewed_6_source_points_entrance_checks_remain",
+  "integrationUpdate": {
+    "date": "2026-11-02",
+    "baseline": "fa65df0",
+    "status": "local_only_not_deployed",
+    "newlySelectedIds": [
+      "karuizawa-kumoba",
+      "fuji-museum-park",
+      "fuji-kitaguchi-sengen",
+      "fuji-tanuki-lake",
+      "fuji-shiraito-falls",
+      "fuji-chichibunomiya",
+      "fuji-fujioka-ginkgo"
+    ],
+    "travelSchedulesRequired": false
+  }
 }

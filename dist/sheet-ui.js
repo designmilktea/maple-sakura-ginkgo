@@ -26,6 +26,9 @@ function renderDetail(spot){
   document.getElementById('detailTitle').textContent=spot.ja;
   document.getElementById('detailChinese').textContent=spot.zh;
   document.getElementById('detailPeak').innerHTML=renderSeasonRows(spot);
+  const seasonStatus=document.getElementById('detailSeasonMatch');
+  seasonStatus.textContent=seasonEvidenceLabel(spot);
+  seasonStatus.hidden=!seasonStatus.textContent;
   document.getElementById('detailAddress').textContent=spot.address;
   const foliage=document.getElementById('detailFoliage');
   foliage.textContent=spot.species?'':spot.foliage||''; foliage.hidden=Boolean(spot.species)||!spot.foliage;
@@ -34,7 +37,7 @@ function renderDetail(spot){
   const location=document.getElementById('detailLocationStatus');
   location.hidden=hasMapLocation(spot);
   const addressHint={service_center:'地址為管理所聯絡地址。',registered_venue:'地址為寺院登記所在地，非觀賞入口定位。',district:'地址目前僅核對至町／區級。',municipality:'地址目前僅核對至市級。',linear_area:'景點為道路／走廊範圍，入口待核對。'}[spot.research?.addressPrecision]||'';
-  location.textContent=`${addressHint}銀杏觀賞位置待核對，暫未放置地圖標記。Google Maps 連結會搜尋景點名稱與地址，請確認入口。`;
+  location.textContent=`${addressHint}觀賞位置待核對，暫未放置地圖標記。Google Maps 連結會搜尋景點名稱與地址，請確認入口。`;
   const access=document.getElementById('detailAccess');
   const notices=spot.research?.accessNotices||[];
   access.hidden=!notices.length&&!spot.research?.integration.missingChecks.includes('verify_current_public_access');
@@ -53,6 +56,8 @@ function renderDetail(spot){
       links.set(url,links.get(url)?.includes('楓樹')?'楓樹與銀杏季節依據 ↗':`${key==='maple'?'楓樹':'銀杏'}季節依據 ↗`);
     }
   }
+  const mixedPeak=mixedAutumn(spot)?.peak;
+  if(mixedPeak?.source&&foliageResearch.sources[mixedPeak.source]) links.set(foliageResearch.sources[mixedPeak.source].url,'整體紅葉期依據 ↗');
   for(const id of spot.research?.sources||[]){const source=foliageResearch.sources[id];if(!links.has(source.url))links.set(source.url,`${source.publisher}・${source.title} ↗`);}
   document.getElementById('detailSources').innerHTML=[...links].map(([url,label])=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`).join('');
   document.getElementById('detailUpdated').textContent=`資料核對 ${(spot.researchedAt||'2026-11-01').replaceAll('-','/')}`;
@@ -108,6 +113,11 @@ function syncSelection(visible){
   if(selectedSpotId && !visible.some(s=>s.id===selectedSpotId)){
     closeDetail(false);
     showToast('已更新篩選，原景點不在目前結果中');
+  }
+  if(selectedSpotId){
+    const status=document.getElementById('detailSeasonMatch');
+    status.textContent=seasonEvidenceLabel(visible.find(s=>s.id===selectedSpotId));
+    status.hidden=!status.textContent;
   }
   updateSelectedMarker();
 }

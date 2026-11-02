@@ -79,7 +79,7 @@ typeKeyword('<img src=x onerror=alert(1)>');
 assert.equal(keyword.run('filteredSpots().length'),0);
 assert.equal(keyword.elements.get('spotList').innerHTML,'');
 keyword.run('resetAllFilters()');typeKeyword('  　');
-assert.equal(keyword.run('filteredSpots().length'),102);
+assert.equal(keyword.run('filteredSpots().length'),109);
 typeKeyword('河口湖');keyword.run("window.location.href='https://maple.example/?spot=kenrokuen';restoreSpotFromUrl()");
 assert.equal(keyword.run('selectedSpotId'),'kenrokuen');assert.equal(keyword.run('searchQuery'),'');
 typeKeyword('東京');assert.equal(keyword.elements.get('resetFilters').hidden,false);
@@ -90,14 +90,16 @@ assert.equal(keyword.run('saved["fuji-kawaguchiko-momiji-corridor"]'),'skip');
 assert.equal(keyword.memory.value,'{"kenrokuen":"2026-11-07","fuji-kawaguchiko-momiji-corridor":"skip"}');
 console.log('PASS: permanent keyword field, Japanese/Chinese names, aliases, addresses, NFKC/case/space normalization, filter intersection, IME, submit-only map fit, empty states, focused clear, clean deep links and untouched saves.');
 // Expansion must preserve every original ID while keeping new regions independent.
-const regionalIds=['fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'];
+const originalRegionalIds=['fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout'];
+const addedRegionalIds=['karuizawa-kumoba','fuji-museum-park','fuji-kitaguchi-sengen','fuji-tanuki-lake','fuji-shiraito-falls','fuji-chichibunomiya','fuji-fujioka-ginkgo'];
+const regionalIds=[...originalRegionalIds,...addedRegionalIds];
 const oldResearch=JSON.parse(fs.readFileSync(__dirname+'/research/ginkgo-spots.json','utf8'));
 const oldIds=app.run('spots.filter(s=>!s.research).map(s=>s.id)');
 oldIds.push(...oldResearch.spots.filter(s=>s.ginkgo.present===true).map(s=>s.id));
 assert.equal(new Set(oldIds).size,96);
 assert.equal(app.run(`spots.filter(s=>${JSON.stringify([...new Set(oldIds)])}.includes(s.id)).length`),96);
 assert.deepEqual(Array.from(app.run('regionalFoliageResearch.spots.map(s=>s.id)')),regionalIds);
-for(const [area,count] of [['hokuriku',50],['tokyo-all',46],['fuji-all',5],['fuji-yamanashi',3],['fuji-shizuoka',2],['fuji-south',1],['fuji-gotemba',1],['karuizawa-all',1]]){
+for(const [area,count] of [['hokuriku',50],['tokyo-all',46],['fuji-all',11],['fuji-yamanashi',5],['fuji-shizuoka',6],['fuji-south',4],['fuji-gotemba',2],['karuizawa-all',2]]){
   const regionApp=boot('{}',false,`https://maple.example/?area=${area}`);
   assert.equal(regionApp.run('filteredSpots().length'),count,area);
   assert.equal(regionApp.run('activeArea'),area);
@@ -106,8 +108,9 @@ for(const id of regionalIds){
   const linked=boot('{"kenrokuen":"2026-11-07"}',false,`https://maple.example/?spot=${id}`);
   assert.equal(linked.run('selectedSpotId'),id);
   assert.equal(linked.run('saved.kenrokuen'),'2026-11-07');
-  assert.equal(linked.run(`hasMapLocation(spots.find(s=>s.id==='${id}'))`),true);
-  assert.match(linked.elements.get('detailMapPrecision').textContent,/非已核實入口/);
+  const mapped=!['fuji-tanuki-lake','fuji-shiraito-falls','fuji-chichibunomiya','fuji-fujioka-ginkgo'].includes(id);
+  assert.equal(linked.run(`hasMapLocation(spots.find(s=>s.id==='${id}'))`),mapped);
+  assert.match(linked.elements.get('detailMapPrecision').textContent,mapped?/非已核實入口/:/尚未標記/);
   assert.ok(linked.elements.get('detailSources').innerHTML.includes('https://'));
   assert.equal(new URL(linked.run(`spotShareUrl('${id}')`)).searchParams.get('spot'),id);
   linked.run(`onSaveWeekend({target:{dataset:{id:'${id}'},value:'skip'}})`);
@@ -116,19 +119,61 @@ for(const id of regionalIds){
   restored.run(`onSaveWeekend({target:{dataset:{id:'${id}'},value:weekends[1].value}});setFilter('saved')`);
   assert.equal(restored.run(`filteredSpots().some(s=>s.id==='${id}')`),true);
 }
-for(const [id,kind] of regionalIds.map(id=>[id,id==='fuji-niihashi-sengen'?'both':id==='fuji-murayama-sengen'?'ginkgo':'maple'])){
+for(const [id,kind] of regionalIds.map(id=>[id,['fuji-niihashi-sengen','fuji-kitaguchi-sengen','fuji-chichibunomiya'].includes(id)?'both':['fuji-murayama-sengen','fuji-fujioka-ginkgo'].includes(id)?'ginkgo':'maple'])){
   assert.equal(app.run(`foliageKind(spots.find(s=>s.id==='${id}'),[])`),kind);
 }
 for(const id of ['fuji-asahigaoka','fuji-murayama-sengen','fuji-niihashi-sengen','karuizawa-usui-lookout']){
   assert.equal(app.run(`matchesPeak(spots.find(s=>s.id==='${id}'),'11-middle')`),false);
 }
 app.run("setArea('fuji-all');setPeak('11-early')");
-assert.deepEqual(Array.from(app.run('filteredSpots().map(s=>s.id)')),regionalIds.slice(0,2));
+assert.deepEqual(Array.from(app.run('filteredSpots().filter(s=>seasonEvidence(s)!=="unknown").map(s=>s.id)')),['fuji-kawaguchiko-momiji-corridor','fuji-kawaguchiko-momiji-tunnel','fuji-asahigaoka','fuji-museum-park','fuji-tanuki-lake','fuji-shiraito-falls']);
 app.run("setPeak('10-late')");
-assert.deepEqual(Array.from(app.run('filteredSpots().map(s=>s.id)')),[regionalIds[0]]);
+assert.deepEqual(Array.from(app.run('filteredSpots().filter(s=>seasonEvidence(s)!=="unknown").map(s=>s.id)')),['fuji-kawaguchiko-momiji-corridor','fuji-asahigaoka','fuji-museum-park']);
 app.run('resetAllFilters();renderChoicePanel("area")');
 assert.match(app.elements.get('filterChoices').innerHTML,/富士山周邊|輕井澤/);
-console.log('PASS: original 96 IDs, six selected additions, region isolation, species-only seasons, source/precision details, deep links and new local weekend reloads.');
+// Preserve all original 102 IDs, and keep unknown dates visible as disclosed supplements.
+assert.equal(app.run(`spots.filter(s=>${JSON.stringify([...new Set(oldIds),...originalRegionalIds])}.includes(s.id)).length`),102);
+const mixedCase=boot('{"fuji-kitaguchi-sengen":"2026-11-07","fuji-fujioka-ginkgo":"skip"}');
+mixedCase.run("setArea('karuizawa-all');setPeak('10-middle')");
+assert.equal(mixedCase.run('filteredSpots().length'),2);
+assert.equal(mixedCase.run('filteredSpots().every(s=>seasonEvidence(s)==="mixed")'),true);
+mixedCase.run("openSpot('karuizawa-kumoba')");
+assert.match(mixedCase.elements.get('detailPeak').innerHTML,/混合紅葉[\s\S]*10月中旬[\s\S]*楓樹[\s\S]*見頃待確認[\s\S]*ドウダンツツジ/);
+assert.equal(mixedCase.run('foliageKind(spots.find(s=>s.id==="karuizawa-kumoba"))'),'mixed');
+assert.match(mixedCase.elements.get('detailSeasonMatch').textContent,/整體紅葉期符合/);
+mixedCase.run("setPeak([])");
+assert.equal(mixedCase.elements.get('detailSeasonMatch').hidden,true);
+mixedCase.run("setArea('fuji-all');setPeak('11-early')");
+assert.equal(mixedCase.run('filteredSpots().length'),10);
+assert.equal(mixedCase.run('filteredSpots().slice(0,6).every(s=>seasonEvidenceRank(s)===0)'),true);
+assert.equal(mixedCase.run('filteredSpots().slice(6).every(s=>seasonEvidence(s)==="unknown")'),true);
+assert.match(mixedCase.elements.get('seasonResultSummary').textContent,/例年期符合 6 處・時期待確認 4 處/);
+assert.match(mixedCase.elements.get('spotList').innerHTML,/時期待確認・補充景點/);
+mixedCase.run("openSpot('fuji-kitaguchi-sengen')");
+assert.match(mixedCase.elements.get('detailPeak').innerHTML,/楓樹[\s\S]*見頃待確認[\s\S]*銀杏/);
+assert.match(mixedCase.elements.get('detailSeasonMatch').textContent,/未確認符合所選期間/);
+mixedCase.run("setFilter('2026-11-07')");
+assert.deepEqual(Array.from(mixedCase.run('filteredSpots().map(s=>s.id)')),['fuji-kitaguchi-sengen']);
+mixedCase.run("setFilter('all');updateSearch('田貫湖')");
+assert.deepEqual(Array.from(mixedCase.run('filteredSpots().map(s=>s.id)')),['fuji-tanuki-lake']);
+mixedCase.run("openSpot('fuji-tanuki-lake')");
+assert.match(mixedCase.elements.get('detailLocationStatus').textContent,/觀賞位置待核對/);
+assert.doesNotMatch(mixedCase.elements.get('detailLocationStatus').textContent,/銀杏觀賞/);
+mixedCase.run("updateSearch('');setPeak('12-early')");
+assert.equal(mixedCase.run('filteredSpots().some(s=>["fuji-tanuki-lake","fuji-shiraito-falls","fuji-kawaguchiko-momiji-tunnel"].includes(s.id))'),false);
+assert.equal(mixedCase.run('filteredSpots()[0].id'),'fuji-fujioka-ginkgo');
+assert.equal(mixedCase.run('filteredSpots().length'),5);
+mixedCase.run("setFilter('skip')");
+assert.deepEqual(Array.from(mixedCase.run('filteredSpots().map(s=>s.id)')),['fuji-fujioka-ginkgo']);
+mixedCase.run("resetAllFilters();setArea('karuizawa-all');setPeak('9-early')");
+assert.equal(mixedCase.run('filteredSpots().length'),0,'known dates outside the selection do not fall back to unknown species');
+mixedCase.run("var seasonFixture={species:{maple:{present:true,peak:null},ginkgo:{present:null,peak:null}},research:{seasonReference:{text:'11月',start:'11-01',end:'11-30',precision:'month'}}}");
+assert.equal(mixedCase.run('seasonEvidence(seasonFixture,"11-middle")'),'seasonal');
+assert.equal(mixedCase.run('seasonEvidence(seasonFixture,"10-middle")'),'outside');
+mixedCase.run("seasonFixture.research.seasonReference={text:'10月中旬以後',start:'10-11',end:null}");
+assert.equal(mixedCase.run('seasonEvidence(seasonFixture,"12-late")'),'unknown','open-ended onset is not an invented peak range');
+assert.equal(mixedCase.run('JSON.stringify(saved)'),'{"fuji-kitaguchi-sengen":"2026-11-07","fuji-fujioka-ginkgo":"skip"}');
+console.log('PASS: original 102 IDs preserved, seven additions, mixed/species coexistence, seasonal/unknown evidence, ranked supplements, cross-filter intersections, source/precision details and local persistence.');
 assert.ok(markup.indexOf('class="weekend-box detail-info-row"')<markup.indexOf('class="season-row detail-info-row"'));
 app.run('renderDetail(spots.find(s=>s.ja===s.zh))');
 assert.equal(app.elements.get('detailChinese').textContent,app.run('spots.find(s=>s.ja===s.zh).zh'));
@@ -164,7 +209,7 @@ for(const protocol of ['http:','https:']){
   assert.equal(result.calls.length,1); // no fallback host or retry loop
 }
 const fileApp=boot('{}',false,'file:///preview/index.html');
-assert.equal(fileApp.run('spots.length'),102);
+assert.equal(fileApp.run('spots.length'),109);
 assert.equal(fileApp.elements.get('mapServiceNotice').hidden,false);
 function checkListShortcuts(instance){
   const html=instance.elements.get('spotList').innerHTML;
@@ -239,7 +284,7 @@ assert.equal(multiPeak.run('JSON.stringify(selectedPeakValues())'),'["11-late"]'
 assert.equal(multiPeak.elements.get('filterDialogFooter').hidden,true);
 multiPeak.run('resetAllFilters()');
 assert.equal(multiPeak.run('selectedPeakValues().length'),0);
-assert.equal(multiPeak.run('filteredSpots().length'),102);
+assert.equal(multiPeak.run('filteredSpots().length'),109);
 assert.equal(multiPeak.run('saved["tokyo-showa"]'),'2026-11-14');
 console.log('PASS: list season information removed; multi-period union, chronological summaries, checkbox states, open picker, clear/last-toggle reset, disjoint windows, species markers, combined filters and saved-plan preservation.');
 const listWeekends=boot();
@@ -278,8 +323,8 @@ changeListWeekend(listDenied,'toyama-baba',nextWeekend);
 assert.equal(listDenied.run('saved["toyama-baba"]'),nextWeekend);
 assert.match(listDenied.elements.get('toast').textContent,/僅在本次頁面/);
 console.log('PASS: per-card weekend options, delegated save/clear, list/detail sync, unrelated selection, reload persistence, filtered-out focus recovery, and blocked-storage fallback.');
-assert.equal(app.run('spots.length'),102);
-assert.equal(app.run('new Set(spots.map(s=>s.id)).size'),102);
+assert.equal(app.run('spots.length'),109);
+assert.equal(app.run('new Set(spots.map(s=>s.id)).size'),109);
 assert.equal(app.run('tokyoSpots.length'),24);
 assert.equal(app.run('tokyoSpots.every(s=>s.address && s.source && Number.isFinite(s.lat) && Number.isFinite(s.lng))'),true);
 assert.equal(app.run('optionMarkup().startsWith(`<option value="">尚未選擇</option>`)'),true);
@@ -306,8 +351,8 @@ const past=boot('{"kenrokuen":"2025-11-01"}');
 assert.ok(past.run('optionMarkup(saved.kenrokuen).includes("2025-11-01")'));
 past.run(`activeWeekend='2025-11-01'`);
 assert.equal(past.run('filteredSpots().length'),1);
-assert.equal(boot('broken JSON').run('filteredSpots().length'),102);
-assert.equal(boot('{}',true).run('filteredSpots().length'),102);
+assert.equal(boot('broken JSON').run('filteredSpots().length'),109);
+assert.equal(boot('{}',true).run('filteredSpots().length'),109);
 const expanded=boot('{"kenrokuen":"2026-11-07"}');
 assert.equal(expanded.run('saved.kenrokuen'),'2026-11-07');
 expanded.run(`activeArea='tokyo-all'`);
@@ -375,8 +420,8 @@ assert.doesNotMatch(controls,/cloud-toolbar|cloudScope/);
 assert.match(fs.readFileSync(__dirname+'/dist/design-system.css','utf8'),/\.results-row \.list-button\{color:#000;-webkit-text-fill-color:#000;/);
 console.log('PASS: all-saved dates with combined filters, list snap/drag/keyboard/background collapse/close, compact header and plan edit control.');
 const seasonal=boot();
-assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),91);
-assert.equal(seasonal.run('spots.filter(s=>!hasMapLocation(s)).length'),11);
+assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),94);
+assert.equal(seasonal.run('spots.filter(s=>!hasMapLocation(s)).length'),15);
 const coordinateUpdates=JSON.parse(fs.readFileSync(`${__dirname}/research/ginkgo-coordinate-updates.json`,'utf8'));
 for(const update of coordinateUpdates.updates){
   const actual=seasonal.run(`spots.find(s=>s.id===${JSON.stringify(update.id)})`);
@@ -409,29 +454,29 @@ for(const [area,count] of [['ishikawa-all',24],['toyama-all',26],['tokyo-prefect
   assert.equal(seasonal.run('filteredSpots().length'),count,area);
 }
 seasonal.run(`setArea('tokyo-city');setPeak('11-late')`);
-assert.equal(seasonal.run('filteredSpots().length'),9);
+assert.equal(seasonal.run('filteredSpots().filter(s=>seasonEvidence(s)!=="unknown").length'),9);
 seasonal.run(`setArea('tokyo-all')`);
-assert.equal(seasonal.run('filteredSpots().length'),26);
+assert.equal(seasonal.run('filteredSpots().filter(s=>seasonEvidence(s)!=="unknown").length'),26);
 checkListShortcuts(seasonal);
 seasonal.run(`setArea('tokyo-city')`);
 seasonal.run(`openSpot('tokyo-rikugien');setPeak('9-early')`);
-assert.equal(seasonal.run('filteredSpots().length'),0);
+assert.equal(seasonal.run('filteredSpots().filter(s=>seasonEvidence(s)!=="unknown").length'),0);
 checkListShortcuts(seasonal);
 assert.equal(seasonal.run('selectedSpotId'),null);
 seasonal.run(`setPeak('11-late');onSaveWeekend({target:{dataset:{id:'tokyo-rikugien'},value:weekends[1].value}});setFilter(weekends[1].value)`);
 assert.equal(seasonal.run('filteredSpots().length'),1);
 assert.equal(seasonal.run('filteredSpots()[0].id'),'tokyo-rikugien');
 seasonal.run('resetAllFilters()');
-assert.equal(seasonal.run('filteredSpots().length'),102);
+assert.equal(seasonal.run('filteredSpots().length'),109);
 assert.ok(seasonal.run('saved["tokyo-rikugien"]'));
 checkListShortcuts(seasonal);
 const ginkgo=boot('{"kenrokuen":"2026-11-07","toyama-baba":"2026-11-14"}');
 assert.equal(ginkgo.run('saved.kenrokuen'),'2026-11-07');
 assert.equal(ginkgo.run('saved["toyama-baba"]'),'2026-11-14');
-assert.equal(ginkgo.run('spots.filter(s=>s.research).length'),51);
+assert.equal(ginkgo.run('spots.filter(s=>s.research).length'),58);
 assert.equal(ginkgo.run('spots.some(s=>s.id==="tokyo-zenpukuji-river"||s.id==="tokyo-wadabori")'),false);
-assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&hasMapLocation(s)).length'),31);
-assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&!hasMapLocation(s)).length'),11);
+assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&hasMapLocation(s)).length'),34);
+assert.equal(ginkgo.run('spots.filter(s=>s.research&&!s.research.existingSpotId&&!hasMapLocation(s)).length'),15);
 assert.equal(ginkgo.run('spots.find(s=>s.id==="kenrokuen").species.ginkgo.peak'),null);
 assert.equal(ginkgo.run('spots.find(s=>s.id==="kenrokuen").species.maple.peak'),null);
 assert.equal(ginkgo.run('spots.find(s=>s.id==="tokyo-gaien").species.maple.present'),null);
@@ -487,9 +532,9 @@ assert.equal(ginkgo.run('filteredSpots()[0].id'),'toyama-baba');
 const newLink=boot('{}',false,'https://maple.example/?spot=tokyo-hikarigaoka');
 assert.equal(newLink.run('selectedSpotId'),'tokyo-hikarigaoka');
 assert.equal(newLink.run('spotShareUrl("tokyo-hikarigaoka")'),'https://maple.example/?spot=tokyo-hikarigaoka');
-console.log('PASS: 51 merged species records, 91 mapped destinations (25 audited ginkgo additions and 6 regional additions), 11 list-only, original 60 pins unchanged, per-pin precision metadata and deep links, independent species seasons, marker variants and preserved saved weekends.');
+console.log('PASS: 58 merged species records, 94 mapped destinations (25 audited ginkgo additions and 9 regional source points), 15 list-only, original 60 pins unchanged, per-pin precision metadata and deep links, independent species seasons, marker variants and preserved saved weekends.');
 console.log('PASS: every rendered destination has independent, accessible, icon-only X/Maps links with exact per-spot URLs, including alternate X search names, filtered results and empty results.');
-console.log('PASS: 102 destinations, date/storage/X rules, sheet behavior, independent species seasons, inclusive season overlap, prefecture groups, three-way intersection, empty states, and reset without deleting saved plans.');
+console.log('PASS: 109 destinations, date/storage/X rules, sheet behavior, independent species seasons, inclusive season overlap, prefecture groups, three-way intersection, empty states, and reset without deleting saved plans.');
 async function checkSpotTools(){
   const linked=boot('{"kenrokuen":"2026-11-07"}',false,'https://maple.example/?area=hokuriku&spot=tokyo-rikugien');
   assert.equal(linked.run('selectedSpotId'),'tokyo-rikugien');

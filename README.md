@@ -1,5 +1,15 @@
 # 週末賞楓地圖
 
+## Latest release: mixed foliage and seven destinations (2026-11-02)
+
+Release based on `fa65df0`: all original 102 IDs retained; seven additions make **109 destinations, 94 mapped, 15 list-only**. Added: Kumoba Pond, Fujisan Museum Park, Kitaguchi Hongu Fuji Sengen Shrine, Lake Tanuki, Shiraito Falls in Fujinomiya, Chichibunomiya Memorial Park and Fujioka Ginkgo Jizo. The first three use source representative points, never verified entrances or trees. The other four remain unplotted. Existing area groups, saved-status colors, IDs, storage, sharing, drag, skip, notes and plan-member permissions are preserved. Travel schedules are optional and are not included in this batch.
+
+Mixed autumn scenery, maple and ginkgo coexist with independent evidence and dates. `autumnReference` and `mixedAutumn` retain overall dates and confirmed plants without assigning those dates to individual species. Matching species or overall dates appear first; supported seasonal references are labelled separately; destinations without adopted dates remain in a **時期待確認** supplementary group. All results still intersect region, search and saved weekends. An adopted date outside the selection cannot re-enter simply because another species has unknown dates. `葉` identifies a mixed-only date match and `?` an unknown supplement; neither implies current leaf condition.
+
+Validation: generated-data, MVP, collaboration mock and notes checks pass. A local Standard-edition emulator passes **477 authorization and shipped-client checks**; Firebase syntax validation reports no errors. Deployed rules were read and matched the pre-edit local rules aside from trailing whitespace. The rules only append seven known IDs; every permission/schema predicate remains unchanged. **Following explicit publish authorization, only Firestore rules were deployed to maple-sakura-ginkgo/(default), then read back and matched to the reviewed source on 2026-11-02.** No Auth settings, production documents or old Sites resources were changed. The GitHub Pages workflow validates this release and publishes only `dist`; its deployment result is recorded in GitHub Actions.
+
+The local HTTP server returns 200. In-app browser access to loopback timed out and computer control was not approved to use Chrome; browser visual/responsive QA, physical iPhone Safari and real two-account testing remain outstanding for this version. Historical testing below does not count as validation of this local update.
+
 Mobile-friendly static map for Hokuriku, Tokyo and nearby day trips, Mount Fuji surroundings, and Karuizawa.
 
 ## Run locally
