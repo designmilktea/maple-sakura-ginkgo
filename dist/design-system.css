@@ -124,9 +124,7 @@ body,button,select,textarea{font-family:var(--font-ui)}
 .map-coverage{position:absolute;z-index:410;top:calc(var(--controls-bottom,300px) + 12px);left:20px;max-width:calc(100% - 90px);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:13px;line-height:1.5;color:var(--muted);box-shadow:0 2px 10px #0000000a;pointer-events:none}
 .map-service-notice{position:absolute;z-index:410;left:20px;bottom:28px;width:360px;max-width:calc(100% - 40px);padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-size:14px;line-height:1.6;box-shadow:var(--shadow)}
 body.has-selection .map-service-notice{display:none}
-.cloud-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;color:var(--muted);font-size:13px}
-.cloud-toolbar span{min-width:0;overflow-wrap:anywhere}
-.cloud-toolbar button,.cloud-dialog button:not(.icon-button){min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--red);padding:8px 12px;font:inherit}
+.cloud-dialog button:not(.icon-button){min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--red);padding:8px 12px;font:inherit}
 .cloud-dialog{width:min(520px,calc(100% - 24px));max-height:85dvh;overflow-y:auto;border:1px solid var(--line);border-radius:22px;padding:22px;background:var(--card);color:var(--ink);font:16px/1.6 var(--font-ui)}
 .cloud-dialog::backdrop{background:#292d2855}
 .cloud-dialog h2{font-size:24px;margin:0}.cloud-dialog h3{font-size:17px;margin:0 0 8px}.cloud-dialog section{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
@@ -148,3 +146,27 @@ body.has-selection .map-coverage{display:none}
 .cloud-delete-dialog{max-width:420px}.cloud-delete-dialog p{overflow-wrap:anywhere}
 .cloud-field-error{font-size:var(--text-label);color:var(--red);margin:0 0 12px}
 .cloud-dialog input[aria-invalid="true"]{border-color:var(--red)}
+
+.weekend-heading{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.weekend-heading .weekend-label{flex:1;min-width:0;margin:0;overflow-wrap:anywhere}
+.weekend-heading #weekendTitle{font:inherit;color:var(--muted);margin:0}
+.weekend-heading .prediction-label{display:inline-block}
+.plan-edit-button{flex-shrink:0;color:var(--muted)}
+.results-row .list-button{color:#292d28;-webkit-text-fill-color:#292d28;appearance:none;-webkit-appearance:none}
+.results-row .list-button span{color:var(--red);-webkit-text-fill-color:var(--red)}
+.list-panel{top:auto;bottom:20px;height:490px;max-height:calc(100dvh - 65px);transition:height .3s var(--ease)}
+.list-panel.is-dragging{transition:none}
+.list-drag-zone{position:relative;flex-shrink:0;min-height:72px;touch-action:none;cursor:ns-resize}
+.list-handle{height:44px}.list-drag-zone #closeList{position:absolute;top:20px;right:14px}
+.list-body{display:flex;flex-direction:column;min-height:0;flex:1}.list-body .spot-list{min-height:0;flex:1}
+body.has-list .map-coverage{display:none}
+.cloud-loading-dialog{width:min(340px,calc(100% - 32px));border:1px solid var(--line);border-radius:var(--radius-panel);padding:28px;text-align:center;background:var(--card);color:var(--ink);font-family:var(--font-ui)}
+.cloud-loading-dialog::backdrop{background:#292d2866;backdrop-filter:blur(3px)}
+.cloud-loading-dialog h2{font-size:var(--text-heading);margin:16px 0 8px}.cloud-loading-dialog p{color:var(--muted);font-size:var(--text-label);line-height:1.6}
+.cloud-loading-dialog button{min-height:44px;padding:8px 16px;border:1px solid var(--line);border-radius:var(--radius-control);color:var(--ink);background:var(--card);font:inherit}
+.loading-spinner{width:32px;height:32px;margin:0 auto;border:3px solid var(--line);border-top-color:var(--red);border-radius:50%;animation:plan-loading .8s linear infinite}
+@keyframes plan-loading{to{transform:rotate(360deg)}}
+@media(max-width:760px){.list-panel{bottom:0;padding-bottom:env(safe-area-inset-bottom)}body.has-list .foliage-legend{display:none}}
+@media(prefers-reduced-motion:reduce){.loading-spinner{animation:none}.list-panel{transition:none}}
+
+body.has-list .detail-sheet{visibility:hidden;pointer-events:none}

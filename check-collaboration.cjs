@@ -15,16 +15,16 @@ vm.runInContext(client,context);
 const evaluate=code=>vm.runInContext(code,context);
 const uiSource=fs.readFileSync(__dirname+'/dist/collaboration-ui.js','utf8');
 function bootUI(){
-  const elements=new Map(),location=new URL('https://map.example/');
+  const elements=new Map(),timers=new Map();let nextTimer=0;const location=new URL('https://map.example/');
   const get=id=>{if(!elements.has(id))elements.set(id,{textContent:'',hidden:false,value:'',dataset:{},focus(){},select(){},setAttribute(name,value){this[name]=value;},showModal(){this.open=true;},close(){this.open=false;},children:[],replaceChildren(){this.children=[];},append(...nodes){this.children.push(...nodes);},addEventListener(){}});return elements.get(id);};
-  const cx=vm.createContext({URL,URLSearchParams,Date,Promise,Set,console,
+  const cx=vm.createContext({setTimeout:fn=>{const id=++nextTimer;timers.set(id,fn);return id;},clearTimeout:id=>timers.delete(id),URL,URLSearchParams,Date,Promise,Set,console,
     document:{getElementById:get,querySelectorAll:()=>[],createElement:()=>({})},
     window:{location,history:{replaceState(a,b,url){location.href=url;}},confirm:()=>false},
     renderFilters(){},renderSpots(){},renderDetail(){},showToast(){},selectedSpotId:null,
     saved:{kenrokuen:'2026-11-07'},spots:[{id:'kenrokuen'},{id:'toyama-baba'}]
   });
   vm.runInContext(uiSource,cx);
-  return {run:code=>vm.runInContext(code,cx),elements,get,cx,location};
+  return {run:code=>vm.runInContext(code,cx),elements,get,cx,location,timers};
 }
 (async()=>{
   const id='ABCDEFGHIJKLMNOPQRST';
@@ -79,8 +79,8 @@ function bootUI(){
   // Verify default HTML containment: hidden + inert ancestors remove all shared
   // fields, headings and actions from rendering, accessibility and keyboard use.
   const html=fs.readFileSync(__dirname+'/dist/index.html','utf8');
-  assert.match(html,/collaboration-ui\.js\?v=20261102-plans2/);
-  assert.match(uiSource,/firebase-client\.mjs\?v=20261102-plans2/);
+  assert.match(html,/collaboration-ui\.js\?v=20261102-panels3/);
+  assert.match(uiSource,/firebase-client\.mjs\?v=20261102-panels3/);
   const dialog=html.match(/<dialog id="cloudDialog"[\s\S]*?<\/dialog>/)[0];
   const stack=[],ancestors=new Map();
   for(const match of dialog.matchAll(/<(\/?)([a-z][a-z0-9]*)([^>]*)>/gi)){
@@ -206,6 +206,29 @@ function bootUI(){
   await d.run('cloudAuthChanged(null)');
   assert.equal(d.get('cloudDeleteDialog').open,false);assert.equal(d.get('cloudDeleteDescription').textContent,'');
   await assert.rejects(()=>d.run('cloudDelete(cloudDeleteTarget)'),/行程已變更/);
+  // Loading stays modal through cached snapshots, supports cancellation/timeout,
+  // and never applies a late response after cancellation or account changes.
+  const load=bootUI();
+  load.run(`cloudState.authReady=true;cloudState.user={uid:'alice'};var serverChange;var resolvePlan;
+    cloudState.api={getPlan:()=>new Promise(resolve=>resolvePlan=resolve),watchAccess:()=>()=>{},watchPlan:(id,change)=>{serverChange=change;return ()=>{}}};`);
+  const opening=load.run(`cloudOpen('${id}')`);
+  assert.equal(load.get('cloudLoadingDialog').open,true);assert.equal(load.run('cloudState.opening'),true);
+  load.run(`resolvePlan({id:'${id}',title:'東京秋季週末',ownerUid:'alice'})`);await opening;
+  assert.equal(load.get('weekendTitle').textContent,'東京秋季週末的賞楓週末');
+  load.run('serverChange([],{fromCache:true,pending:false})');assert.equal(load.get('cloudLoadingDialog').open,true);
+  load.run('serverChange([],{fromCache:false,pending:false})');assert.equal(load.get('cloudLoadingDialog').open,false);
+  assert.equal(load.timers.size,0);
+  const cancelled=load.run(`cloudOpen('${id}')`);load.run('cloudLocal()');
+  assert.equal(load.get('cloudLoadingDialog').open,false);
+  assert.equal(load.get('weekendTitle').textContent,'瀏覽器暫存的賞楓週末');
+  load.run(`resolvePlan({id:'${id}',title:'不可回填',ownerUid:'alice'})`);await cancelled;
+  assert.equal(load.run('cloudState.mode'),'local');assert.equal(load.run('saved.kenrokuen'),'2026-11-07');
+  const timed=load.run(`cloudOpen('${id}')`);[...load.timers.values()][0]();
+  assert.equal(load.get('cloudLoadingDialog').open,false);assert.match(load.get('cloudStatus').textContent,/逾時/);
+  load.run(`resolvePlan({id:'${id}',title:'不可回填',ownerUid:'alice'})`);await timed;
+  assert.equal(load.run('cloudState.mode'),'local');
+  assert.match(html,/<dialog id="cloudLoadingDialog"[\s\S]*aria-modal="true"/);
+  console.log('PASS: plan title/local fallback, modal loading until server confirmation, cancellation, timeout and stale-response rejection.');
   console.log('PASS: reordered plan selection, browser default, scoped switch navigation, owner-only delete confirmation/cancel, failure/resume, local restoration and auth-invalidation.');
   console.log('PASS: initial HTML hidden/inert containment, loading/signed-out gates, auth restoration, owner/member UI, explicit invite acceptance, cancelled/failed login, sign-out subscription/data cleanup, stale snapshot/list rejection and local/import preservation.');
   console.log('PASS: transaction revision conflicts, tombstone clearing, authenticated SDK writes, Saturday validation, explicit cloud scope, no local upload/overwrite, offline edit lock, access revocation clearing, local restoration and signed-out invite preservation.');

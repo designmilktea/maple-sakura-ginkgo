@@ -1,7 +1,6 @@
 let selectedSpotId = null;
 let sheetState = 'half';
-let drag = null;
-let suppressHandleClick = false;
+let listSheetState = 'half';
 const sheet = document.getElementById('detailSheet');
 const sheetBody = document.getElementById('sheetBody');
 const sheetHandle = document.getElementById('sheetHandle');
@@ -128,29 +127,38 @@ function panToSelection(){
   const center=map.unproject(map.project([spot.lat,spot.lng],zoom).subtract(target.subtract(size.divideBy(2))),zoom);
   map.setView(center,zoom,{animate:!prefersReducedMotion()});
 }
+function listSheetSizes(){return {...sheetSizes(),peek:84};}
+function setListSheetState(state){
+  if(!['peek','half','full'].includes(state))return;
+  listSheetState=state;
+  const panel=document.getElementById('listPanel'),body=document.getElementById('listBody'),handle=document.getElementById('listHandle');
+  panel.dataset.state=state;panel.style.height=`${listSheetSizes()[state]}px`;
+  if(state==='peek'&&body.contains?.(document.activeElement))handle.focus({preventScroll:true});
+  body.hidden=state==='peek';
+  handle.setAttribute('aria-expanded',String(state==='full'));
+  handle.setAttribute('aria-label',state==='full'?'收合景點清單':'展開景點清單');
+}
 function toggleList(open){
   document.getElementById('listPanel').hidden=!open;
+  document.body.classList.toggle('has-list',open);
   document.getElementById('listButton').setAttribute('aria-expanded',String(open));
-  if(open){ toggleAbout(false); document.getElementById('closeList').focus({preventScroll:true}); }
+  sheet.inert=open||!selectedSpotId;sheet.setAttribute('aria-hidden',String(open||!selectedSpotId));
+  if(open){toggleAbout(false);setListSheetState('half');document.getElementById('closeList').focus({preventScroll:true});}
 }
 function toggleAbout(open){
   document.getElementById('aboutPanel').hidden=!open;
   document.getElementById('aboutButton').setAttribute('aria-expanded',String(open));
   if(open){ toggleList(false); document.getElementById('closeAbout').focus({preventScroll:true}); }
 }
+function collapseMapPanels(){
+  if(!document.getElementById('listPanel').hidden)setListSheetState('peek');
+  else if(selectedSpotId)setSheetState('peek',false);
+}
 function initSheetUI(){
   document.getElementById('closeDetail').addEventListener('click',()=>closeDetail());
   document.getElementById('detailWeekend').addEventListener('change',onSaveWeekend);
-  sheetHandle.addEventListener('click',()=>{
-    if(suppressHandleClick){suppressHandleClick=false;return;}
-    setSheetState(sheetState==='peek'?'half':sheetState==='half'?'full':'peek');
-  });
-  sheetHandle.addEventListener('keydown',event=>{
-    const levels=['peek','half','full'];
-    if(event.key==='ArrowUp'||event.key==='ArrowDown'){
-      event.preventDefault(); setSheetState(levels[Math.max(0,Math.min(2,levels.indexOf(sheetState)+(event.key==='ArrowUp'?1:-1)))]);
-    }
-  });
+  bindSnapPanel({panel:sheet,body:sheetBody,handle:sheetHandle,zone:document.getElementById('sheetDragZone'),isOpen:()=>Boolean(selectedSpotId),getState:()=>sheetState,setState:setSheetState,sizes:sheetSizes});
+  bindSnapPanel({panel:document.getElementById('listPanel'),body:document.getElementById('listBody'),handle:document.getElementById('listHandle'),zone:document.getElementById('listDragZone'),isOpen:()=>!document.getElementById('listPanel').hidden,getState:()=>listSheetState,setState:setListSheetState,sizes:listSheetSizes});
   document.getElementById('listButton').addEventListener('click',()=>toggleList(document.getElementById('listPanel').hidden));
   document.getElementById('closeList').addEventListener('click',()=>{toggleList(false);document.getElementById('listButton').focus();});
   document.getElementById('aboutButton').addEventListener('click',()=>toggleAbout(document.getElementById('aboutPanel').hidden));
@@ -164,41 +172,50 @@ function initSheetUI(){
     else if(!document.getElementById('listPanel').hidden){toggleList(false);document.getElementById('listButton').focus();}
     else if(selectedSpotId) closeDetail();
   });
-  map?.on('click',()=>{if(selectedSpotId) setSheetState('peek',false);});
+  map?.on('click',collapseMapPanels);
   window.addEventListener('resize',()=>{
     map?.invalidateSize(); if(selectedSpotId) setSheetState(sheetState);
+    if(!document.getElementById('listPanel').hidden)setListSheetState(listSheetState);
   });
-  const zone=document.getElementById('sheetDragZone');
+}
+// Both panels share snapping, drag threshold, keyboard controls and click suppression.
+function bindSnapPanel({panel,body,handle,zone,isOpen,getState,setState,sizes}){
+  let drag=null,suppressClick=false;
+  handle.addEventListener('click',()=>{
+    if(suppressClick){suppressClick=false;return;}
+    const state=getState();setState(state==='peek'?'half':state==='half'?'full':'peek');
+  });
+  handle.addEventListener('keydown',event=>{
+    const levels=['peek','half','full'];
+    if(event.key==='ArrowUp'||event.key==='ArrowDown'){
+      event.preventDefault();setState(levels[Math.max(0,Math.min(2,levels.indexOf(getState())+(event.key==='ArrowUp'?1:-1)))]);
+    }
+  });
   zone.addEventListener('pointerdown',event=>{
-    if(event.button!==0 || !selectedSpotId || (event.target.closest('button') && !event.target.closest('#sheetHandle'))) return;
-    drag={id:event.pointerId,y:event.clientY,height:sheetSizes()[sheetState],moved:false};
-    // Keep handle taps targeted at the button while still capturing header drags.
-    (event.target.closest('#sheetHandle')||zone).setPointerCapture(event.pointerId);
+    if(event.button!==0||!isOpen())return;
+    const button=event.target.closest('button');
+    if(button&&button!==handle)return;
+    drag={id:event.pointerId,y:event.clientY,height:sizes()[getState()],moved:false};
+    (button||zone).setPointerCapture(event.pointerId);
   });
   zone.addEventListener('pointermove',event=>{
-    if(!drag || event.pointerId!==drag.id) return;
+    if(!drag||event.pointerId!==drag.id)return;
     const delta=drag.y-event.clientY;
-    if(!drag.moved && Math.abs(delta)<6) return;
-    drag.moved=true;
-    sheet.classList.add('is-dragging');
-    sheetBody.hidden=false;
-    const sizes=sheetSizes();
-    sheet.style.height=`${Math.max(sizes.peek,Math.min(sizes.full,drag.height+delta))}px`;
+    if(!drag.moved&&Math.abs(delta)<6)return;
+    drag.moved=true;panel.classList.add('is-dragging');body.hidden=false;
+    const bounds=sizes();panel.style.height=`${Math.max(bounds.peek,Math.min(bounds.full,drag.height+delta))}px`;
   });
-  function endDrag(event){
-    if(!drag || event.pointerId!==drag.id) return;
-    const moved=drag.moved;
-    const height=parseFloat(sheet.style.height)||drag.height;
-    drag=null;
-    sheet.classList.remove('is-dragging');
+  zone.addEventListener('pointerup',event=>{
+    if(!drag||event.pointerId!==drag.id)return;
+    const {moved,height:initialHeight}=drag,height=parseFloat(panel.style.height)||initialHeight;
+    drag=null;panel.classList.remove('is-dragging');
     if(moved){
-      suppressHandleClick=true;
-      setTimeout(()=>{suppressHandleClick=false;},0);
-      const sizes=sheetSizes();
-      const nearest=Object.keys(sizes).reduce((a,b)=>Math.abs(sizes[a]-height)<Math.abs(sizes[b]-height)?a:b);
-      setSheetState(nearest);
+      suppressClick=true;setTimeout(()=>{suppressClick=false;},0);
+      const bounds=sizes(),nearest=Object.keys(bounds).reduce((a,b)=>Math.abs(bounds[a]-height)<Math.abs(bounds[b]-height)?a:b);
+      setState(nearest);
     }
-  }
-  zone.addEventListener('pointerup',endDrag);
-  zone.addEventListener('pointercancel',event=>{if(drag?.id===event.pointerId){drag=null;sheet.classList.remove('is-dragging');setSheetState(sheetState);}});
+  });
+  zone.addEventListener('pointercancel',event=>{
+    if(drag?.id===event.pointerId){drag=null;panel.classList.remove('is-dragging');setState(getState());}
+  });
 }

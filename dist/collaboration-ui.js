@@ -1,5 +1,5 @@
 // Shared-plan state is separate from the legacy browser-only save key.
-const cloudState={mode:'local',choosing:false,plan:null,user:null,authReady:false,authBusy:false,choicesLoading:false,choicesRequest:0,ready:false,api:null,epoch:0,pending:new Set(),revisions:{},stops:[],localSaved:null};
+const cloudState={mode:'local',choosing:false,plan:null,user:null,authReady:false,authBusy:false,opening:false,loadingTimer:null,choicesLoading:false,choicesRequest:0,ready:false,api:null,epoch:0,pending:new Set(),revisions:{},stops:[],localSaved:null};
 const cloudElement=id=>document.getElementById(id);
 const validPlanId=id=>typeof id==='string'&&/^[A-Za-z0-9]{20}$/.test(id);
 function cloudMessage(text){cloudElement('cloudStatus').textContent=text;}
@@ -20,7 +20,7 @@ function cloudSyncControls(){
     const id=control.dataset.id||selectedSpotId;
     control.disabled=shared&&(!cloudState.ready||cloudState.pending.has(id));
   });
-  cloudElement('cloudScope').textContent=shared?(cloudState.plan?.title||'共編行程'):'瀏覽器暫存';
+  cloudElement('weekendTitle').textContent=(shared?(cloudState.plan?.title||'共編行程'):'瀏覽器暫存')+'的賞楓週末';
   cloudElement('cloudLogin').hidden=!cloudState.authReady||signedIn;
   cloudElement('cloudLogin').disabled=!cloudState.api||cloudState.authBusy;
   cloudElement('cloudLogout').hidden=!cloudState.user;
@@ -45,7 +45,25 @@ function cloudSyncControls(){
   cloudElement('cloudOpen').disabled=cloudElement('cloudOpen').disabled||cloudState.choicesLoading;
   cloudElement('cloudCopyInvite').hidden=!owner||!cloudElement('cloudInviteLink').value;
 }
+function cloudSetLoading(open){
+  const dialog=cloudElement('cloudLoadingDialog');
+  cloudState.opening=open;
+  if(!open){
+    clearTimeout(cloudState.loadingTimer);cloudState.loadingTimer=null;
+    if(dialog.open)dialog.close();
+    return;
+  }
+  if(!dialog.open)dialog.showModal();
+  if(cloudState.loadingTimer===null){
+    const epoch=cloudState.epoch;
+    cloudState.loadingTimer=setTimeout(()=>{
+      if(!cloudState.opening||epoch!==cloudState.epoch)return;
+      cloudLocal();cloudMessage('開啟行程逾時，已切回瀏覽器暫存。請檢查網路後重試。');
+    },20000);
+  }
+}
 function cloudStop(){
+  cloudSetLoading(false);
   cloudState.stops.forEach(stop=>stop());cloudState.stops=[];cloudState.epoch++;
   cloudState.ready=false;cloudState.revisions={};cloudState.choicesLoading=false;cloudState.choicesRequest++;
 }
@@ -69,13 +87,13 @@ function cloudFail(error){
 }
 async function cloudOpen(id){
   if(!cloudState.user)throw Error('請先登入 Google，再開啟共編行程');
+  if(!cloudState.api)throw Error('Firebase 尚未載入');
   if(!validPlanId(id))throw Error('行程連結格式不正確');
   if(cloudState.pending.size)throw Error('請等待儲存完成');
   if(cloudState.mode==='local')cloudState.localSaved={...saved};
-  cloudStop();const epoch=cloudState.epoch;
+  cloudStop();const epoch=cloudState.epoch;cloudSetLoading(true);
   cloudState.mode='shared';cloudState.choosing=false;cloudState.plan={id};saved={};cloudRefresh();
   cloudElement('cloudInviteLink').value='';cloudElement('cloudInviteLink').hidden=true;cloudElement('cloudMemberList').replaceChildren();
-  if(!cloudState.api)throw Error('Firebase 尚未載入');
   try{
     const plan=await cloudState.api.getPlan(id);
     if(epoch!==cloudState.epoch)return;
@@ -88,7 +106,7 @@ async function cloudOpen(id){
       cloudStop();cloudState.pending.clear();cloudState.plan=updated;saved={};
       cloudMessage('此行程正在刪除，已停止共編。建立者可繼續完成刪除。');cloudRefresh();
     }));
-    if(plan.deletingAt){cloudMessage('此行程尚未刪除完成，請按「繼續刪除行程」。');return;}
+    if(plan.deletingAt){cloudSetLoading(false);cloudMessage('此行程尚未刪除完成，請按「繼續刪除行程」。');return;}
     cloudState.stops.push(cloudState.api.watchPlan(id,(records,meta)=>{
       if(epoch!==cloudState.epoch)return;
       const next={},revisions={};
@@ -98,6 +116,7 @@ async function cloudOpen(id){
         if(r.weekend?.toDate)next[r.id]=r.weekend.toDate().toISOString().slice(0,10);
       }
       saved=next;cloudState.revisions=revisions;cloudState.ready=!meta.fromCache&&!meta.pending;
+      if(cloudState.ready)cloudSetLoading(false);
       cloudMessage(meta.fromCache?'離線／等待伺服器確認，暫停編輯。':meta.pending?'正在儲存…':'已同步・此行程的成員可共同編輯');
       cloudRefresh();
     },error=>{
@@ -237,6 +256,8 @@ async function cloudDelete(target){
 }
 function initCollaboration(){
   cloudElement('cloudPanelButton').addEventListener('click',()=>{cloudElement('cloudDialog').showModal();});
+  cloudElement('cloudCancelOpen').addEventListener('click',cloudLocal);
+  cloudElement('cloudLoadingDialog').addEventListener('cancel',event=>{event.preventDefault();cloudLocal();});
   cloudElement('cloudClose').addEventListener('click',()=>cloudElement('cloudDialog').close());
   cloudElement('cloudLocal').addEventListener('click',()=>cloudAction(cloudChooseOther));
   cloudElement('cloudReturn').addEventListener('click',()=>{cloudState.choosing=false;cloudSyncControls();});
@@ -298,7 +319,7 @@ function initCollaboration(){
   if(!['http:','https:'].includes(window.location.protocol)){
     cloudState.authReady=true;cloudMessage('登入與共編需透過 HTTP／HTTPS 網站使用。');cloudSyncControls();return;
   }
-  import('./firebase-client.mjs?v=20261102-plans2').then(api=>{
+  import('./firebase-client.mjs?v=20261102-panels3').then(api=>{
     cloudState.api=api;
     api.observeAuth(user=>{cloudAuthChanged(user);},error=>{
       cloudAuthChanged(null);cloudFail(error);
@@ -306,6 +327,6 @@ function initCollaboration(){
   }).catch(()=>{
     cloudState.authReady=true;cloudMessage('Firebase 無法載入；瀏覽器暫存仍可使用，請檢查網路後重新整理。');cloudSyncControls();
   });
-  window.addEventListener('offline',()=>{if(cloudState.mode==='shared'){cloudState.ready=false;cloudMessage('目前離線，共編暫停編輯。');cloudSyncControls();}});
+  window.addEventListener('offline',()=>{if(cloudState.opening){cloudLocal();cloudMessage('目前離線，已切回瀏覽器暫存。');return;}if(cloudState.mode==='shared'){cloudState.ready=false;cloudMessage('目前離線，共編暫停編輯。');cloudSyncControls();}});
   cloudSyncControls();
 }

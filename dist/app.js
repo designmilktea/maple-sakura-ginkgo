@@ -156,6 +156,7 @@ function filteredSpots(){
     if(!matchesArea(s,activeArea)) return false;
     if(!matchesPeak(s,activePeak)) return false;
     if(activeWeekend==='all') return true;
+    if(activeWeekend==='saved') return Boolean(saved[s.id]);
     if(activeWeekend==='unsaved') return !saved[s.id];
     return saved[s.id]===activeWeekend;
   });
@@ -185,6 +186,7 @@ function setFilter(value){ activeWeekend=value; renderFilters(); renderSpots(); 
 
 function renderFilters(){
   const items = [
+    {value:'saved',label:'所有已存週末'},
     ...weekends.map(w=>({value:w.value,label:w.short})),
     ...oldWeekends().map(date=>({value:date,label:`已保存 ${date}`})),
     {value:'unsaved',label:'尚未選擇'}
@@ -196,8 +198,6 @@ function renderFilters(){
 function renderSpots(){
   const visible = filteredSpots();
   document.getElementById('visibleCount').textContent = visible.length;
-  const selectedWeekend = weekends.find(w=>w.value===activeWeekend);
-  document.getElementById('listTitle').textContent = selectedWeekend ? selectedWeekend.short : activeWeekend==='unsaved' ? '尚未安排' : activeWeekend==='all' ? areaLabels[activeArea] : `已保存 ${activeWeekend}`;
   document.getElementById('spotList').innerHTML = visible.map(spot=>`
     <article class="spot-card ${spot.area}" data-spot-id="${spot.id}">
       <button class="spot-summary" type="button" data-open-spot="${spot.id}" aria-label="查看 ${spot.ja} 詳情"><span class="spot-summary-text"><span class="area-tag">${spot.region}</span><h3 lang="ja">${spot.ja}</h3></span><span class="list-arrow" aria-hidden="true">›</span></button>

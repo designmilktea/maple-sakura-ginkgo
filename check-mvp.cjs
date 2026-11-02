@@ -22,9 +22,9 @@ function boot(initial='{}', denyStorage=false, href='http://localhost:4173/'){
   const elements=new Map();
   const memory={value:initial};
   const document={
-    hidden:false,body:{classList:{add(){},remove(){}}},
+    hidden:false,body:{classList:{add(){},remove(){},toggle(){}}},
     getElementById(id){
-      if(!elements.has(id)) elements.set(id,{innerHTML:'',textContent:'',hidden:false,value:'all',dataset:{},style:{},scrollTop:0,open:false,addEventListener(type,handler){(this.listeners||={})[type]=handler;},setAttribute(){},focus(){this.focused=true;},select(){this.selected=true;},showModal(){this.open=true;},close(){this.open=false;},classList:{add(){},remove(){},toggle(){}}});
+      if(!elements.has(id)) elements.set(id,{innerHTML:'',textContent:'',hidden:false,value:'all',dataset:{},style:{},scrollTop:0,open:false,addEventListener(type,handler){(this.listeners||={})[type]=handler;},setPointerCapture(){},setAttribute(name,value){this[name]=value;},focus(){this.focused=true;},select(){this.selected=true;},showModal(){this.open=true;},close(){this.open=false;},classList:{add(){},remove(){},toggle(){}}});
       return elements.get(id);
     },
     querySelectorAll(){return [];}, querySelector(){return null;}, addEventListener(){}
@@ -250,6 +250,38 @@ sheetApp.run(`setArea('tokyo-all');openSpot('tokyo-rikugien');onSaveWeekend({tar
 assert.equal(sheetApp.run('selectedSpotId'),'tokyo-rikugien');
 sheetApp.run(`onSaveWeekend({target:{dataset:{id:'tokyo-rikugien'},value:''}})`);
 assert.equal(sheetApp.run('selectedSpotId'),null);
+// Saved-all includes dates outside the upcoming-weekend range and combines filters.
+const allSaved=boot(JSON.stringify({kenrokuen:'2025-11-08','tokyo-rikugien':'2026-11-14','toyama-baba':'2026-12-05'}));
+allSaved.run("setFilter('saved')");
+assert.equal(allSaved.run('filteredSpots().length'),3);
+allSaved.run("setArea('tokyo-all')");assert.equal(allSaved.run('filteredSpots()[0].id'),'tokyo-rikugien');
+allSaved.run('resetAllFilters()');assert.equal(allSaved.run('activeWeekend'),'all');
+assert.equal(Object.keys(JSON.parse(allSaved.memory.value)).length,3);
+assert.match(allSaved.elements.get('weekendFilters').innerHTML,/所有已存週末/);
+const listSheet=boot();
+listSheet.run('toggleList(true)');assert.equal(listSheet.run('listSheetState'),'half');
+listSheet.run('document.getElementById("listHandle").listeners.click()');assert.equal(listSheet.run('listSheetState'),'full');
+listSheet.run('document.getElementById("listHandle").listeners.click()');assert.equal(listSheet.run('listSheetState'),'peek');
+assert.equal(listSheet.elements.get('listBody').hidden,true);
+listSheet.run('document.getElementById("listHandle").listeners.keydown({key:"ArrowUp",preventDefault(){}})');
+assert.equal(listSheet.run('listSheetState'),'half');assert.equal(listSheet.elements.get('listBody').hidden,false);
+listSheet.run(`var dragTarget={closest:()=>document.getElementById('listHandle')};
+ document.getElementById('listDragZone').listeners.pointerdown({button:0,pointerId:1,clientY:700,target:dragTarget});
+ document.getElementById('listDragZone').listeners.pointermove({pointerId:1,clientY:100});
+ document.getElementById('listDragZone').listeners.pointerup({pointerId:1});`);
+assert.equal(listSheet.run('listSheetState'),'full');
+listSheet.run('document.getElementById("listHandle").listeners.click()');assert.equal(listSheet.run('listSheetState'),'full'); // drag synthetic click suppressed
+listSheet.run('collapseMapPanels()');
+assert.equal(listSheet.run('listSheetState'),'peek');
+listSheet.run('document.getElementById("closeList").listeners.click()');
+assert.equal(listSheet.elements.get('listPanel').hidden,true);
+assert.equal(listSheet.elements.get('listButton').focused,true);
+const listMarkup=markup.match(/<section id="listPanel"[\s\S]*?<\/section>/)[0];
+assert.doesNotMatch(listMarkup,/EXPLORE THE MAP|全部地區|不限見頃|resultSummary/);
+assert.match(listMarkup,/id="listTitle" class="sr-only"/);
+assert.match(controls,/weekend-heading[\s\S]*id="cloudPanelButton"/);
+assert.doesNotMatch(controls,/cloud-toolbar|cloudScope/);
+console.log('PASS: all-saved dates with combined filters, list snap/drag/keyboard/background collapse/close, compact header and plan edit control.');
 const seasonal=boot();
 assert.equal(seasonal.run('spots.filter(hasMapLocation).length'),85);
 assert.equal(seasonal.run('spots.filter(s=>!hasMapLocation(s)).length'),11);

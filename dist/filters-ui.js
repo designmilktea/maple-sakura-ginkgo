@@ -72,9 +72,6 @@ function updateFilterLabels(){
   document.getElementById('peakFilter').classList.toggle('has-value',peaks.length>0);
   document.getElementById('resetFilters').hidden=activeArea==='all'&&peaks.length===0&&activeWeekend==='all';
   document.getElementById('clearPeak').hidden=peaks.length===0;
-  const weekend=weekends.find(w=>w.value===activeWeekend);
-  const summary=[peaks.length?`例年 ${peakText}`:'不限見頃',activeWeekend==='all'?'所有週末':activeWeekend==='unsaved'?'尚未安排':`我的週末 ${weekend?.short||activeWeekend}`];
-  document.getElementById('resultSummary').textContent=summary.join(' · ');
 }
 function choiceRow(value,label,selected,subtitle='',className='',multi=false){
   const checked=multi?(value==='all'?selected.length===0:selected.includes(value)):selected===value;
