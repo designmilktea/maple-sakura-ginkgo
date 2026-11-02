@@ -58,7 +58,7 @@ let saved = {};
 try {
   const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   if(data && typeof data==='object' && !Array.isArray(data)) {
-    saved = Object.fromEntries(Object.entries(data).filter(([id,date])=>spots.some(s=>s.id===id) && /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date))));
+    saved = Object.fromEntries(Object.entries(data).filter(([id,date])=>spots.some(s=>s.id===id) && (date==='skip' || /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(date)))));
   }
 } catch { storageAvailable = false; }
 let activeWeekend = 'all';
@@ -89,13 +89,14 @@ function getUpcomingWeekends(today = new Date()){
   });
 }
 let weekends = getUpcomingWeekends();
-function oldWeekends(){ return [...new Set(Object.values(saved))].filter(date=>!weekends.some(w=>w.value===date)).sort(); }
+function hasSavedWeekend(value){ return Boolean(value)&&value!=='skip'; }
+function oldWeekends(){ return [...new Set(Object.values(saved))].filter(date=>hasSavedWeekend(date)&&!weekends.some(w=>w.value===date)).sort(); }
 
 function xUrl(name){ return `https://x.com/search?q=${encodeURIComponent(`\"${name}\" filter:images`)}&src=typed_query&f=live`; }
 function mapsUrl(spot){ return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${spot.ja} ${spot.address}`)}`; }
 function optionMarkup(value=''){
-  const retained = value && !weekends.some(w=>w.value===value) ? `<option value="${value}" selected>已保存：${value} 起的週末</option>` : '';
-  return `<option value="">尚未選擇</option>${weekends.map((w,i)=>`<option value="${w.value}" ${value===w.value?'selected':''}>${['本週末','下週末','再下週末'][i]}｜${w.label}</option>`).join('')}${retained}`;
+  const retained = hasSavedWeekend(value) && !weekends.some(w=>w.value===value) ? `<option value="${value}" selected>已保存：${value} 起的週末</option>` : '';
+  return `<option value="">尚未選擇</option>${weekends.map((w,i)=>`<option value="${w.value}" ${value===w.value?'selected':''}>${['本週末','下週末','再下週末'][i]}｜${w.label}</option>`).join('')}${retained}<option value="skip" ${value==='skip'?'selected':''}>這次不去</option>`;
 }
 
 const map = typeof L!=='undefined' ? L.map('map', {zoomControl:false, scrollWheelZoom:true}).setView([36.55, 137.05], 8) : null;
@@ -126,7 +127,7 @@ if(map){
 
 function markerIcon(spot){
   const kind=foliageKind(spot);
-  return L.divIcon({className:'maple-marker', html:`<div class="marker-pin foliage-${kind}${saved[spot.id]?' is-saved':''}"><span>${foliageSymbol(kind)}</span></div>`, iconSize:[30,30], iconAnchor:[15,28]});
+  return L.divIcon({className:'maple-marker', html:`<div class="marker-pin foliage-${kind}${hasSavedWeekend(saved[spot.id])?' is-saved':saved[spot.id]==='skip'?' is-skipped':''}"><span>${foliageSymbol(kind)}</span></div>`, iconSize:[30,30], iconAnchor:[15,28]});
 }
 spots.forEach(spot => {
   if(!map||!hasMapLocation(spot)) return;
@@ -156,7 +157,7 @@ function filteredSpots(){
     if(!matchesArea(s,activeArea)) return false;
     if(!matchesPeak(s,activePeak)) return false;
     if(activeWeekend==='all') return true;
-    if(activeWeekend==='saved') return Boolean(saved[s.id]);
+    if(activeWeekend==='saved') return hasSavedWeekend(saved[s.id]);
     if(activeWeekend==='unsaved') return !saved[s.id];
     return saved[s.id]===activeWeekend;
   });
@@ -189,6 +190,7 @@ function renderFilters(){
     {value:'saved',label:'所有已存週末'},
     ...weekends.map(w=>({value:w.value,label:w.short})),
     ...oldWeekends().map(date=>({value:date,label:`已保存 ${date}`})),
+    {value:'skip',label:'這次不去'},
     {value:'unsaved',label:'尚未選擇'}
   ];
   document.getElementById('weekendFilters').innerHTML = items.map(i=>`<button class="filter-pill ${activeWeekend===i.value?'active':''}" aria-pressed="${activeWeekend===i.value}" data-filter="${i.value}" type="button">${i.label}</button>`).join('');
@@ -201,7 +203,7 @@ function renderSpots(){
   document.getElementById('spotList').innerHTML = visible.map(spot=>`
     <article class="spot-card ${spot.area}" data-spot-id="${spot.id}">
       <button class="spot-summary" type="button" data-open-spot="${spot.id}" aria-label="查看 ${spot.ja} 詳情"><span class="spot-summary-text"><span class="area-tag">${spot.region}</span><h3 lang="ja">${spot.ja}</h3></span><span class="list-arrow" aria-hidden="true">›</span></button>
-      <div class="spot-card-meta">${!hasMapLocation(spot)?'<p class="location-pending">觀賞位置待核對 · 可開啟 Google Maps</p>':''}${saved[spot.id] ? `<p class="saved-badge">我的週末 · ${saved[spot.id]}</p>` : ''}</div>
+      <div class="spot-card-meta">${!hasMapLocation(spot)?'<p class="location-pending">觀賞位置待核對 · 可開啟 Google Maps</p>':''}${saved[spot.id] ? `<p class="saved-badge">${saved[spot.id]==='skip'?'這次不去':`我的週末 · ${saved[spot.id]}`}</p>` : ''}</div>
       <div class="spot-card-footer"><div class="list-weekend-field"><label for="list-weekend-${spot.id}">我的賞楓週末</label><select id="list-weekend-${spot.id}" class="weekend-select list-weekend-select" data-id="${spot.id}" data-weekend-origin="list" aria-label="${spot.ja} 的賞楓週末">${optionMarkup(saved[spot.id]||'')}</select></div><div class="spot-quick-actions" role="group" aria-label="${spot.ja} 的外部連結"><a class="spot-quick-link x" href="${xUrl(spot.searchName||spot.ja)}" target="_blank" rel="noopener noreferrer" aria-label="查看 ${spot.ja} 的 X 最新圖片（另開分頁）" title="X 最新圖片 · ${spot.ja}"><span aria-hidden="true">𝕏</span></a><a class="spot-quick-link maps" href="${mapsUrl(spot)}" target="_blank" rel="noopener noreferrer" aria-label="在 Google Maps 開啟 ${spot.ja}（另開分頁）" title="Google Maps · ${spot.ja}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></a></div></div>
     </article>`).join('');
   document.querySelectorAll('[data-open-spot]').forEach(button=>button.addEventListener('click',()=>focusSpot(button.dataset.openSpot)));
@@ -236,7 +238,7 @@ function onSaveWeekend(event){
   catch { storageAvailable=false; }
   const spot = spots.find(s=>s.id===id);
   const weekend = weekends.find(w=>w.value===value);
-  showToast(!storageAvailable ? '瀏覽器無法保存；此安排僅在本次頁面有效' : value ? `已將 ${spot.zh} 加入 ${weekend?.short||value}` : `已清除 ${spot.zh} 的週末安排`);
+  showToast(!storageAvailable ? '瀏覽器無法保存；此安排僅在本次頁面有效' : value==='skip' ? `已將 ${spot.zh} 標記為這次不去` : value ? `已將 ${spot.zh} 加入 ${weekend?.short||value}` : `已清除 ${spot.zh} 的週末安排`);
   renderFilters();
   renderSpots();
   if(selectedSpotId===id) renderDetail(spot);

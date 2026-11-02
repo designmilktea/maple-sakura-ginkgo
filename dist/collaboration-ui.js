@@ -109,11 +109,14 @@ async function cloudOpen(id){
     if(plan.deletingAt){cloudSetLoading(false);cloudMessage('此行程尚未刪除完成，請按「繼續刪除行程」。');return;}
     cloudState.stops.push(cloudState.api.watchPlan(id,(records,meta)=>{
       if(epoch!==cloudState.epoch)return;
-      const next={},revisions={};
-      for(const r of records){
-        if(!spots.some(s=>s.id===r.id))continue;
+      // Clears are revisioned tombstones; missing/older records cannot undo a confirmed write.
+      const next={...saved},revisions={...cloudState.revisions};
+      for(const r of meta.pending?[]:records){
+        if(!spots.some(s=>s.id===r.id)||!Number.isInteger(r.revision)||r.revision<(revisions[r.id]||0))continue;
         revisions[r.id]=r.revision;
-        if(r.weekend?.toDate)next[r.id]=r.weekend.toDate().toISOString().slice(0,10);
+        if(r.weekend==='skip')next[r.id]='skip';
+        else if(r.weekend?.toDate)next[r.id]=r.weekend.toDate().toISOString().slice(0,10);
+        else delete next[r.id];
       }
       saved=next;cloudState.revisions=revisions;cloudState.ready=!meta.fromCache&&!meta.pending;
       if(cloudState.ready)cloudSetLoading(false);
@@ -132,15 +135,23 @@ function handleCloudWeekend(event){
   const id=event.target.dataset.id,value=event.target.value;
   if(!cloudState.ready||!cloudState.user){showToast('請先登入並等待行程完成同步');cloudRefresh();return true;}
   if(cloudState.pending.has(id))return true;
-  if(!spots.some(s=>s.id===id)||!validCloudDate(value)){showToast('週末日期不正確');cloudRefresh();return true;}
+  if(!spots.some(s=>s.id===id)||!validCloudChoice(value)){showToast('週末日期不正確');cloudRefresh();return true;}
   const epoch=cloudState.epoch,planId=cloudState.plan.id,revision=cloudState.revisions[id]||0;
   cloudState.pending.add(id);cloudSyncControls();cloudMessage('正在儲存…');
-  cloudState.api.writeWeekend(planId,id,value,revision).then(()=>{
-    if(epoch===cloudState.epoch)showToast(value?'已儲存至共編行程':'已清除此景點的共編安排');
+  cloudState.api.writeWeekend(planId,id,value,revision).then(receipt=>{
+    if(epoch!==cloudState.epoch)return;
+    const committed=receipt||{value,revision:revision+1};
+    // Apply only after the transaction commits, without touching browser storage.
+    if(committed.revision>=(cloudState.revisions[id]||0)){
+      cloudState.revisions[id]=committed.revision;
+      if(committed.value)saved[id]=committed.value;else delete saved[id];
+    }
+    showToast(value==='skip'?'已儲存至共編行程：這次不去':value?'已儲存至共編行程':'已清除此景點的共編安排');
   }).catch(error=>{if(epoch===cloudState.epoch){cloudFail(error);showToast(error.message||'儲存失敗，原安排未變更');}})
     .finally(()=>{if(epoch===cloudState.epoch){cloudState.pending.delete(id);cloudRefresh();}});
   return true;
 }
+function validCloudChoice(value){ return value==='skip'||validCloudDate(value); }
 function validCloudDate(value){
   if(value==='')return true;
   if(!/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/.test(value))return false;
@@ -182,7 +193,7 @@ async function cloudImport(){
   if(!cloudState.ready)throw Error('請等待同步完成');
   const epoch=cloudState.epoch,planId=cloudState.plan.id;
   const local=cloudState.localSaved||{};
-  const entries=Object.entries(local).filter(([id,date])=>spots.some(s=>s.id===id)&&validCloudDate(date));
+  const entries=Object.entries(local).filter(([id,date])=>spots.some(s=>s.id===id)&&validCloudChoice(date));
   if(!window.confirm('將瀏覽器暫存中的 '+entries.length+' 筆安排加入目前共編行程？已有安排或曾清除的景點不會覆蓋。'))return;
   // Individual transactions never replace the entire shared plan.
   for(const [id,value]of entries){
@@ -319,7 +330,7 @@ function initCollaboration(){
   if(!['http:','https:'].includes(window.location.protocol)){
     cloudState.authReady=true;cloudMessage('登入與共編需透過 HTTP／HTTPS 網站使用。');cloudSyncControls();return;
   }
-  import('./firebase-client.mjs?v=20261102-panels3').then(api=>{
+  import('./firebase-client.mjs?v=20261102-skip1').then(api=>{
     cloudState.api=api;
     api.observeAuth(user=>{cloudAuthChanged(user);},error=>{
       cloudAuthChanged(null);cloudFail(error);

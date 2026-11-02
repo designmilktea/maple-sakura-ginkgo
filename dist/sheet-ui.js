@@ -98,7 +98,7 @@ function closeDetail(restoreFocus=true, syncUrl=true){
 function updateSelectedMarker(){
   markers.forEach((marker,id)=>{
     const spot=spots.find(spot=>spot.id===id);
-    marker.getElement()?.setAttribute('aria-label',`${spot.ja}・${foliageLabel(foliageKind(spot))}・${saved[id]?'已存週末':'未存週末'}`);
+    marker.getElement()?.setAttribute('aria-label',`${spot.ja}・${foliageLabel(foliageKind(spot))}・${saved[id]==='skip'?'這次不去':saved[id]?'已存週末':'未存週末'}`);
     marker.getElement()?.classList.toggle('is-selected',id===selectedSpotId);
     marker.setZIndexOffset(id===selectedSpotId?1000:0);
   });

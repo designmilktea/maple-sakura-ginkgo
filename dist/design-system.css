@@ -170,3 +170,6 @@ body.has-list .map-coverage{display:none}
 @media(prefers-reduced-motion:reduce){.loading-spinner{animation:none}.list-panel{transition:none}}
 
 body.has-list .detail-sheet{visibility:hidden;pointer-events:none}
+
+/* A deliberate skip stays distinct from a scheduled weekend. */
+.marker-pin.is-skipped{border-style:dashed;opacity:.7}

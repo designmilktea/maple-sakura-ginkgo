@@ -30,7 +30,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Check plan deletion permissions in isolated emulator
+      - name: Check collaboration permissions in isolated emulator
         run: |
           npm install --prefix "$RUNNER_TEMP/firebase-test" --no-audit --no-fund firebase@13.1.0 @firebase/rules-unit-testing@6.0.0 firebase-tools@15.34.2
           export NODE_PATH="$RUNNER_TEMP/firebase-test/node_modules"

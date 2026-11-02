@@ -83,3 +83,6 @@ Sharing/copy checks additionally cover exact copied values, clipboard denial, sh
 Site identity is persisted in `.openai/hosting.json`. No source-repository credential is stored in this project. The existing private Site must be reused rather than recreated.
 
 Source upload and deployment are pending explicit user approval after automatic approval review rejected export to the Sites source repository. Do not bypass that decision.
+
+
+Weekend assignment update (2026-11-02): detail and list selectors support `skip` (「這次不去」) alongside a Saturday date and empty selection. The dedicated skip filter intersects with region/season; 「所有已存週末」 includes dates only, and 「尚未選擇」 excludes explicit skips. Local choices use the existing browser key and are never automatically uploaded. Firestore keeps the same revisioned assignment document: `weekend` is a Saturday Timestamp, exact `skip`, or null for clearing. Membership, conflicts, owner controls and deletion restrictions are unchanged. A committed transaction returns its value/revision so the UI refreshes immediately; older snapshots and pending writes cannot replace a confirmed choice. Regression coverage includes local persistence, detail/list rendering, delayed snapshots, failures and 209 emulator authorization checks.

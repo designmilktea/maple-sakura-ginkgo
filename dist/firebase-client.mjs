@@ -80,10 +80,11 @@ export async function deletePlan(id){
 
 export async function writeWeekend(id,spotId,weekend,expectedRevision){
   const user=requireUser(),ref=doc(db,'weekendPlans',id,'spots',spotId);
-  await runTransaction(db,async tx=>{
+  return runTransaction(db,async tx=>{
     const previous=await tx.get(ref),revision=previous.exists()?previous.data().revision:0;
     if(revision!==expectedRevision)throw Error('這個景點已被其他人更新，請確認最新安排後再選一次');
-    tx.set(ref,{weekend:weekend?Timestamp.fromDate(new Date(weekend+'T00:00:00Z')):null,revision:revision+1,updatedBy:user.uid,updatedAt:serverTimestamp()});
+    tx.set(ref,{weekend:weekend==='skip'?'skip':weekend?Timestamp.fromDate(new Date(weekend+'T00:00:00Z')):null,revision:revision+1,updatedBy:user.uid,updatedAt:serverTimestamp()});
+    return {value:weekend,revision:revision+1};
   });
 }
 export async function createInvite(id){

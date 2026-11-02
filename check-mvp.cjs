@@ -448,3 +448,45 @@ async function checkSpotTools(){
   console.log('PASS: spot deep links, filter conflicts, invalid IDs, clean share URLs, history restoration, all three exact copy values, clipboard denial, native share payload/cancellation/failure and desktop fallback.');
 }
 checkSpotTools().catch(error=>{console.error(error);process.exitCode=1;});
+
+// Deliberate skips survive reload and remain separate from scheduled/unselected spots.
+const skipped=boot();
+skipped.run('var L={divIcon:options=>options}');
+skipped.run('openSpot("kenrokuen");onSaveWeekend({target:{dataset:{id:"kenrokuen"},value:"skip"}})');
+assert.equal(JSON.parse(skipped.memory.value).kenrokuen,'skip');
+assert.match(skipped.elements.get('detailWeekend').innerHTML,/value="skip" selected>這次不去/);
+assert.match(skipped.elements.get('spotList').innerHTML,/saved-badge">這次不去/);
+assert.match(skipped.run('markerIcon(spots[0]).html'),/is-skipped/);
+assert.doesNotMatch(skipped.run('markerIcon(spots[0]).html'),/is-saved/);
+assert.equal(skipped.run('oldWeekends().includes("skip")'),false);
+assert.match(skipped.elements.get('weekendFilters').innerHTML,/data-filter="skip"[^>]*>這次不去/);
+skipped.run('setFilter("saved")');assert.equal(skipped.run('filteredSpots().length'),0);
+skipped.run('setFilter("unsaved")');assert.equal(skipped.run('filteredSpots().some(s=>s.id==="kenrokuen")'),false);
+skipped.run('setFilter("skip")');assert.equal(skipped.run('filteredSpots()[0].id'),'kenrokuen');
+skipped.run('setArea("tokyo-all")');assert.equal(skipped.run('filteredSpots().length'),0);
+const skipReload=boot(skipped.memory.value);assert.equal(skipReload.run('saved.kenrokuen'),'skip');
+skipReload.run('openSpot("kenrokuen")');assert.match(skipReload.elements.get('detailWeekend').innerHTML,/value="skip" selected/);
+changeListWeekend(skipReload,'kenrokuen',nextWeekend);assert.equal(skipReload.run('saved.kenrokuen'),nextWeekend);
+changeListWeekend(skipReload,'kenrokuen','skip');assert.equal(skipReload.run('saved.kenrokuen'),'skip');
+changeListWeekend(skipReload,'kenrokuen','');assert.equal(skipReload.run('saved.kenrokuen'),undefined);
+console.log('PASS: skip choice in list/detail, persistence, marker semantics, skip/saved/unselected filters, area intersection, date reassignment and clearing.');
+
+// Exercise the actual detail/list rendering after a committed shared write,
+// before any collection snapshot arrives (the reported regression).
+(async()=>{
+  const shared=boot(JSON.stringify({kenrokuen:'2026-11-07'}));
+  shared.run(fs.readFileSync(__dirname+'/dist/collaboration-ui.js','utf8'));
+  shared.run(`openSpot('kenrokuen');cloudState.mode='shared';cloudState.authReady=true;
+    cloudState.user={uid:'alice'};cloudState.plan={id:'ABCDEFGHIJKLMNOPQRST',title:'測試'};
+    cloudState.localSaved={...saved};cloudState.ready=true;cloudState.revisions={kenrokuen:4};
+    cloudState.api={writeWeekend:async(id,spot,value,revision)=>({value,revision:revision+1})};`);
+  for(const value of ['2026-11-14','skip','']){
+    shared.run(`handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:${JSON.stringify(value)}}})`);
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(shared.run('saved.kenrokuen'),value||undefined);
+    assert.equal(shared.elements.get('detailWeekend').innerHTML,shared.run(`optionMarkup(${JSON.stringify(value)})`));
+    checkListShortcuts(shared);
+    assert.equal(JSON.parse(shared.memory.value).kenrokuen,'2026-11-07');
+  }
+  console.log('PASS: committed shared date/skip/clear immediately update actual detail/list markup while browser storage remains unchanged.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

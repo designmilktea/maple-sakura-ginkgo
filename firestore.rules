@@ -6,7 +6,8 @@ rules_version = '2';
 // members/{uid}: uid, role='editor', inviteToken (48 hex), joinedAt (immutable).
 // invites/{48-hex token}: createdAt (immutable), expiresAt (max 8 days, immutable),
 //   revoked (bool; only false -> true). Only owner lists tokens.
-// spots/{known spot id}: weekend (Saturday 00:00 UTC timestamp or null tombstone),
+// spots/{known spot id}: weekend (Saturday 00:00 UTC timestamp, 'skip', or null),
+//   'skip' means explicitly not attending this time; null clears the assignment.
 //   revision (positive int <= 10M, increments exactly one), updatedBy, updatedAt.
 // weekendPlanUsers/{uid}/plans/{planId}: title (1..80), joinedAt (server time).
 // weekendPlanDeletions/{planId}: deletedAt server timestamp, permanent ID tombstone.
@@ -69,7 +70,7 @@ service cloud.firestore {
     function validAssignment(d) {
       return d.keys().hasAll(['weekend','revision','updatedBy','updatedAt']) &&
         d.keys().hasOnly(['weekend','revision','updatedBy','updatedAt']) &&
-        (d.weekend == null || (d.weekend is timestamp &&
+        (d.weekend == null || d.weekend == 'skip' || (d.weekend is timestamp &&
           d.weekend.toMillis() >= 1577836800000 && d.weekend.toMillis() < 4102444800000 &&
           d.weekend.toMillis() % 604800000 == 172800000)) &&
         d.revision is int && d.revision >= 1 && d.revision <= 10000000 &&

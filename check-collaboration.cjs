@@ -42,6 +42,11 @@ function bootUI(){
   auth.currentUser=null;
   await assert.rejects(()=>evaluate(`writeWeekend('${id}','kenrokuen','2026-11-14',2)`),/登入/);
   assert.equal(sdkWrites.length,2);
+  auth.currentUser={uid:'bob'};
+  const receipt=await evaluate(`writeWeekend('${id}','kenrokuen','skip',2)`);
+  assert.equal(receipt.value,'skip');assert.equal(receipt.revision,3);
+  assert.equal(records.get(ref).weekend,'skip');
+  auth.currentUser=null;
   const ui=bootUI();
   assert.equal(ui.run("validCloudDate('2026-11-07')"),true);
   for(const value of ['2026-11-08','2026-02-31','2026-13-01','bad'])assert.equal(ui.run('validCloudDate('+JSON.stringify(value)+')'),false);
@@ -61,8 +66,31 @@ function bootUI(){
   ui.run("handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:'2026-11-21'}})");
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(ui.run('writeCalls[0][3]'),4);
-  assert.equal(ui.run('saved.kenrokuen'),'2026-11-14'); // no optimistic success or full-map overwrite
+  assert.equal(ui.run('saved.kenrokuen'),'2026-11-21'); // acknowledged transaction must update before a delayed snapshot
   assert.equal(ui.run('cloudState.localSaved.kenrokuen'),'2026-11-07');
+  // Delayed snapshots cannot undo acknowledged writes, including clearing.
+  ui.run("listener([{id:'kenrokuen',revision:4,weekend:{toDate:()=>new Date('2026-11-14T00:00:00Z')}}],{fromCache:false,pending:false})");
+  assert.equal(ui.run('saved.kenrokuen'),'2026-11-21');
+  ui.run("handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:'skip'}})");
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(ui.run('saved.kenrokuen'),'skip');assert.equal(ui.run('cloudState.revisions.kenrokuen'),6);
+  ui.run("listener([{id:'kenrokuen',revision:7,weekend:null}],{fromCache:false,pending:true})");
+  assert.equal(ui.run('saved.kenrokuen'),'skip'); // pending writes may still fail
+  ui.run("listener([{id:'kenrokuen',revision:6,weekend:'skip'}],{fromCache:false,pending:false})");
+  ui.run("handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:''}})");
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(ui.run('saved.kenrokuen'),undefined);
+  ui.run("listener([{id:'kenrokuen',revision:6,weekend:'skip'}],{fromCache:false,pending:false})");
+  assert.equal(ui.run('saved.kenrokuen'),undefined);
+  // A newer member update wins over a delayed receipt, failures retain the prior choice.
+  ui.run("var finishWrite;cloudState.api.writeWeekend=()=>new Promise(resolve=>finishWrite=resolve);handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:'skip'}})");
+  ui.run("listener([{id:'kenrokuen',revision:9,weekend:{toDate:()=>new Date('2026-11-14T00:00:00Z')}}],{fromCache:false,pending:false});finishWrite({value:'skip',revision:8})");
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(ui.run('saved.kenrokuen'),'2026-11-14');
+  ui.run("cloudState.api.writeWeekend=async()=>{throw Error('離線')};handleCloudWeekend({target:{dataset:{id:'kenrokuen'},value:'skip'}})");
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(ui.run('saved.kenrokuen'),'2026-11-14');assert.equal(ui.run('cloudState.pending.size'),0);
+  assert.equal(ui.run("validCloudChoice('skip')"),true);assert.equal(ui.run("validCloudDate('skip')"),false);
   ui.run("listener([],{fromCache:true,pending:false})");
   assert.equal(ui.run('cloudState.ready'),false);
   ui.run("denied({code:'permission-denied'})");
@@ -79,8 +107,8 @@ function bootUI(){
   // Verify default HTML containment: hidden + inert ancestors remove all shared
   // fields, headings and actions from rendering, accessibility and keyboard use.
   const html=fs.readFileSync(__dirname+'/dist/index.html','utf8');
-  assert.match(html,/collaboration-ui\.js\?v=20261102-panels3/);
-  assert.match(uiSource,/firebase-client\.mjs\?v=20261102-panels3/);
+  assert.match(html,/collaboration-ui\.js\?v=20261102-skip1/);
+  assert.match(uiSource,/firebase-client\.mjs\?v=20261102-skip1/);
   const dialog=html.match(/<dialog id="cloudDialog"[\s\S]*?<\/dialog>/)[0];
   const stack=[],ancestors=new Map();
   for(const match of dialog.matchAll(/<(\/?)([a-z][a-z0-9]*)([^>]*)>/gi)){

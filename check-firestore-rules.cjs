@@ -10,7 +10,7 @@ setLogLevel('silent');
 const ID='PlanForRulesTest0001',TOKEN='a'.repeat(48);
 const path=`weekendPlans/${ID}`,index=uid=>`weekendPlanUsers/${uid}/plans/${ID}`;
 let checks=0;
-async function allow(p){await assertSucceeds(p);checks++;}
+async function allow(p){try{await assertSucceeds(p);checks++;}catch(error){throw new Error(`Expected success at check ${checks+1}`,{cause:error});}}
 async function deny(p){await assertFails(p);checks++;}
 (async()=>{
   if(!process.env.FIRESTORE_EMULATOR_HOST)throw Error('FIRESTORE_EMULATOR_HOST must target a local emulator');
@@ -39,6 +39,19 @@ async function deny(p){await assertFails(p);checks++;}
     await deny(setDoc(doc(other,`${path}/spots/natadera`),assignment('other')));
     await deny(setDoc(doc(member,`${path}/spots/kenrokuen`),{...assignment('member',2),extra:true}));
     await deny(setDoc(doc(member,`${path}/spots/natadera`),{...assignment('member'),weekend:'invalid'}));
+    // Explicit skip is a bounded sentinel, retaining the same revision history.
+    const skipRef=doc(member,`${path}/spots/shiko-park`);
+    await allow(setDoc(skipRef,{...assignment('member'),weekend:'skip'}));
+    await allow(setDoc(skipRef,{...assignment('member',2),weekend:'skip'}));
+    await allow(setDoc(skipRef,{...assignment('member',3),weekend:Timestamp.fromDate(new Date('2026-11-07T00:00:00Z'))}));
+    await allow(setDoc(skipRef,assignment('member',4)));
+    await deny(setDoc(skipRef,{...assignment('member',4),weekend:'skip'})); // stale revision
+    for(const invalid of ['SKIP','skip ', '這次不去','2026-11-07','',{},true,false,0,1]){
+      await deny(setDoc(doc(member,`${path}/spots/honda-forest`),{...assignment('member'),weekend:invalid}));
+      await deny(setDoc(skipRef,{...assignment('member',5),weekend:invalid}));
+    }
+    await deny(setDoc(doc(other,`${path}/spots/honda-forest`),{...assignment('other'),weekend:'skip'}));
+    await deny(setDoc(doc(anon,`${path}/spots/honda-forest`),{...assignment('anonymous'),weekend:'skip'}));
     await deny(deleteDoc(doc(member,index('owner'))));
     await deny(deleteDoc(doc(owner,index('member')))); // cleanup allowed only after mark
     await deny(deleteDoc(doc(owner,path))); // cannot bypass lifecycle
@@ -160,6 +173,20 @@ async function deny(p){await assertFails(p);checks++;}
     for(const id of integrationIds)await seedClientPlan(id);
     await assert.rejects(client(member,'member').deletePlan(integrationIds[0]),/僅建立者可刪除行程/);checks++;
     await assert.rejects(client(anon,null).deletePlan(integrationIds[0]),/請先登入/);checks++;
+    // Exercise shipped writeWeekend encoding with the real transaction SDK.
+    const clientPlan=integrationIds[0],clientSpot=doc(owner,`weekendPlans/${clientPlan}/spots/shiko-park`);
+    assert.deepEqual(await client(member,'member').writeWeekend(clientPlan,'shiko-park','skip',0),{value:'skip',revision:1});checks++;
+    assert.equal((await getDoc(clientSpot)).data().weekend,'skip');checks++;
+    assert.deepEqual(await client(owner,'owner').writeWeekend(clientPlan,'shiko-park','2026-11-07',1),{value:'2026-11-07',revision:2});checks++;
+    assert.equal((await getDoc(clientSpot)).data().weekend.toDate().toISOString(),'2026-11-07T00:00:00.000Z');checks++;
+    assert.deepEqual(await client(member,'member').writeWeekend(clientPlan,'shiko-park',null,2),{value:null,revision:3});checks++;
+    assert.equal((await getDoc(clientSpot)).data().weekend,null);checks++;
+    assert.deepEqual(await client(member,'member').writeWeekend(clientPlan,'shiko-park','skip',3),{value:'skip',revision:4});checks++;
+    await assert.rejects(client(owner,'owner').writeWeekend(clientPlan,'shiko-park','skip',3),/已被其他人更新/);checks++;
+    assert.equal((await getDoc(clientSpot)).data().revision,4);checks++;
+    await assert.rejects(client(anon,null).writeWeekend(clientPlan,'shiko-park','skip',4),/請先登入/);checks++;
+    await assert.rejects(client(member,'member').writeWeekend(unrelated,'kenrokuen','skip',7));checks++;
+    await deny(setDoc(doc(member,`weekendPlans/${unrelated}/spots/natadera`),{...assignment('member'),weekend:'skip'}));
     await client(owner,'owner').deletePlan(integrationIds[0]);checks++;
     await verifyDeleted(integrationIds[0]);
     const resumeId=integrationIds[1];
@@ -168,6 +195,7 @@ async function deny(p){await assertFails(p);checks++;}
     }).deletePlan(resumeId),/simulated server read interruption/);checks++;
     assert.ok((await getDoc(doc(owner,`weekendPlans/${resumeId}`))).data().deletingAt);checks++;
     await deny(setDoc(doc(member,`weekendPlans/${resumeId}/spots/kenrokuen`),assignment('member')));
+    await deny(setDoc(doc(owner,`weekendPlans/${resumeId}/spots/kenrokuen`),{...assignment('owner'),weekend:'skip'}));
     let cleanupCommits=0;
     await assert.rejects(client(owner,'owner',{
       writeBatch:db=>{
